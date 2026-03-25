@@ -1,0 +1,204 @@
+{
+  "common": {
+    "appName": "RoboJunior",
+    "tagline": "Career Simulator for Future Engineers",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "next": "Next",
+    "start": "Start",
+    "complete": "Complete",
+    "xp": "XP",
+    "level": "Level"
+  },
+  "nav": {
+    "home": "Home",
+    "roles": "Roles",
+    "dashboard": "Dashboard",
+    "leaderboard": "Leaderboard",
+    "profile": "Profile",
+    "logout": "Log out"
+  },
+  "auth": {
+    "login": "Log In",
+    "register": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "username": "Username",
+    "country": "Country",
+    "age": "Age",
+    "confirmPassword": "Confirm Password",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "forgotPassword": "Forgot password?",
+    "loginTitle": "Welcome back, engineer!",
+    "registerTitle": "Join RoboJunior",
+    "registerSubtitle": "Start your engineering career today",
+    "orContinueWith": "or continue with",
+    "agreeToTerms": "I agree to the Terms of Service",
+    "parentAccount": "I'm a parent creating a family account",
+    "demo": "Try Demo",
+    "demoSubtitle": "Explore as a demo user — no registration needed"
+  },
+  "roles": {
+    "title": "Choose Your Role",
+    "subtitle": "Try different careers. Discover what fits you.",
+    "drone_programmer": {
+      "name": "Drone Programmer",
+      "description": "Write code to control drones in real Saudi Arabia scenarios",
+      "skill": "Algorithmic Thinking"
+    },
+    "robot_constructor": {
+      "name": "Robot Constructor",
+      "description": "Build and optimize robots for industrial missions",
+      "skill": "Engineering Thinking"
+    },
+    "entrepreneur": {
+      "name": "Tech Entrepreneur",
+      "description": "Launch a tech startup and make strategic decisions",
+      "skill": "Strategic Thinking"
+    },
+    "missions": "Missions",
+    "completed": "completed",
+    "startRole": "Start Role",
+    "continueRole": "Continue",
+    "locked": "Complete previous mission to unlock"
+  },
+  "missions": {
+    "briefing": "Mission Briefing",
+    "objective": "Objective",
+    "timeEstimate": "~{time} min",
+    "difficulty": "Difficulty",
+    "xpReward": "+{xp} XP for completion",
+    "startMission": "Start Mission",
+    "missionComplete": "Mission Complete!",
+    "score": "Score",
+    "nextMission": "Next Mission",
+    "backToRoles": "Back to Roles",
+    "tryAgain": "Try Again",
+    "drone": {
+      "m1_title": "Platform Delivery — NEOM",
+      "m1_desc": "Program a drone to deliver medical supplies to an oil platform. Avoid obstacles.",
+      "m2_title": "City Grid — Riyadh",
+      "m2_desc": "Optimize a drone delivery route across Riyadh to minimize time and battery use."
+    },
+    "robot": {
+      "m1_title": "Assembly Line — Aramco",
+      "m1_desc": "Build a robot to work on an oil pipeline assembly line within a tight budget.",
+      "m2_title": "Rescue Robot — NEOM",
+      "m2_desc": "Design a robot for search-and-rescue operations in a desert environment."
+    },
+    "entrepreneur": {
+      "m1_title": "EdTech Startup — Riyadh",
+      "m1_desc": "Launch an educational technology startup for Saudi schools. Choose your team and strategy.",
+      "m2_title": "Scale or Pivot?",
+      "m2_desc": "Your startup has traction. Decide whether to scale locally or expand to BRICS+ markets."
+    }
+  },
+  "dashboard": {
+    "title": "My Career Dashboard",
+    "subtitle": "Based on your mission performance",
+    "competencies": "Competency Radar",
+    "axes": {
+      "technical_precision": "Technical Precision",
+      "analytical_thinking": "Analytical Thinking",
+      "creativity": "Creativity",
+      "teamwork": "Teamwork",
+      "management": "Management",
+      "learning_speed": "Learning Speed"
+    },
+    "topProfessions": "Best-Fit Careers for You",
+    "playMoreToUnlock": "Complete {count} more role(s) to unlock your career profile",
+    "professionQuestion": "Which career would you like to explore further?",
+    "professionQuestionSubtitle": "This helps us improve RoboJunior",
+    "noneOfThese": "None of these",
+    "badges": "My Badges",
+    "noBadges": "Complete missions to earn badges!",
+    "stats": {
+      "missionsCompleted": "Missions Completed",
+      "rolesExplored": "Roles Explored",
+      "coopMissions": "Coop Missions",
+      "totalXP": "Total XP"
+    }
+  },
+  "coop": {
+    "title": "Cooperative Missions",
+    "subtitle": "Team up with engineers from BRICS+ countries",
+    "findTeam": "Find a Team",
+    "createSession": "Create Session",
+    "joinSession": "Join Session",
+    "waitingForPartner": "Waiting for a partner...",
+    "partnerFound": "Partner found!",
+    "yourTurn": "Your Turn",
+    "partnersTurn": "Partner's Turn — waiting...",
+    "turnCompleted": "Your part is done! Waiting for partner.",
+    "missionComplete": "Team Mission Complete!",
+    "bonusXP": "+{xp} Bonus XP for teamwork!",
+    "noActiveSessions": "No open sessions right now",
+    "createFirst": "Create a session and invite a partner",
+    "asyncNote": "No need to be online at the same time — take turns at your own pace",
+    "partnerInactive": "Your partner has been inactive for 48h",
+    "inviteNewPartner": "Invite New Partner",
+    "continueAlone": "Continue Solo"
+  },
+  "chat": {
+    "typeMessage": "Type a message...",
+    "send": "Send",
+    "presetPhrases": "Quick Phrases",
+    "phrases": {
+      "hello": "Hello! Ready to start?",
+      "great": "Great work!",
+      "myTurn": "My turn — I'll do my part now",
+      "done": "Done! Your turn now",
+      "nice": "Nice solution!",
+      "question": "Do you have a question?",
+      "wait": "Please wait a moment",
+      "thanks": "Thanks for the teamwork!"
+    }
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "global": "Global",
+    "byCountry": "By Country",
+    "rank": "Rank",
+    "player": "Player",
+    "country": "Country",
+    "xp": "XP",
+    "missions": "Missions"
+  },
+  "profile": {
+    "title": "My Profile",
+    "editProfile": "Edit Profile",
+    "customizeAvatar": "Customize Avatar",
+    "avatarFor": "Avatar for {role}",
+    "color": "Color",
+    "accessory": "Accessory",
+    "accessories": {
+      "none": "None",
+      "antenna": "Antenna",
+      "hat": "Hard Hat",
+      "visor": "Visor",
+      "wings": "Wings",
+      "crown": "Crown"
+    },
+    "parentControls": "Parental Controls",
+    "linkedChildren": "Linked Children",
+    "addChild": "Link Child Account",
+    "activityLog": "Activity Log",
+    "genderFilter": "Partner Gender Filter",
+    "genderFilterAll": "All",
+    "genderFilterSame": "Same gender only",
+    "verifiedOnly": "Only verified partners",
+    "language": "Language"
+  },
+  "countries": {
+    "SA": "Saudi Arabia",
+    "RU": "Russia",
+    "IN": "India",
+    "CN": "China",
+    "BR": "Brazil",
+    "OTHER": "Other"
+  }
+}
