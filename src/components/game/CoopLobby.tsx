@@ -20,7 +20,7 @@ interface RecentlyCompletedSession {
   mission_template: string
   difficulty?: string
   updated_at: string
-  coop_participants?: { user_id: string; role: string; is_completed: boolean; score?: number; profiles?: { username: string } }[]
+  coop_participants?: { user_id: string; role: string; is_completed: boolean; score?: number; profiles?: { username: string } | { username: string }[] | null }[]
 }
 
 interface CoopLobbyProps {
@@ -479,7 +479,7 @@ export default function CoopLobby({ userId, mySessions: initialMySessions, openS
                     {parts.map(p => (
                       <div key={p.user_id} className="flex items-center gap-1 text-xs text-gray-400">
                         <RoleIcon role={p.role as Role} size={14} />
-                        <span>{p.user_id === userId ? t('you') : (p.profiles?.username ?? '?')}</span>
+                        <span>{p.user_id === userId ? t('you') : ((Array.isArray(p.profiles) ? p.profiles[0]?.username : p.profiles?.username) ?? '?')}</span>
                         <span className="text-gray-600">{p.score ?? 0}</span>
                       </div>
                     ))}
