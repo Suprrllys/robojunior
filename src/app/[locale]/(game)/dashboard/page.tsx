@@ -36,7 +36,7 @@ export default async function DashboardPage() {
     .eq('user_id', user!.id)
     .eq('status', 'completed')
   if (!hintsRes.error && hintsRes.data) {
-    hintsData = hintsRes.data as typeof hintsData
+    hintsData = hintsRes.data as unknown as { mission_number: number; role: string; hints_used: number }[]
   }
 
   const completedMissions = progress.filter(p => p.status === 'completed').length
