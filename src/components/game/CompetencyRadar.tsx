@@ -22,7 +22,7 @@ function CustomTick({ payload, x, y, textAnchor, ...rest }: Record<string, unkno
     lines = [text]
   }
   return (
-    <text x={x as number} y={y as number} textAnchor={textAnchor as string} fill="#9CA3AF" fontSize={11} {...rest}>
+    <text x={x as number} y={y as number} textAnchor={textAnchor as string} fill="#E5E7EB" fontSize={11} {...rest}>
       {lines.map((line, i) => (
         <tspan key={i} x={x as number} dy={i === 0 ? 0 : 14}>{line}</tspan>
       ))}
