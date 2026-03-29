@@ -13,11 +13,19 @@ export interface Profile {
   avatar_accessory: string
   xp: number
   game_currency: number
+  is_parent: boolean
   is_verified: boolean
   parent_id: string | null
   gender_filter: 'all' | 'same'
   only_verified_partners: boolean
+  show_on_leaderboard: boolean
   created_at: string
+  // V2 fields
+  equipped_skin: string | null
+  equipped_frame: string | null
+  title_key: string | null
+  missions_without_hints: number
+  total_missions_completed: number
 }
 
 export interface MissionProgress {
@@ -25,11 +33,20 @@ export interface MissionProgress {
   user_id: string
   role: Role
   mission_number: number
+  difficulty: 'easy' | 'medium' | 'hard'
   status: MissionStatus
   score: number
   metrics: MissionMetrics
   completed_at: string | null
   created_at: string
+  // V2 fields
+  stars: number
+  best_score: number
+  attempts: number
+  hints_used: number
+  first_clear_rewarded: boolean
+  bonus_objective_visible: boolean
+  bonus_objective_completed: boolean
 }
 
 export interface MissionMetrics {
@@ -44,6 +61,7 @@ export interface MissionMetrics {
 export interface CoopSession {
   id: string
   mission_template: string
+  difficulty: string
   status: CoopStatus
   created_by: string
   created_at: string
@@ -101,4 +119,68 @@ export interface CompetencyScore {
   management: number
   learning_speed: number
   updated_at: string
+}
+
+export interface ShopItemRow {
+  id: string
+  key: string
+  name_en: string
+  name_ru: string
+  name_ar: string
+  description_en: string
+  category: 'accessory' | 'skin' | 'effect'
+  price: number
+  rarity: 'common' | 'rare' | 'epic'
+  asset_key: string
+  is_active: boolean
+  created_at: string
+}
+
+export interface UserInventoryRow {
+  id: string
+  user_id: string
+  item_id: string
+  purchased_at: string
+  equipped: boolean
+}
+
+// ==============================
+// V2 types for missions engine
+// ==============================
+
+export interface AvatarSkin {
+  id: string
+  name_key: string
+  rarity: 'common' | 'rare' | 'epic' | 'legendary' | 'secret'
+  unlock_condition: string
+  image_url: string | null
+}
+
+export interface UserSkin {
+  user_id: string
+  skin_id: string
+  unlocked_at: string
+}
+
+export interface Achievement {
+  id: string
+  name_key: string
+  description_key: string
+  condition_type: string
+  condition_value: Record<string, unknown>
+  reward_skin_id: string | null
+  reward_title_key: string | null
+}
+
+export interface UserAchievement {
+  user_id: string
+  achievement_id: string
+  unlocked_at: string
+}
+
+export interface OnboardingStatus {
+  user_id: string
+  role: Role
+  completed: boolean
+  completed_at: string | null
 }

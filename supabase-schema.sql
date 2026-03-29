@@ -37,12 +37,13 @@ create policy "Users can update own profile" on public.profiles
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id, email, username, preferred_language)
+  insert into public.profiles (id, email, username, preferred_language, country)
   values (
     new.id,
     new.email,
     coalesce(new.raw_user_meta_data->>'username', split_part(new.email, '@', 1)),
-    coalesce(new.raw_user_meta_data->>'preferred_language', 'en')
+    coalesce(new.raw_user_meta_data->>'preferred_language', 'en'),
+    coalesce(new.raw_user_meta_data->>'country', 'OTHER')
   );
   return new;
 end;
@@ -62,6 +63,7 @@ create table public.mission_progress (
   mission_number integer not null,
   status text not null default 'not_started' check (status in ('not_started', 'in_progress', 'completed')),
   score integer not null default 0,
+  hints_used integer not null default 0,
   metrics jsonb not null default '{}',
   completed_at timestamptz,
   created_at timestamptz not null default now(),
@@ -179,18 +181,29 @@ create table public.coop_participants (
 alter table public.coop_participants enable row level security;
 
 -- ==============================
+-- Helper function to check participation (SECURITY DEFINER bypasses RLS, prevents recursion)
+-- ==============================
+create or replace function public.is_coop_participant(session_id uuid)
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1 from coop_participants
+    where coop_session_id = session_id and user_id = auth.uid()
+  );
+$$;
+
+-- ==============================
 -- Политики для coop_sessions (добавляем ПОСЛЕ создания coop_participants)
 -- ==============================
-create policy "Waiting sessions are public" on public.coop_sessions
-  for select using (status = 'waiting');
-
-create policy "Coop sessions viewable by participants" on public.coop_sessions
+create policy "Coop sessions viewable" on public.coop_sessions
   for select using (
-    auth.uid() = created_by or
-    exists (
-      select 1 from public.coop_participants
-      where coop_session_id = id and user_id = auth.uid()
-    )
+    auth.uid() = created_by
+    or status = 'waiting'
+    or public.is_coop_participant(id)
   );
 
 create policy "Users can create coop sessions" on public.coop_sessions
@@ -198,11 +211,8 @@ create policy "Users can create coop sessions" on public.coop_sessions
 
 create policy "Participants can update session" on public.coop_sessions
   for update using (
-    auth.uid() = created_by or
-    exists (
-      select 1 from public.coop_participants
-      where coop_session_id = id and user_id = auth.uid()
-    )
+    auth.uid() = created_by
+    or public.is_coop_participant(id)
   );
 
 -- ==============================
@@ -210,13 +220,11 @@ create policy "Participants can update session" on public.coop_sessions
 -- ==============================
 create policy "Participants viewable by session members" on public.coop_participants
   for select using (
-    exists (
-      select 1 from public.coop_participants cp
-      where cp.coop_session_id = coop_session_id and cp.user_id = auth.uid()
-    ) or
-    exists (
+    user_id = auth.uid()
+    or exists (
       select 1 from public.coop_sessions cs
-      where cs.id = coop_session_id and cs.status = 'waiting'
+      where cs.id = coop_session_id
+        and (cs.created_by = auth.uid() or cs.status = 'waiting')
     )
   );
 
@@ -255,6 +263,44 @@ create policy "Participants can send messages" on public.chat_messages
     exists (
       select 1 from public.coop_participants
       where coop_session_id = chat_messages.coop_session_id and user_id = auth.uid()
+    )
+  );
+
+-- ==============================
+-- Отслеживание завершённых кооп-миссий (для ачивок и статистики)
+-- ==============================
+create table public.coop_completed_missions (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  coop_session_id uuid references public.coop_sessions(id) on delete cascade not null,
+  mission_template text not null,
+  role text not null,
+  score integer not null default 0,
+  stars integer not null default 0,
+  total_session_score integer not null default 0,
+  partner_country text,
+  completed_at timestamptz not null default now(),
+  unique(user_id, coop_session_id)
+);
+
+alter table public.coop_completed_missions enable row level security;
+
+create policy "Users can view own coop completions" on public.coop_completed_missions
+  for select using (auth.uid() = user_id);
+
+create policy "Users can insert own coop completions" on public.coop_completed_missions
+  for insert with check (auth.uid() = user_id);
+
+create policy "Users can update own coop completions" on public.coop_completed_missions
+  for update using (auth.uid() = user_id);
+
+-- Разрешаем выход из сессий в ожидании
+create policy "Users can leave waiting sessions" on public.coop_participants
+  for delete using (
+    auth.uid() = user_id and
+    exists (
+      select 1 from public.coop_sessions cs
+      where cs.id = coop_session_id and cs.status = 'waiting'
     )
   );
 

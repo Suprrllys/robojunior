@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useLocale } from 'next-intl'
 
 interface ToastData {
   xp: number
@@ -15,6 +16,7 @@ export function fireGameToast(data: ToastData) {
 }
 
 export default function GameToast() {
+  const locale = useLocale()
   const [toast, setToast] = useState<ToastData | null>(null)
   const [visible, setVisible] = useState(false)
 
@@ -43,14 +45,14 @@ export default function GameToast() {
         <div className="flex items-center gap-3">
           <div className="text-3xl animate-bounce">🎉</div>
           <div>
-            <p className="text-white font-black text-lg">Mission Complete!</p>
-            <p className="text-brand-gold font-bold">+{toast.xp} XP · Score: {toast.score}</p>
+            <p className="text-white font-black text-lg">{locale === 'ru' ? 'Миссия выполнена!' : locale === 'ar' ? 'اكتملت المهمة!' : 'Mission Complete!'}</p>
+            <p className="text-brand-gold font-bold">+{toast.xp} XP · {locale === 'ru' ? 'Счёт' : locale === 'ar' ? 'النتيجة' : 'Score'}: {toast.score}</p>
           </div>
         </div>
         {toast.badge && (
           <div className="mt-3 pt-3 border-t border-brand-border flex items-center gap-2">
             <span className="text-xl">🏅</span>
-            <p className="text-yellow-300 text-sm font-medium">New badge: {toast.badge}</p>
+            <p className="text-yellow-300 text-sm font-medium">{locale === 'ru' ? 'Новый значок' : locale === 'ar' ? 'شارة جديدة' : 'New badge'}: {toast.badge}</p>
           </div>
         )}
       </div>

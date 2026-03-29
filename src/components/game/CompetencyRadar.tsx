@@ -12,6 +12,7 @@ interface CompetencyRadarProps {
 
 export default function CompetencyRadar({ scores }: CompetencyRadarProps) {
   const t = useTranslations('dashboard.axes')
+  const tDash = useTranslations('dashboard')
 
   const data = [
     { axis: t('technical_precision'), value: scores.technical_precision },
@@ -31,7 +32,7 @@ export default function CompetencyRadar({ scores }: CompetencyRadarProps) {
           tick={{ fill: '#9CA3AF', fontSize: 12 }}
         />
         <Radar
-          name="Competencies"
+          name={tDash('competencies')}
           dataKey="value"
           stroke="#1E90FF"
           fill="#1E90FF"

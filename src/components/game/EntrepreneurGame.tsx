@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
 import { completeMission } from '@/lib/game/scoring'
 import { getMissionConfig } from '@/lib/game/missions'
@@ -269,6 +270,7 @@ interface EntrepreneurGameProps {
 export default function EntrepreneurGame({ userId, missionNumber, difficulty, isCompleted, onComplete }: EntrepreneurGameProps) {
   const t = useTranslations('game')
   const tMissions = useTranslations('missions')
+  const router = useRouter()
 
   const scenes = getScenesForDifficulty(missionNumber, difficulty)
   const isHard = difficulty === 'hard'
@@ -369,7 +371,8 @@ export default function EntrepreneurGame({ userId, missionNumber, difficulty, is
     setSaving(false)
     setDone(true)
     onComplete?.(finalScore)
-  }, [userId, missionNumber, difficulty, isHard, startTime, HARD_TIME_LIMIT, onComplete])
+    router.refresh()
+  }, [userId, missionNumber, difficulty, isHard, startTime, HARD_TIME_LIMIT, onComplete, router])
 
   // Auto-finish when timer runs out
   useEffect(() => {

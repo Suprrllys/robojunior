@@ -60,3 +60,23 @@ body {
 .float {
   animation: float 3s ease-in-out infinite;
 }
+
+/* Slide in from right (Knowledge Base panel) */
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.25s ease-out;
+}
+
+/* Fade in (Result Screen breakdown) */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}

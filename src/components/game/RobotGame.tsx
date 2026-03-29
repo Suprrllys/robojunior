@@ -18,6 +18,7 @@ import { completeMission } from '@/lib/game/scoring'
 import { getMissionConfig } from '@/lib/game/missions'
 import { fireGameToast } from '@/components/game/GameToast'
 import { Link } from '@/i18n/navigation'
+import { useRouter } from 'next/navigation'
 import type { Difficulty, MissionResult } from '@/types/game'
 
 // ---------------------------------------------------------------------------
@@ -253,6 +254,7 @@ function StatBar({ label, value, required, color }: { label: string; value: numb
 
 export default function RobotGame({ userId, missionNumber, difficulty, isCompleted, onComplete }: RobotGameProps) {
   const t = useTranslations()
+  const router = useRouter()
   const mission = getMissionConfig('robot_constructor', missionNumber, difficulty)
 
   const budget = mission?.budget ?? 100
@@ -331,10 +333,11 @@ export default function RobotGame({ userId, missionNumber, difficulty, isComplet
       setDone(true)
       fireGameToast({ xp: missionResult.xpEarned, score, badge: missionResult.newBadges[0] })
       onComplete?.(score)
+      router.refresh()
     } finally {
       setSaving(false)
     }
-  }, [allRequirementsMet, saving, calculateScore, userId, missionNumber, difficulty, totalCost, budget, reqPrecision, totalPrecision, onComplete, equippedModules.length, startTime])
+  }, [allRequirementsMet, saving, calculateScore, userId, missionNumber, difficulty, totalCost, budget, reqPrecision, totalPrecision, onComplete, equippedModules.length, startTime, router])
 
   // Done state
   if (done && !saving) {

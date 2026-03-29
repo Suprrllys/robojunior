@@ -9,7 +9,7 @@ export default async function LeaderboardPage() {
 
   const { data: leaders } = await supabase
     .from('profiles')
-    .select('id, username, country, xp')
+    .select('id, username, country, xp, avatar_color, avatar_accessory')
     .order('xp', { ascending: false })
     .limit(50)
 
@@ -17,7 +17,7 @@ export default async function LeaderboardPage() {
     <div>
       <div className="mb-8">
         <h1 className="text-3xl font-black text-white">{t('title')}</h1>
-        <p className="text-gray-400 mt-1 text-sm">Updates live as players complete missions</p>
+        <p className="text-gray-400 mt-1 text-sm">{t('subtitle')}</p>
       </div>
 
       <LiveLeaderboard

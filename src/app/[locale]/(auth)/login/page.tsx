@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import LoginForm from '@/components/auth/LoginForm'
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
 
 export default function LoginPage() {
   const t = useTranslations('auth')
@@ -8,6 +9,11 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md">
+        {/* Language switcher */}
+        <div className="flex justify-end mb-4">
+          <LanguageSwitcher />
+        </div>
+
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="text-3xl font-black">

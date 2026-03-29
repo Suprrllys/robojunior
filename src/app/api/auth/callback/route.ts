@@ -10,7 +10,11 @@ export async function GET(request: Request) {
     const supabase = await createClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`)
+      // If redirecting to reset-password, go to the locale-prefixed version
+      const destination = next === '/reset-password'
+        ? `${origin}/en/reset-password`
+        : `${origin}${next}`
+      return NextResponse.redirect(destination)
     }
   }
 

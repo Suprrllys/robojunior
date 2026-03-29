@@ -5,34 +5,68 @@ import { Link, usePathname } from '@/i18n/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from '@/i18n/navigation'
 import { clsx } from 'clsx'
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
+import VolumeControl from '@/components/game/VolumeControl'
+import CharacterAvatarPreview from '@/components/game/CharacterAvatarPreview'
+import { parseAvatarConfig } from '@/lib/game/avatar-utils'
+import { IconRoles, IconCoop, IconDashboard, IconLeaderboard, IconShop, IconProfile, IconCoin, IconHandshake } from '@/components/ui/SvgIcon'
+
+const NAV_ICON_MAP: Record<string, (props: { size?: number }) => JSX.Element> = {
+  roles: IconRoles,
+  coop: IconHandshake,
+  dashboard: IconDashboard,
+  leaderboard: IconLeaderboard,
+  shop: IconShop,
+  profile: IconProfile,
+  parentDashboard: ({ size = 20 }: { size?: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  ),
+}
 
 interface GameNavProps {
   profile: {
     username: string
     xp: number
     avatar_color: string
+    avatar_accessory?: string
     country: string
+    game_currency?: number
+    is_parent?: boolean
   } | null
   locale: string
 }
 
-const NAV_ITEMS = [
-  { href: '/roles', icon: '🎮', key: 'roles' },
-  { href: '/coop', icon: '🤝', key: 'coop' },
-  { href: '/dashboard', icon: '📊', key: 'dashboard' },
-  { href: '/leaderboard', icon: '🏆', key: 'leaderboard' },
-  { href: '/profile', icon: '👤', key: 'profile' },
+// SVG nav icons — clean line-art style matching the role cards
+const BASE_NAV_ITEMS = [
+  { href: '/roles', key: 'roles' },
+  { href: '/coop', key: 'coop' },
+  { href: '/dashboard', key: 'dashboard' },
+  { href: '/leaderboard', key: 'leaderboard' },
+  { href: '/shop', key: 'shop' },
+  { href: '/profile', key: 'profile' },
 ]
 
-const COUNTRY_FLAGS: Record<string, string> = {
-  SA: '🇸🇦', RU: '🇷🇺', IN: '🇮🇳', CN: '🇨🇳', BR: '🇧🇷', OTHER: '🌍',
+// Country codes that have flag images on flagcdn.com
+const FLAG_COUNTRIES: Record<string, string> = {
+  SA: 'sa', RU: 'ru', IN: 'in', CN: 'cn', BR: 'br', ZA: 'za', EG: 'eg', AE: 'ae', IR: 'ir', ET: 'et',
 }
 
-export default function GameNav({ profile, locale }: GameNavProps) {
+export default function GameNav({ profile }: GameNavProps) {
   const t = useTranslations('nav')
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+
+  // Build nav items — add parent dashboard if user is a parent
+  const NAV_ITEMS = [
+    ...BASE_NAV_ITEMS,
+    ...(profile?.is_parent ? [{ href: '/parent', key: 'parentDashboard' }] : []),
+  ]
 
   async function handleLogout() {
     await supabase.auth.signOut()
@@ -42,9 +76,9 @@ export default function GameNav({ profile, locale }: GameNavProps) {
 
   return (
     <nav className="bg-brand-panel border-b border-brand-border sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-2 sm:px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/roles" className="text-xl font-black">
+        <Link href="/roles" className="text-lg sm:text-xl font-black">
           <span className="text-white">Robo</span>
           <span className="text-brand-blue">Junior</span>
         </Link>
@@ -62,33 +96,47 @@ export default function GameNav({ profile, locale }: GameNavProps) {
                   : 'text-gray-400 hover:text-white hover:bg-brand-border'
               )}
             >
-              <span>{item.icon}</span>
+              {(() => { const Icon = NAV_ICON_MAP[item.key]; return Icon ? <Icon size={18} /> : null })()}
               <span>{t(item.key as 'roles')}</span>
             </Link>
           ))}
         </div>
 
-        {/* User info */}
-        {profile && (
-          <div className="flex items-center gap-3">
-            <div
-              className="w-8 h-8 rounded-lg border flex items-center justify-center text-sm"
-              style={{ backgroundColor: `${profile.avatar_color}22`, borderColor: profile.avatar_color }}
-            >
-              {COUNTRY_FLAGS[profile.country] || '🌍'}
-            </div>
-            <div className="hidden sm:block">
-              <div className="text-sm font-medium text-white">{profile.username}</div>
-              <div className="text-xs text-brand-gold">{profile.xp} XP</div>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="text-gray-500 hover:text-red-400 transition-colors text-sm px-2 py-1"
-            >
-              ↩
-            </button>
-          </div>
-        )}
+        {/* Language switcher + User info */}
+        <div className="flex items-center gap-3">
+          {/* Volume control */}
+          <VolumeControl />
+
+          {/* Language switcher */}
+          <LanguageSwitcher />
+
+          {/* User info */}
+          {profile && (
+            <>
+              <div className="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
+                <CharacterAvatarPreview
+                  avatarColor={profile.avatar_color}
+                  avatarConfig={parseAvatarConfig(profile.avatar_accessory)}
+                  size={32}
+                  animated={false}
+                />
+              </div>
+              <div className="hidden sm:block">
+                <div className="text-sm font-medium text-white">{profile.username}</div>
+                <div className="text-xs text-brand-gold flex items-center gap-2">
+                  <span>{profile.xp} XP</span>
+                  <span className="text-yellow-400 flex items-center gap-1"><IconCoin size={16} /> {profile.game_currency ?? 0}</span>
+                </div>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="text-gray-500 hover:text-red-400 transition-colors text-sm px-2 py-1 min-h-[44px]"
+              >
+                ↩
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Mobile nav */}
@@ -98,13 +146,13 @@ export default function GameNav({ profile, locale }: GameNavProps) {
             key={item.href}
             href={item.href as '/roles'}
             className={clsx(
-              'flex-1 flex flex-col items-center gap-0.5 py-2 text-xs transition-colors',
+              'flex-1 flex flex-col items-center gap-0.5 py-3 md:py-2 text-xs transition-colors',
               pathname === item.href
                 ? 'text-brand-blue'
                 : 'text-gray-500 hover:text-white'
             )}
           >
-            <span className="text-lg">{item.icon}</span>
+            {(() => { const Icon = NAV_ICON_MAP[item.key]; return Icon ? <Icon size={20} /> : null })()}
             <span>{t(item.key as 'roles')}</span>
           </Link>
         ))}

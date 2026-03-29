@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RoboJunior — карьерный симулятор</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;900&family=Nunito:wght@400;500;600;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #05080F;
+      --bg2: #080D18;
+      --card: rgba(11, 19, 36, 0.9);
+      --cyan: #00D4FF;
+      --cyan-dim: rgba(0, 212, 255, 0.10);
+      --orange: #FF6B35;
+      --orange-dim: rgba(255, 107, 53, 0.10);
+      --gold: #FFD166;
+      --text: #DFF0F8;
+      --text-dim: #6A8FAA;
+      --border: rgba(0, 212, 255, 0.14);
+      --border-orange: rgba(255, 107, 53, 0.2);
+      --glow-cyan: 0 0 32px rgba(0, 212, 255, 0.35);
+      --glow-orange: 0 0 32px rgba(255, 107, 53, 0.35);
+      --font-head: 'Exo 2', 'Trebuchet MS', 'Century Gothic', system-ui, sans-serif;
+      --font-body: 'Nunito', 'Segoe UI', 'Helvetica Neue', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 17px;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 6%;
+      background: rgba(5,8,15,0.8); backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family: var(--font-head); font-weight: 900; font-size: 1.35rem; color: var(--text); }
+    .nav-logo span { color: var(--cyan); }
+    .nav-cta {
+      font-family: var(--font-head); font-weight: 700; font-size: 0.875rem;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      color: var(--bg); background: var(--cyan);
+      border: none; padding: 10px 22px; border-radius: 6px;
+      cursor: pointer; text-decoration: none;
+      transition: box-shadow 0.2s, transform 0.15s;
+    }
+    .nav-cta:hover { box-shadow: var(--glow-cyan); transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center; text-align: center;
+      padding: 120px 6% 80px; overflow: hidden;
+    }
+    .hero::after {
+      content: ''; position: absolute;
+      width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,212,255,0.07) 0%, transparent 70%);
+      top: -200px; right: -200px; pointer-events: none;
+      animation: drift 12s ease-in-out infinite alternate;
+    }
+    .hero-orb2 {
+      position: absolute; width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,107,53,0.06) 0%, transparent 70%);
+      bottom: -150px; left: -100px; pointer-events: none;
+      animation: drift2 15s ease-in-out infinite alternate;
+    }
+    @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(-60px,60px) scale(1.1); } }
+    @keyframes drift2 { from { transform: translate(0,0) scale(1.1); } to { transform: translate(60px,-40px) scale(1); } }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-head); font-weight: 600; font-size: 0.78rem;
+      letter-spacing: 1.5px; text-transform: uppercase; color: var(--cyan);
+      border: 1px solid var(--border); background: var(--cyan-dim);
+      padding: 7px 18px; border-radius: 100px; margin-bottom: 32px;
+      animation: fadeUp 0.6s ease both;
+    }
+    .hero-badge::before {
+      content: ''; width: 7px; height: 7px; border-radius: 50%;
+      background: var(--cyan); box-shadow: 0 0 8px var(--cyan);
+      animation: blink 1.8s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+    .hero h1 {
+      font-family: var(--font-head); font-weight: 900;
+      font-size: clamp(2.4rem,5.5vw,4.2rem); line-height: 1.1;
+      letter-spacing: -1.5px; max-width: 900px; margin-bottom: 24px;
+      animation: fadeUp 0.7s 0.1s ease both;
+    }
+    .hero h1 .accent-cyan { color: var(--cyan); }
+    .hero h1 .accent-orange { color: var(--orange); }
+
+    .hero-sub {
+      font-size: clamp(1rem,1.8vw,1.2rem); color: var(--text-dim);
+      max-width: 640px; margin-bottom: 16px;
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
+
+    .hero-missions {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 10px; margin-bottom: 40px;
+      animation: fadeUp 0.7s 0.3s ease both;
+    }
+    .hero-mission-tag {
+      font-family: var(--font-head); font-size: 0.85rem; font-weight: 600;
+      color: var(--text-dim); background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07); padding: 6px 14px; border-radius: 6px;
+    }
+
+    .hero-cta-group {
+      display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+      animation: fadeUp 0.7s 0.4s ease both;
+    }
+    .btn-primary {
+      font-family: var(--font-head); font-weight: 700; font-size: 1.05rem;
+      color: var(--bg); background: var(--cyan); border: none;
+      padding: 16px 38px; border-radius: 8px; cursor: pointer; text-decoration: none;
+      display: inline-block; transition: box-shadow 0.25s, transform 0.15s;
+    }
+    .btn-primary:hover { box-shadow: var(--glow-cyan); transform: translateY(-2px); }
+    .btn-secondary {
+      font-family: var(--font-head); font-weight: 600; font-size: 1rem;
+      color: var(--text); background: transparent; border: 1px solid var(--border);
+      padding: 16px 28px; border-radius: 8px; cursor: pointer; text-decoration: none;
+      display: inline-block; transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--cyan); background: var(--cyan-dim); }
+
+    .hero-note { margin-top: 18px; font-size: 0.85rem; color: var(--text-dim); animation: fadeUp 0.7s 0.5s ease both; }
+
+    @keyframes fadeUp { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ── HERO GAME SCREEN ── */
+    .hero-game-screen {
+      position: relative; margin-top: 56px; width: 100%; max-width: 860px;
+      background: rgba(8,13,24,0.95); border: 1px solid rgba(0,212,255,0.25);
+      border-radius: 16px; overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,212,255,0.1);
+      animation: fadeUp 0.8s 0.5s ease both;
+    }
+    .game-screen-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 18px; background: #060C18;
+      border-bottom: 1px solid rgba(0,212,255,0.15);
+    }
+    .game-screen-title { font-family: 'Courier New', monospace; font-size: 0.78rem; color: var(--cyan); letter-spacing: 1px; }
+    .game-screen-prompt {
+      font-family: var(--font-head); font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase; color: var(--gold);
+      animation: blink 1.4s ease-in-out infinite;
+    }
+    .game-screen-dots { display: flex; gap: 6px; }
+    .game-screen-dots span { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #FF5F57; } .dot-y { background: #FFBD2E; } .dot-g { background: #28CA41; }
+
+    .char-select-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+    }
+
+    .char-card {
+      padding: 24px 20px 20px; border-right: 1px solid rgba(0,212,255,0.1);
+      transition: background 0.2s; cursor: default; position: relative;
+    }
+    .char-card:last-child { border-right: none; }
+    .char-card:hover { background: rgba(0,212,255,0.04); }
+    .char-card.active-char { background: rgba(0,212,255,0.06); }
+
+    .char-svg-wrap { width: 100%; height: 160px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 12px; }
+
+    .char-class {
+      font-family: var(--font-head); font-weight: 800; font-size: 0.88rem;
+      letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px;
+    }
+    .char-card:nth-child(1) .char-class { color: var(--cyan); }
+    .char-card:nth-child(2) .char-class { color: var(--orange); }
+    .char-card:nth-child(3) .char-class { color: var(--gold); }
+
+    .char-level { font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.5px; margin-bottom: 14px; font-family: 'Courier New', monospace; }
+
+    .char-stats { display: flex; flex-direction: column; gap: 6px; }
+    .stat-row { display: flex; align-items: center; gap: 8px; }
+    .stat-label { font-family: 'Courier New', monospace; font-size: 0.65rem; color: var(--text-dim); width: 48px; }
+    .stat-bar { flex: 1; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+    .stat-fill { height: 100%; border-radius: 2px; }
+    .char-card:nth-child(1) .stat-fill { background: var(--cyan); }
+    .char-card:nth-child(2) .stat-fill { background: var(--orange); }
+    .char-card:nth-child(3) .stat-fill { background: var(--gold); }
+
+    /* ── SECTIONS ── */
+    section { position: relative; z-index: 1; padding: 96px 6%; }
+    .section-label {
+      font-family: var(--font-head); font-weight: 700; font-size: 0.75rem;
+      letter-spacing: 2.5px; text-transform: uppercase; color: var(--cyan); margin-bottom: 16px;
+    }
+    h2 {
+      font-family: var(--font-head); font-weight: 900;
+      font-size: clamp(1.9rem,3.5vw,2.8rem); line-height: 1.15;
+      letter-spacing: -0.8px; margin-bottom: 16px;
+    }
+    .section-intro { color: var(--text-dim); font-size: 1.05rem; max-width: 560px; margin-bottom: 56px; }
+
+    /* ── AHA ── */
+    .aha-section {
+      background: linear-gradient(135deg, rgba(0,212,255,0.04) 0%, transparent 60%);
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    }
+    .aha-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; max-width: 900px; }
+    .aha-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+      overflow: hidden; transition: border-color 0.25s, transform 0.2s;
+    }
+    .aha-card:hover { border-color: rgba(0,212,255,0.4); transform: translateY(-4px); }
+    .aha-scene { width: 100%; height: 140px; }
+    .aha-body { padding: 24px 28px; }
+    .aha-card h3 { font-family: var(--font-head); font-weight: 700; font-size: 1.1rem; margin-bottom: 10px; color: var(--text); }
+    .aha-card p { font-size: 0.95rem; color: var(--text-dim); line-height: 1.6; }
+
+    /* ── MISSIONS ── */
+    .missions-section { background: var(--bg2); }
+    .missions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .mission-card {
+      position: relative; background: var(--card); border-radius: 20px;
+      overflow: hidden; transition: transform 0.2s, box-shadow 0.25s; cursor: default;
+    }
+    .mission-card.cyan { border: 1px solid rgba(0,212,255,0.2); }
+    .mission-card.orange { border: 1px solid rgba(255,107,53,0.2); }
+    .mission-card.gold { border: 1px solid rgba(255,209,102,0.2); }
+    .mission-card:hover { transform: translateY(-6px); }
+    .mission-card.cyan:hover { box-shadow: 0 12px 48px rgba(0,212,255,0.15); }
+    .mission-card.orange:hover { box-shadow: 0 12px 48px rgba(255,107,53,0.15); }
+    .mission-card.gold:hover { box-shadow: 0 12px 48px rgba(255,209,102,0.15); }
+    .mission-scene { width: 100%; height: 190px; display: block; }
+    .mission-body { padding: 24px 26px 28px; }
+    .mission-number {
+      font-family: var(--font-head); font-weight: 900; font-size: 4rem; line-height: 1;
+      opacity: 0.1; position: absolute; top: 195px; right: 20px; pointer-events: none;
+    }
+    .mission-card.cyan .mission-number { color: var(--cyan); }
+    .mission-card.orange .mission-number { color: var(--orange); }
+    .mission-card.gold .mission-number { color: var(--gold); }
+    .mission-card h3 { font-family: var(--font-head); font-weight: 800; font-size: 1.2rem; margin-bottom: 10px; }
+    .mission-card.cyan h3 { color: var(--cyan); }
+    .mission-card.orange h3 { color: var(--orange); }
+    .mission-card.gold h3 { color: var(--gold); }
+    .mission-card p { font-size: 0.93rem; color: var(--text-dim); line-height: 1.65; }
+    .mission-arrow {
+      display: inline-flex; align-items: center; margin-top: 18px;
+      font-family: var(--font-head); font-weight: 700; font-size: 0.85rem; gap: 8px;
+    }
+    .mission-card.cyan .mission-arrow { color: var(--cyan); }
+    .mission-card.orange .mission-arrow { color: var(--orange); }
+    .mission-card.gold .mission-arrow { color: var(--gold); }
+
+    /* ── BENEFITS ── */
+    .benefits-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 900px; }
+    .benefit-card {
+      display: flex; gap: 20px; align-items: flex-start;
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+      padding: 28px; transition: border-color 0.2s, transform 0.2s;
+    }
+    .benefit-card:hover { border-color: rgba(0,212,255,0.35); transform: translateY(-3px); }
+    .benefit-icon-wrap {
+      flex-shrink: 0; width: 56px; height: 56px; border-radius: 12px;
+      background: var(--cyan-dim); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .benefit-card h3 { font-family: var(--font-head); font-weight: 700; font-size: 1.05rem; color: var(--cyan); margin-bottom: 6px; }
+    .benefit-card p { font-size: 0.92rem; color: var(--text-dim); line-height: 1.6; }
+
+    /* ── PAIN ── */
+    .pain-section { background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%); border-top: 1px solid var(--border); }
+    .pain-list { list-style: none; max-width: 720px; display: flex; flex-direction: column; gap: 16px; }
+    .pain-item {
+      display: flex; align-items: flex-start; gap: 16px; padding: 22px 28px;
+      background: var(--card); border: 1px solid var(--border-orange); border-radius: 12px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .pain-item:hover { border-color: rgba(255,107,53,0.45); transform: translateX(6px); }
+    .pain-check { flex-shrink: 0; margin-top: 3px; }
+    .pain-item p { font-size: 0.98rem; color: var(--text-dim); line-height: 1.55; }
+    .pain-item p strong { color: var(--text); }
+
+    /* ── HOW ── */
+    .how-section { background: var(--bg2); }
+    .how-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; position: relative; }
+    .how-steps::before {
+      content: ''; position: absolute; top: 52px;
+      left: calc(16.66% + 20px); right: calc(16.66% + 20px); height: 1px;
+      background: linear-gradient(90deg, var(--cyan) 0%, var(--orange) 100%); opacity: 0.25;
+    }
+    .how-step { text-align: center; padding: 0 32px; }
+    .step-num {
+      width: 60px; height: 60px; border-radius: 50%;
+      border: 2px solid var(--border); display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-head); font-weight: 900; font-size: 1.4rem;
+      margin: 0 auto 24px; position: relative; z-index: 1; background: var(--bg);
+    }
+    .how-step:nth-child(1) .step-num { color: var(--cyan); border-color: rgba(0,212,255,0.5); }
+    .how-step:nth-child(2) .step-num { color: var(--orange); border-color: rgba(255,107,53,0.5); }
+    .how-step:nth-child(3) .step-num { color: var(--gold); border-color: rgba(255,209,102,0.5); }
+    .how-step h3 { font-family: var(--font-head); font-weight: 700; font-size: 1.1rem; margin-bottom: 12px; }
+    .how-step ul { list-style: none; display: flex; flex-direction: column; gap: 8px; text-align: left; }
+    .how-step ul li { font-size: 0.88rem; color: var(--text-dim); padding-left: 16px; position: relative; }
+    .how-step ul li::before { content: '→'; position: absolute; left: 0; color: var(--text-dim); opacity: 0.5; }
+
+    /* ── RESULTS ── */
+    .results-section { border-top: 1px solid var(--border); }
+    .results-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; max-width: 900px; }
+    .results-col h3 { font-family: var(--font-head); font-weight: 700; font-size: 0.85rem; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 24px; }
+    .results-col:first-child h3 { color: var(--cyan); }
+    .results-col:last-child h3 { color: var(--orange); }
+    .results-list { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+    .results-list li { padding-left: 22px; position: relative; font-size: 0.95rem; color: var(--text-dim); line-height: 1.55; }
+    .results-list li::before { content: '✦'; position: absolute; left: 0; top: 2px; font-size: 0.75rem; }
+    .results-col:first-child .results-list li::before { color: var(--cyan); }
+    .results-col:last-child .results-list li::before { color: var(--orange); }
+    .results-list li strong { color: var(--text); }
+
+    /* ── FAQ ── */
+    .faq-section { background: var(--bg2); border-top: 1px solid var(--border); }
+    .faq-list { display: flex; flex-direction: column; gap: 16px; max-width: 780px; }
+    .faq-item { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: border-color 0.2s; }
+    .faq-item:hover { border-color: rgba(0,212,255,0.3); }
+    .faq-q { width: 100%; background: none; border: none; text-align: left; padding: 22px 28px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+    .faq-q-text { font-family: var(--font-head); font-weight: 700; font-size: 1rem; color: var(--text); }
+    .faq-icon { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--cyan-dim); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1rem; color: var(--cyan); transition: transform 0.25s; }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+    .faq-a { padding: 0 28px 22px; font-size: 0.95rem; color: var(--text-dim); line-height: 1.65; display: none; }
+    .faq-item.open .faq-a { display: block; }
+
+    /* ── VS ── */
+    .vs-section { border-top: 1px solid var(--border); }
+    .vs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 900px; }
+    .vs-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; transition: transform 0.2s; }
+    .vs-card:hover { transform: translateY(-4px); }
+    .vs-them { font-family: var(--font-head); font-weight: 700; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .vs-them::before { content: '✗'; color: #ff4560; }
+    .vs-card p.vs-their-desc { font-size: 0.88rem; color: #4a6680; line-height: 1.55; margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .vs-us { font-family: var(--font-head); font-weight: 700; font-size: 0.85rem; color: var(--cyan); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .vs-us::before { content: '✓'; color: var(--cyan); }
+    .vs-card p.vs-our-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.55; }
+
+    /* ── BRICS ── */
+    .brics-banner {
+      background: linear-gradient(135deg, rgba(0,212,255,0.06) 0%, rgba(255,107,53,0.04) 100%);
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      padding: 48px 6%; display: flex; align-items: center;
+      justify-content: space-between; gap: 32px; flex-wrap: wrap;
+    }
+    .brics-text h3 { font-family: var(--font-head); font-weight: 900; font-size: 1.5rem; margin-bottom: 8px; }
+    .brics-text p { color: var(--text-dim); font-size: 0.95rem; }
+    .brics-flags { display: flex; gap: 28px; }
+    .brics-flag-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .brics-flag-label { font-family: var(--font-head); font-size: 0.7rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); }
+
+    /* ── CTA ── */
+    .cta-section {
+      text-align: center; padding: 120px 6%;
+      background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(0,212,255,0.07) 0%, transparent 70%);
+    }
+    .cta-section h2 { font-size: clamp(2rem,4vw,3.2rem); max-width: 700px; margin: 0 auto 20px; }
+    .cta-section p { color: var(--text-dim); font-size: 1.05rem; max-width: 500px; margin: 0 auto 40px; }
+    .cta-section .btn-primary { font-size: 1.15rem; padding: 18px 48px; }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 36px 6%;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    }
+    .footer-logo { font-family: var(--font-head); font-weight: 900; font-size: 1.1rem; color: var(--text); }
+    .footer-logo span { color: var(--cyan); }
+    .footer-text { font-size: 0.82rem; color: var(--text-dim); }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .missions-grid, .how-steps, .vs-grid { grid-template-columns: 1fr; }
+      .how-steps::before { display: none; }
+      .benefits-grid, .results-cols, .aha-grid { grid-template-columns: 1fr; }
+      .char-select-grid { grid-template-columns: 1fr; }
+      /* Fix hero */
+      .hero { min-height: auto; }
+      .hero-game-screen { margin-top: 32px; }
+
+      /* Disable scroll reveal on mobile — show everything immediately */
+      .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+
+      /* Mission scenes smaller on mobile */
+      .mission-scene { height: 150px; }
+      .aha-scene { height: 120px; }
+
+      /* How steps */
+      .how-step { padding: 0 8px 24px; }
+
+      /* BRICS banner stacked */
+      .brics-banner { flex-direction: column; text-align: center; gap: 24px; }
+      .brics-flags { justify-content: center; }
+
+      /* CTA section */
+      .cta-section { padding: 80px 4%; }
+
+      /* Results columns */
+      .results-cols { gap: 32px; }
+
+      /* Pain items */
+      .pain-item { padding: 16px 20px; }
+
+      /* Benefit cards */
+      .benefit-card { padding: 20px; }
+
+      /* FAQ */
+      .faq-q { padding: 18px 20px; }
+      .faq-a { padding: 0 20px 18px; }
+    }
+    @media (max-width: 600px) {
+      nav { padding: 14px 4%; }
+      section { padding: 64px 4%; }
+      .hero { padding: 88px 4% 48px; }
+      h2 { font-size: 1.75rem; }
+      .hero-missions { flex-direction: column; align-items: center; }
+      .hero-cta-group { flex-direction: column; align-items: stretch; }
+      .hero-cta-group .btn-primary, .hero-cta-group .btn-secondary { text-align: center; }
+      .btn-primary { padding: 14px 24px; font-size: 0.95rem; }
+      .benefits-grid { gap: 14px; }
+      .missions-grid { gap: 16px; }
+      .vs-grid { gap: 16px; }
+      .aha-grid { gap: 16px; }
+      .section-intro { margin-bottom: 36px; }
+      footer { flex-direction: column; text-align: center; gap: 8px; }
+    }
+
+    /* ── CHARACTER PHOTOS ── */
+    .hero-main-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      width: 100%;
+    }
+    .hero-center {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .hero-char-side {
+      flex-shrink: 0;
+      width: 220px;
+      height: 420px;
+      background-size: cover;
+      background-position: center top;
+      background-repeat: no-repeat;
+      pointer-events: none;
+      -webkit-mask-image:
+        linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 5%, black 88%, transparent 100%);
+      -webkit-mask-composite: source-in;
+      mask-image:
+        linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 5%, black 88%, transparent 100%);
+      mask-composite: intersect;
+      animation: holoPulse 5s ease-in-out infinite;
+    }
+    .hero-char-side:last-child {
+      animation-delay: 2.2s;
+    }
+
+    /* Missions section header — text left, image right */
+    .missions-header {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      margin-bottom: 56px;
+    }
+    .missions-header-text { flex: 1; min-width: 0; }
+    .missions-header-text .section-intro { margin-bottom: 0; }
+    .missions-header-img {
+      flex-shrink: 0;
+      width: 44%;
+      max-width: 540px;
+    }
+    .missions-header-img img {
+      width: 100%; height: auto; display: block;
+      -webkit-mask-image:
+        linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+      -webkit-mask-composite: source-in;
+      mask-image:
+        linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+      mask-composite: intersect;
+      animation: holoPulse 5s ease-in-out infinite;
+      animation-delay: 1.1s;
+    }
+
+    /* FAQ section — two-column layout with image on the right */
+    .faq-layout {
+      display: flex;
+      align-items: flex-start;
+      gap: 48px;
+    }
+    .faq-content { flex: 1; min-width: 0; }
+    .faq-img-col {
+      flex-shrink: 0;
+      width: 340px;
+    }
+    .faq-img-col img {
+      width: 100%; height: auto; display: block;
+      -webkit-mask-image:
+        linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+      -webkit-mask-composite: source-in;
+      mask-image:
+        linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+      mask-composite: intersect;
+      animation: holoPulse 5s ease-in-out infinite;
+      animation-delay: 3.3s;
+    }
+
+    @media (max-width: 900px) {
+      .hero-char-side { display: none; }
+      .hero-main-row { display: block; text-align: center; }
+      .missions-header { flex-direction: column; gap: 20px; }
+      .missions-header-img { width: 100%; max-width: 100%; }
+      .faq-layout { flex-direction: column; }
+      .faq-img-col { width: 100%; position: static; }
+    }
+
+    /* ── SVG ANIMATIONS ── */
+    @keyframes holoPulse {
+      0%   { filter: brightness(1.0) saturate(1.0); }
+      35%  { filter: brightness(1.15) saturate(1.1) contrast(1.03); }
+      50%  { filter: brightness(0.85) saturate(0.95); }
+      65%  { filter: brightness(1.15) saturate(1.1) contrast(1.03); }
+      100% { filter: brightness(1.0) saturate(1.0); }
+    }
+
+    @keyframes rotorSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes droneHover { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    @keyframes scanLine { 0% { transform: translateY(0); opacity: 0.6; } 100% { transform: translateY(140px); opacity: 0; } }
+    @keyframes pulseNode { 0%,100% { r: 3; opacity: 1; } 50% { r: 5; opacity: 0.5; } }
+    @keyframes dashFlow { from { stroke-dashoffset: 24; } to { stroke-dashoffset: 0; } }
+    @keyframes buildFill { from { width: 0; } to { width: 62%; } }
+    @keyframes chartGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Robo<span>Junior</span></div>
+  <a href="/register" class="nav-cta">Начать миссию</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-orb2"></div>
+
+  <div class="hero-main-row">
+    <div class="hero-char-side" style="background-image: url('characters-pics/BANDAR.jpg')" aria-hidden="true"></div>
+
+    <div class="hero-center">
+      <div class="hero-badge">Открытый бета-доступ · RobodexBRICS</div>
+
+      <h1>
+        Узнай, какой ты<br/>
+        <span class="accent-cyan">специалист</span> —<br/>
+        не дожидаясь <span class="accent-orange">университета</span>
+      </h1>
+
+      <p class="hero-sub">
+        Карьерный симулятор, где ты за один вечер пробуешь роль программиста дрона,
+        конструктора робота и технопредпринимателя — вместе с ровесниками из России и Индии.
+      </p>
+
+      <div class="hero-missions">
+        <span class="hero-mission-tag">▸ Запрограммируй дрон для NEOM</span>
+        <span class="hero-mission-tag">▸ Собери робота для нефтяной платформы</span>
+        <span class="hero-mission-tag">▸ Запусти edtech-стартап</span>
+      </div>
+
+      <div class="hero-cta-group">
+        <a href="/register" class="btn-primary">Начать первую миссию — 15 минут</a>
+        <a href="#how" class="btn-secondary">Как это работает?</a>
+      </div>
+      <p class="hero-note">Бесплатно · В браузере · Без установки</p>
+    </div>
+
+    <div class="hero-char-side" style="background-image: url('characters-pics/QAMAR.jpg')" aria-hidden="true"></div>
+  </div>
+
+  <!-- GAME CHARACTER SELECT SCREEN -->
+  <div class="hero-game-screen">
+    <div class="game-screen-bar">
+      <div class="game-screen-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="game-screen-title">ROBOJUNIOR // LIVE GAMEPLAY</span>
+      <span class="game-screen-prompt">▶ MISSION IN PROGRESS</span>
+    </div>
+    <!-- 2.5D ISOMETRIC GAME SCENE -->
+    <svg viewBox="0 0 860 320" width="100%" xmlns="http://www.w3.org/2000/svg" style="display:block">
+      <defs>
+        <linearGradient id="hg-sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#020609"/><stop offset="60%" stop-color="#04101E"/><stop offset="100%" stop-color="#071828"/>
+        </linearGradient>
+        <radialGradient id="hg-dg" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#00D4FF" stop-opacity="0.4"/><stop offset="100%" stop-color="#00D4FF" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="hg-hor" cx="50%" cy="100%" r="60%">
+          <stop offset="0%" stop-color="#00D4FF" stop-opacity="0.07"/><stop offset="100%" stop-color="#00D4FF" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <!-- Sky + horizon glow -->
+      <rect width="860" height="320" fill="url(#hg-sky)"/>
+      <rect width="860" height="320" fill="url(#hg-hor)"/>
+      <!-- Stars -->
+      <circle cx="55" cy="22" r="0.9" fill="white" opacity="0.5"/><circle cx="148" cy="14" r="0.8" fill="white" opacity="0.4"/>
+      <circle cx="275" cy="28" r="1" fill="white" opacity="0.35"/><circle cx="418" cy="9" r="0.8" fill="white" opacity="0.4"/>
+      <circle cx="570" cy="20" r="1" fill="white" opacity="0.5"/><circle cx="715" cy="11" r="0.8" fill="white" opacity="0.35"/>
+      <circle cx="808" cy="26" r="1" fill="white" opacity="0.4"/>
+
+      <!-- ═══ BUILDING 1 — back left, tallest tower ═══ -->
+      <polygon points="155,118 175,128 225,128 205,118" fill="#1A3A62"/><!-- top -->
+      <rect x="175" y="128" width="50" height="150" fill="#0B1E38"/><!-- front -->
+      <polygon points="155,118 175,128 175,278 155,268" fill="#071428"/><!-- left -->
+      <!-- windows B1 -->
+      <rect x="181" y="138" width="8" height="5" rx="1" fill="#00D4FF" opacity="0.55"/>
+      <rect x="195" y="138" width="8" height="5" rx="1" fill="#00D4FF" opacity="0.35"/>
+      <rect x="209" y="138" width="8" height="5" rx="1" fill="#00D4FF" opacity="0.45"/>
+      <rect x="181" y="152" width="8" height="5" rx="1" fill="#00D4FF" opacity="0.3"/>
+      <rect x="209" y="152" width="8" height="5" rx="1" fill="#00D4FF" opacity="0.5"/>
+      <rect x="195" y="166" width="8" height="5" rx="1" fill="#00D4FF" opacity="0.4"/>
+      <rect x="181" y="180" width="8" height="5" rx="1" fill="#00D4FF" opacity="0.25"/>
+      <!-- B1 antenna -->
+      <line x1="200" y1="118" x2="200" y2="96" stroke="#00D4FF" stroke-width="1.5"/>
+      <circle cx="200" cy="94" r="2.5" fill="#00D4FF"><animate attributeName="opacity" values="1;0.2;1" dur="1.5s" repeatCount="indefinite"/></circle>
+
+      <!-- ═══ BUILDING 2 — back right, tall ═══ -->
+      <polygon points="610,102 632,112 688,112 666,102" fill="#1A3A62"/>
+      <rect x="632" y="112" width="56" height="162" fill="#0B1E38"/>
+      <polygon points="610,102 632,112 632,274 610,264" fill="#071428"/>
+      <!-- windows B2 -->
+      <rect x="640" y="122" width="9" height="5" rx="1" fill="#00D4FF" opacity="0.45"/>
+      <rect x="656" y="122" width="9" height="5" rx="1" fill="#00D4FF" opacity="0.3"/>
+      <rect x="672" y="122" width="9" height="5" rx="1" fill="#00D4FF" opacity="0.5"/>
+      <rect x="640" y="136" width="9" height="5" rx="1" fill="#FF6B35" opacity="0.5"/>
+      <rect x="672" y="136" width="9" height="5" rx="1" fill="#FF6B35" opacity="0.35"/>
+      <rect x="656" y="150" width="9" height="5" rx="1" fill="#00D4FF" opacity="0.4"/>
+      <!-- B2 helipad -->
+      <circle cx="660" cy="107" r="8" fill="none" stroke="#FF6B35" stroke-width="0.8" opacity="0.7"/>
+      <text x="660" y="111" text-anchor="middle" fill="#FF6B35" font-size="8" font-family="monospace" opacity="0.7">H</text>
+
+      <!-- ═══ BUILDING 3 — midground left ═══ -->
+      <polygon points="328,182 350,192 410,192 388,182" fill="#162E4E"/>
+      <rect x="350" y="192" width="60" height="100" fill="#0A1C32"/>
+      <polygon points="328,182 350,192 350,292 328,282" fill="#07121E"/>
+      <rect x="357" y="202" width="8" height="5" rx="1" fill="#00D4FF" opacity="0.4"/>
+      <rect x="372" y="202" width="8" height="5" rx="1" fill="#00D4FF" opacity="0.3"/>
+      <rect x="387" y="202" width="8" height="5" rx="1" fill="#00D4FF" opacity="0.45"/>
+      <rect x="357" y="216" width="8" height="5" rx="1" fill="#00D4FF" opacity="0.25"/>
+      <rect x="387" y="216" width="8" height="5" rx="1" fill="#00D4FF" opacity="0.35"/>
+      <!-- Robot on B3 rooftop -->
+      <g transform="translate(378,175)">
+        <rect x="-5" y="-26" width="10" height="9" rx="2" fill="#0D2540" stroke="#00D4FF" stroke-width="0.8"/>
+        <rect x="-6" y="-17" width="12" height="14" rx="2" fill="#0D2540" stroke="#00D4FF" stroke-width="0.8"/>
+        <circle cx="-2" cy="-21" r="1.5" fill="#00D4FF"><animate attributeName="opacity" values="0.9;0.2;0.9" dur="2s" repeatCount="indefinite"/></circle>
+        <circle cx="4" cy="-21" r="1.5" fill="#00D4FF"><animate attributeName="opacity" values="0.9;0.2;0.9" dur="2.4s" repeatCount="indefinite"/></circle>
+        <rect x="-5" y="-3" width="4" height="8" rx="1" fill="#071828"/>
+        <rect x="1" y="-3" width="4" height="8" rx="1" fill="#071828"/>
+      </g>
+
+      <!-- ═══ BUILDING 4 — midground right ═══ -->
+      <polygon points="483,162 505,172 556,172 534,162" fill="#162E4E"/>
+      <rect x="505" y="172" width="51" height="122" fill="#0A1C32"/>
+      <polygon points="483,162 505,172 505,294 483,284" fill="#07121E"/>
+      <rect x="513" y="182" width="8" height="5" rx="1" fill="#FFD166" opacity="0.5"/>
+      <rect x="528" y="182" width="8" height="5" rx="1" fill="#FFD166" opacity="0.35"/>
+      <rect x="543" y="182" width="8" height="5" rx="1" fill="#FFD166" opacity="0.45"/>
+      <rect x="513" y="196" width="8" height="5" rx="1" fill="#FFD166" opacity="0.3"/>
+      <rect x="543" y="196" width="8" height="5" rx="1" fill="#FFD166" opacity="0.5"/>
+
+      <!-- ═══ BUILDING 5 — foreground left ═══ -->
+      <polygon points="60,220 78,230 124,230 106,220" fill="#162E4E"/>
+      <rect x="78" y="230" width="46" height="68" fill="#0A1C32"/>
+      <polygon points="60,220 78,230 78,298 60,288" fill="#07121E"/>
+      <rect x="86" y="240" width="7" height="5" rx="1" fill="#00D4FF" opacity="0.4"/>
+      <rect x="100" y="240" width="7" height="5" rx="1" fill="#00D4FF" opacity="0.3"/>
+
+      <!-- ═══ BUILDING 6 — foreground right ═══ -->
+      <polygon points="737,206 756,216 806,216 787,206" fill="#162E4E"/>
+      <rect x="756" y="216" width="50" height="80" fill="#0A1C32"/>
+      <polygon points="737,206 756,216 756,296 737,286" fill="#07121E"/>
+      <rect x="764" y="226" width="8" height="5" rx="1" fill="#FF6B35" opacity="0.5"/>
+      <rect x="779" y="226" width="8" height="5" rx="1" fill="#FF6B35" opacity="0.35"/>
+
+      <!-- ═══ GROUND ═══ -->
+      <rect x="0" y="278" width="860" height="42" fill="#030810"/>
+      <!-- Perspective grid lines -->
+      <g stroke="#00D4FF" stroke-width="0.35" opacity="0.14">
+        <line x1="0" y1="320" x2="430" y2="278"/><line x1="86" y1="320" x2="430" y2="278"/>
+        <line x1="172" y1="320" x2="430" y2="278"/><line x1="258" y1="320" x2="430" y2="278"/>
+        <line x1="344" y1="320" x2="430" y2="278"/><line x1="430" y1="320" x2="430" y2="278"/>
+        <line x1="516" y1="320" x2="430" y2="278"/><line x1="602" y1="320" x2="430" y2="278"/>
+        <line x1="688" y1="320" x2="430" y2="278"/><line x1="774" y1="320" x2="430" y2="278"/>
+        <line x1="860" y1="320" x2="430" y2="278"/>
+        <line x1="0" y1="292" x2="860" y2="292"/>
+        <line x1="0" y1="306" x2="860" y2="306"/>
+        <line x1="0" y1="320" x2="860" y2="320"/>
+      </g>
+
+      <!-- ═══ DRONE FLIGHT PATH ═══ -->
+      <path d="M 190 220 Q 310 50 450 72 Q 570 90 680 175" fill="none" stroke="#00D4FF" stroke-width="1.3" stroke-dasharray="7 5" opacity="0.35"/>
+      <!-- Waypoint markers -->
+      <circle cx="310" cy="62" r="4" fill="none" stroke="#00D4FF" stroke-width="1" opacity="0.5"/>
+      <circle cx="450" cy="72" r="4" fill="none" stroke="#00D4FF" stroke-width="1" opacity="0.5"/>
+      <line x1="310" y1="58" x2="310" y2="48" stroke="#00D4FF" stroke-width="0.8" opacity="0.4"/>
+      <line x1="450" y1="68" x2="450" y2="58" stroke="#00D4FF" stroke-width="0.8" opacity="0.4"/>
+
+      <!-- ═══ DRONE (4-rotor, 2.5D depth) ═══ -->
+      <g style="animation: droneHover 2.5s ease-in-out infinite; transform-origin: 430px 68px">
+        <!-- glow -->
+        <ellipse cx="430" cy="68" rx="30" ry="14" fill="url(#hg-dg)"/>
+        <!-- Rotor arms (X pattern for 2.5D depth) -->
+        <line x1="416" y1="62" x2="400" y2="54" stroke="#00D4FF" stroke-width="1.6"/>
+        <line x1="444" y1="62" x2="460" y2="54" stroke="#00D4FF" stroke-width="1.6"/>
+        <line x1="416" y1="75" x2="400" y2="83" stroke="#5AA0B8" stroke-width="1.4"/><!-- back arms slightly dimmer = depth -->
+        <line x1="444" y1="75" x2="460" y2="83" stroke="#5AA0B8" stroke-width="1.4"/>
+        <!-- Rotor discs (front = brighter, back = dimmer) -->
+        <ellipse cx="400" cy="53" rx="12" ry="3" fill="none" stroke="#00D4FF" stroke-width="1" opacity="0.8" style="transform-origin:400px 53px;animation:rotorSpin 0.1s linear infinite"/>
+        <ellipse cx="460" cy="53" rx="12" ry="3" fill="none" stroke="#00D4FF" stroke-width="1" opacity="0.8" style="transform-origin:460px 53px;animation:rotorSpin 0.1s linear infinite reverse"/>
+        <ellipse cx="400" cy="84" rx="12" ry="3" fill="none" stroke="#5AA0B8" stroke-width="0.8" opacity="0.6" style="transform-origin:400px 84px;animation:rotorSpin 0.1s linear infinite reverse"/>
+        <ellipse cx="460" cy="84" rx="12" ry="3" fill="none" stroke="#5AA0B8" stroke-width="0.8" opacity="0.6" style="transform-origin:460px 84px;animation:rotorSpin 0.1s linear infinite"/>
+        <!-- Drone body (slightly trapezoidal for 2.5D) -->
+        <polygon points="413,62 447,62 449,75 411,75" fill="#0D2A48" stroke="#00D4FF" stroke-width="1.2"/>
+        <!-- Body detail: stripe + LED -->
+        <line x1="418" y1="68" x2="442" y2="68" stroke="#00D4FF" stroke-width="0.6" opacity="0.5"/>
+        <circle cx="430" cy="68" r="3" fill="#00D4FF" opacity="0.8"/>
+        <circle cx="430" cy="68" r="6" fill="none" stroke="#00D4FF" stroke-width="0.5" opacity="0.4"/>
+        <!-- Payload hanging below -->
+        <line x1="430" y1="75" x2="430" y2="92" stroke="#00D4FF" stroke-width="0.9" opacity="0.7"/>
+        <rect x="422" y="92" width="16" height="11" rx="2" fill="#FF6B35" opacity="0.9"/>
+        <line x1="424" y1="94" x2="436" y2="94" stroke="#FF6B35" stroke-width="0.5" opacity="0.5"/>
+        <!-- Targeting circle -->
+        <circle cx="430" cy="68" r="26" fill="none" stroke="#00D4FF" stroke-width="0.5" stroke-dasharray="4 4" opacity="0.28">
+          <animateTransform attributeName="transform" type="rotate" from="0 430 68" to="360 430 68" dur="7s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+
+      <!-- ═══ DATA LINK: drone → robot ═══ -->
+      <line x1="430" y1="92" x2="378" y2="174" stroke="#00D4FF" stroke-width="0.7" stroke-dasharray="4 4" opacity="0.25" style="animation:dashFlow 0.8s linear infinite"/>
+
+      <!-- ═══ SCAN LINE ═══ -->
+      <rect x="0" y="0" width="860" height="1.5" fill="#00D4FF" opacity="0.06" style="animation:scanLine 5s linear infinite"/>
+
+      <!-- ═══ HUD BOTTOM BAR ═══ -->
+      <rect x="0" y="292" width="860" height="28" fill="rgba(3,8,16,0.82)"/>
+      <!-- Mission objective -->
+      <rect x="8" y="296" width="210" height="20" rx="3" fill="#061120" stroke="#00D4FF" stroke-width="0.5" stroke-opacity="0.4"/>
+      <text x="16" y="310" fill="#00D4FF" font-size="7" font-family="'Courier New',monospace" font-weight="bold">◉ МИССИЯ:</text>
+      <text x="72" y="310" fill="#4ADE80" font-size="7" font-family="'Courier New',monospace">ДОСТАВКА ГРУЗА · NEOM</text>
+      <!-- XP bar -->
+      <text x="235" y="310" fill="#6A8FAA" font-size="7" font-family="'Courier New',monospace">XP</text>
+      <rect x="250" y="301" width="55" height="5" rx="2" fill="#061120"/>
+      <rect x="250" y="301" width="42" height="5" rx="2" fill="#FFD166" opacity="0.85"/>
+      <!-- HP bar -->
+      <text x="315" y="310" fill="#6A8FAA" font-size="7" font-family="'Courier New',monospace">HP</text>
+      <rect x="330" y="301" width="55" height="5" rx="2" fill="#061120"/>
+      <rect x="330" y="301" width="51" height="5" rx="2" fill="#4ADE80" opacity="0.85"/>
+      <!-- Alt/speed readout -->
+      <text x="400" y="310" fill="#6A8FAA" font-size="7" font-family="'Courier New',monospace">ALT: <tspan fill="#00D4FF">120m</tspan>  SPD: <tspan fill="#00D4FF">24km/h</tspan></text>
+      <!-- Timer -->
+      <text x="600" y="310" fill="#FF6B35" font-size="7" font-family="'Courier New',monospace" font-weight="bold">⏱ 04:32</text>
+
+      <!-- ═══ MINIMAP (top right) ═══ -->
+      <rect x="800" y="8" width="52" height="52" rx="4" fill="rgba(3,8,16,0.85)" stroke="#00D4FF" stroke-width="0.5" stroke-opacity="0.4"/>
+      <text x="826" y="19" text-anchor="middle" fill="#00D4FF" font-size="6" font-family="'Courier New',monospace">MAP</text>
+      <circle cx="814" cy="32" r="2" fill="#00D4FF" opacity="0.5"/>
+      <circle cx="826" cy="28" r="2" fill="#00D4FF" opacity="0.4"/>
+      <circle cx="838" cy="34" r="2" fill="#00D4FF" opacity="0.55"/>
+      <circle cx="818" cy="46" r="2" fill="#FF6B35" opacity="0.5"/>
+      <circle cx="833" cy="48" r="2" fill="#FF6B35" opacity="0.4"/>
+      <circle cx="826" cy="36" r="3" fill="#00D4FF" opacity="0.9"><animate attributeName="opacity" values="0.9;0.3;0.9" dur="0.8s" repeatCount="indefinite"/></circle>
+
+      <!-- ═══ LIVE INDICATOR top left ═══ -->
+      <rect x="8" y="8" width="115" height="20" rx="3" fill="rgba(3,8,16,0.8)" stroke="#FF6B35" stroke-width="0.5" stroke-opacity="0.6"/>
+      <circle cx="18" cy="18" r="4" fill="#FF6B35" opacity="0.8"><animate attributeName="opacity" values="0.8;0.3;0.8" dur="1s" repeatCount="indefinite"/></circle>
+      <text x="27" y="22" fill="#FF6B35" font-size="7" font-family="'Courier New',monospace" font-weight="bold">LIVE MISSION</text>
+    </svg>
+    <div class="char-select-grid" style="display:none">
+
+      <!-- CHARACTER 1: DRONE PILOT -->
+      <div class="char-card">
+        <div class="char-svg-wrap">
+          <svg viewBox="0 0 120 160" width="110" height="146" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="cg1" cx="50%" cy="40%" r="50%">
+                <stop offset="0%" stop-color="#00D4FF" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="#00D4FF" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <!-- Glow -->
+            <ellipse cx="60" cy="140" rx="32" ry="8" fill="#00D4FF" opacity="0.12"/>
+            <!-- Helmet -->
+            <ellipse cx="60" cy="34" rx="22" ry="24" fill="#0A1E38" stroke="#00D4FF" stroke-width="1.5"/>
+            <!-- Visor -->
+            <path d="M 42 32 Q 60 22 78 32 Q 78 44 60 47 Q 42 44 42 32 Z" fill="#00D4FF" opacity="0.18" stroke="#00D4FF" stroke-width="0.8"/>
+            <!-- Visor reflection -->
+            <line x1="50" y1="28" x2="58" y2="38" stroke="white" stroke-width="1" opacity="0.25"/>
+            <!-- Antenna -->
+            <line x1="60" y1="10" x2="60" y2="2" stroke="#00D4FF" stroke-width="1.5"/>
+            <circle cx="60" cy="1" r="2.5" fill="#00D4FF">
+              <animate attributeName="opacity" values="1;0.2;1" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+            <!-- Body - flight suit -->
+            <rect x="42" y="60" width="36" height="38" fill="#0A1E38" rx="7" stroke="#00D4FF" stroke-width="1"/>
+            <!-- Chest panel -->
+            <rect x="50" y="67" width="20" height="12" rx="2" fill="#071528" stroke="#00D4FF" stroke-width="0.6" stroke-opacity="0.5"/>
+            <rect x="52" y="69" width="6" height="2" rx="1" fill="#00D4FF" opacity="0.6"/>
+            <circle cx="66" cy="71" r="2" fill="#4ADE80" opacity="0.8">
+              <animate attributeName="opacity" values="0.8;0.2;0.8" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <rect x="52" y="73" width="14" height="2" rx="1" fill="#00D4FF" opacity="0.3"/>
+            <!-- Shoulder stripe -->
+            <rect x="42" y="63" width="36" height="3" rx="1" fill="#00D4FF" opacity="0.25"/>
+            <!-- Left arm -->
+            <rect x="25" y="62" width="17" height="8" fill="#0A1E38" rx="4" stroke="#00D4FF" stroke-width="0.8"/>
+            <!-- Right arm - raised, holding controller -->
+            <rect x="78" y="58" width="17" height="8" fill="#0A1E38" rx="4" stroke="#00D4FF" stroke-width="0.8"/>
+            <!-- Controller in right hand -->
+            <rect x="92" y="53" width="14" height="9" rx="2" fill="#0D2A45" stroke="#00D4FF" stroke-width="0.8"/>
+            <circle cx="95" cy="57" r="1.5" fill="#00D4FF" opacity="0.8"/>
+            <circle cx="103" cy="57" r="1.5" fill="#FF6B35" opacity="0.8"/>
+            <!-- Legs -->
+            <rect x="44" y="98" width="13" height="28" fill="#071528" rx="4" stroke="#00D4FF" stroke-width="0.7"/>
+            <rect x="63" y="98" width="13" height="28" fill="#071528" rx="4" stroke="#00D4FF" stroke-width="0.7"/>
+            <!-- Boots -->
+            <rect x="42" y="122" width="17" height="8" rx="3" fill="#00D4FF" opacity="0.45"/>
+            <rect x="61" y="122" width="17" height="8" rx="3" fill="#00D4FF" opacity="0.45"/>
+            <!-- Mini drone floating -->
+            <g style="animation: droneHover 2.5s ease-in-out infinite">
+              <rect x="14" y="42" width="18" height="7" rx="2" fill="#00D4FF" opacity="0.75"/>
+              <line x1="14" y1="44" x2="8" y2="40" stroke="#00D4FF" stroke-width="1.2"/>
+              <line x1="32" y1="44" x2="38" y2="40" stroke="#00D4FF" stroke-width="1.2"/>
+              <ellipse cx="8" cy="39" rx="5" ry="1.5" fill="none" stroke="#00D4FF" stroke-width="0.8" opacity="0.7" style="transform-origin:8px 39px; animation: rotorSpin 0.15s linear infinite"/>
+              <ellipse cx="38" cy="39" rx="5" ry="1.5" fill="none" stroke="#00D4FF" stroke-width="0.8" opacity="0.7" style="transform-origin:38px 39px; animation: rotorSpin 0.15s linear infinite reverse"/>
+            </g>
+          </svg>
+        </div>
+        <div class="char-class">Drone Pilot</div>
+        <div class="char-level">LVL 1 · UNLOCKED</div>
+        <div class="char-stats">
+          <div class="stat-row"><span class="stat-label">LOGIC</span><div class="stat-bar"><div class="stat-fill" style="width:80%"></div></div></div>
+          <div class="stat-row"><span class="stat-label">CODE</span><div class="stat-bar"><div class="stat-fill" style="width:65%"></div></div></div>
+          <div class="stat-row"><span class="stat-label">SPEED</span><div class="stat-bar"><div class="stat-fill" style="width:90%"></div></div></div>
+        </div>
+      </div>
+
+      <!-- CHARACTER 2: ROBOT ENGINEER -->
+      <div class="char-card">
+        <div class="char-svg-wrap">
+          <svg viewBox="0 0 120 160" width="110" height="146" xmlns="http://www.w3.org/2000/svg">
+            <!-- Glow -->
+            <ellipse cx="60" cy="140" rx="32" ry="8" fill="#FF6B35" opacity="0.12"/>
+            <!-- Hard hat -->
+            <ellipse cx="60" cy="26" rx="26" ry="10" fill="#FF6B35" opacity="0.9"/>
+            <rect x="36" y="22" width="48" height="8" rx="0" fill="#FF6B35" opacity="0.9"/>
+            <!-- Head -->
+            <rect x="42" y="30" width="36" height="30" rx="6" fill="#0A1E38" stroke="#FF6B35" stroke-width="1.2"/>
+            <!-- Eyes (LED) -->
+            <rect x="49" y="38" width="8" height="6" rx="2" fill="#FF6B35" opacity="0.9"/>
+            <rect x="63" y="38" width="8" height="6" rx="2" fill="#FF6B35" opacity="0.9"/>
+            <!-- Mouth grid -->
+            <rect x="50" y="50" width="20" height="6" rx="1" fill="#071528" stroke="#FF6B35" stroke-width="0.5"/>
+            <line x1="54" y1="50" x2="54" y2="56" stroke="#FF6B35" stroke-width="0.4" opacity="0.5"/>
+            <line x1="58" y1="50" x2="58" y2="56" stroke="#FF6B35" stroke-width="0.4" opacity="0.5"/>
+            <line x1="62" y1="50" x2="62" y2="56" stroke="#FF6B35" stroke-width="0.4" opacity="0.5"/>
+            <line x1="66" y1="50" x2="66" y2="56" stroke="#FF6B35" stroke-width="0.4" opacity="0.5"/>
+            <!-- Body -->
+            <rect x="40" y="62" width="40" height="40" rx="6" fill="#0A1E38" stroke="#FF6B35" stroke-width="1"/>
+            <!-- Tool belt -->
+            <rect x="40" y="88" width="40" height="8" rx="2" fill="#071528" stroke="#FF6B35" stroke-width="0.6"/>
+            <rect x="46" y="90" width="6" height="4" rx="1" fill="#FF6B35" opacity="0.6"/>
+            <rect x="57" y="90" width="6" height="4" rx="1" fill="#FFD166" opacity="0.6"/>
+            <rect x="68" y="90" width="6" height="4" rx="1" fill="#FF6B35" opacity="0.6"/>
+            <!-- Chest panel -->
+            <rect x="48" y="67" width="24" height="16" rx="2" fill="#071528" stroke="#FF6B35" stroke-width="0.5" stroke-opacity="0.5"/>
+            <circle cx="54" cy="75" r="3" fill="none" stroke="#FF6B35" stroke-width="1"/>
+            <circle cx="66" cy="75" r="3" fill="none" stroke="#FF6B35" stroke-width="1"/>
+            <line x1="57" y1="75" x2="63" y2="75" stroke="#FF6B35" stroke-width="0.8"/>
+            <!-- Left arm with wrench -->
+            <rect x="24" y="64" width="16" height="8" rx="4" fill="#0A1E38" stroke="#FF6B35" stroke-width="0.8"/>
+            <!-- Wrench -->
+            <line x1="14" y1="58" x2="24" y2="70" stroke="#FF6B35" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="12" cy="56" r="4" fill="none" stroke="#FF6B35" stroke-width="1.5"/>
+            <!-- Right arm -->
+            <rect x="80" y="64" width="16" height="8" rx="4" fill="#0A1E38" stroke="#FF6B35" stroke-width="0.8"/>
+            <!-- Legs -->
+            <rect x="42" y="102" width="14" height="28" rx="4" fill="#071528" stroke="#FF6B35" stroke-width="0.7"/>
+            <rect x="64" y="102" width="14" height="28" rx="4" fill="#071528" stroke="#FF6B35" stroke-width="0.7"/>
+            <!-- Boots -->
+            <rect x="40" y="126" width="18" height="8" rx="3" fill="#FF6B35" opacity="0.45"/>
+            <rect x="62" y="126" width="18" height="8" rx="3" fill="#FF6B35" opacity="0.45"/>
+            <!-- Mini robot companion -->
+            <rect x="96" y="96" width="16" height="14" rx="2" fill="#071528" stroke="#FF6B35" stroke-width="0.8"/>
+            <rect x="99" y="99" width="4" height="4" rx="1" fill="#FF6B35" opacity="0.8"/>
+            <rect x="107" y="99" width="4" height="4" rx="1" fill="#FF6B35" opacity="0.8"/>
+            <rect x="97" y="110" width="5" height="10" rx="2" fill="#0A1E38" stroke="#FF6B35" stroke-width="0.6"/>
+            <rect x="105" y="110" width="5" height="10" rx="2" fill="#0A1E38" stroke="#FF6B35" stroke-width="0.6"/>
+          </svg>
+        </div>
+        <div class="char-class">Robot Engineer</div>
+        <div class="char-level">LVL 1 · UNLOCKED</div>
+        <div class="char-stats">
+          <div class="stat-row"><span class="stat-label">BUILD</span><div class="stat-bar"><div class="stat-fill" style="width:90%"></div></div></div>
+          <div class="stat-row"><span class="stat-label">TECH</span><div class="stat-bar"><div class="stat-fill" style="width:75%"></div></div></div>
+          <div class="stat-row"><span class="stat-label">CRAFT</span><div class="stat-bar"><div class="stat-fill" style="width:70%"></div></div></div>
+        </div>
+      </div>
+
+      <!-- CHARACTER 3: TECH FOUNDER -->
+      <div class="char-card">
+        <div class="char-svg-wrap">
+          <svg viewBox="0 0 120 160" width="110" height="146" xmlns="http://www.w3.org/2000/svg">
+            <!-- Glow -->
+            <ellipse cx="60" cy="140" rx="32" ry="8" fill="#FFD166" opacity="0.12"/>
+            <!-- Head -->
+            <ellipse cx="60" cy="32" rx="20" ry="22" fill="#1A2840" stroke="#FFD166" stroke-width="1.2"/>
+            <!-- Hair / cap -->
+            <path d="M 40 28 Q 60 12 80 28" fill="#FFD166" opacity="0.7"/>
+            <!-- Face features -->
+            <circle cx="52" cy="34" r="3" fill="none" stroke="#FFD166" stroke-width="1"/> <!-- glasses L -->
+            <circle cx="68" cy="34" r="3" fill="none" stroke="#FFD166" stroke-width="1"/> <!-- glasses R -->
+            <line x1="55" y1="34" x2="65" y2="34" stroke="#FFD166" stroke-width="0.8"/>
+            <line x1="40" y1="34" x2="49" y2="34" stroke="#FFD166" stroke-width="0.8"/>
+            <line x1="71" y1="34" x2="80" y2="34" stroke="#FFD166" stroke-width="0.8"/>
+            <path d="M 54 42 Q 60 46 66 42" fill="none" stroke="#FFD166" stroke-width="1" stroke-linecap="round"/>
+            <!-- Body - smart casual -->
+            <rect x="43" y="56" width="34" height="40" rx="6" fill="#0F1E36" stroke="#FFD166" stroke-width="1"/>
+            <!-- Collar/lapel -->
+            <line x1="60" y1="56" x2="55" y2="68" stroke="#FFD166" stroke-width="0.8" opacity="0.6"/>
+            <line x1="60" y1="56" x2="65" y2="68" stroke="#FFD166" stroke-width="0.8" opacity="0.6"/>
+            <!-- Left arm -->
+            <rect x="26" y="58" width="17" height="8" rx="4" fill="#0F1E36" stroke="#FFD166" stroke-width="0.8"/>
+            <!-- Right arm - holding tablet -->
+            <rect x="77" y="56" width="17" height="8" rx="4" fill="#0F1E36" stroke="#FFD166" stroke-width="0.8"/>
+            <!-- Tablet in right hand -->
+            <rect x="91" y="46" width="20" height="26" rx="3" fill="#071528" stroke="#FFD166" stroke-width="0.8"/>
+            <!-- Chart on tablet -->
+            <rect x="94" y="60" width="3" height="8" rx="1" fill="#FFD166" opacity="0.5"/>
+            <rect x="99" y="55" width="3" height="13" rx="1" fill="#FFD166" opacity="0.7"/>
+            <rect x="104" y="50" width="3" height="18" rx="1" fill="#FFD166" opacity="0.9"/>
+            <line x1="93" y1="68" x2="109" y2="68" stroke="#FFD166" stroke-width="0.5" opacity="0.4"/>
+            <!-- Legs -->
+            <rect x="45" y="96" width="13" height="30" rx="4" fill="#081525" stroke="#FFD166" stroke-width="0.7"/>
+            <rect x="62" y="96" width="13" height="30" rx="4" fill="#081525" stroke="#FFD166" stroke-width="0.7"/>
+            <!-- Shoes -->
+            <rect x="43" y="122" width="17" height="8" rx="3" fill="#FFD166" opacity="0.45"/>
+            <rect x="60" y="122" width="17" height="8" rx="3" fill="#FFD166" opacity="0.45"/>
+            <!-- World map dots floating -->
+            <circle cx="16" cy="80" r="3" fill="#FFD166" opacity="0.7">
+              <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="28" cy="68" r="2" fill="#FFD166" opacity="0.5">
+              <animate attributeName="opacity" values="0.5;0.1;0.5" dur="2.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="22" cy="92" r="2" fill="#00D4FF" opacity="0.5">
+              <animate attributeName="opacity" values="0.5;0.1;0.5" dur="1.8s" repeatCount="indefinite"/>
+            </circle>
+            <line x1="16" y1="80" x2="28" y2="68" stroke="#FFD166" stroke-width="0.6" stroke-dasharray="2 2" opacity="0.4"/>
+            <line x1="16" y1="80" x2="22" y2="92" stroke="#00D4FF" stroke-width="0.6" stroke-dasharray="2 2" opacity="0.4"/>
+          </svg>
+        </div>
+        <div class="char-class">Tech Founder</div>
+        <div class="char-level">LVL 1 · UNLOCKED</div>
+        <div class="char-stats">
+          <div class="stat-row"><span class="stat-label">VISION</span><div class="stat-bar"><div class="stat-fill" style="width:95%"></div></div></div>
+          <div class="stat-row"><span class="stat-label">PITCH</span><div class="stat-bar"><div class="stat-fill" style="width:80%"></div></div></div>
+          <div class="stat-row"><span class="stat-label">GROWTH</span><div class="stat-bar"><div class="stat-fill" style="width:85%"></div></div></div>
+        </div>
+      </div>
+
+    </div><!-- /char-select-grid -->
+  </div><!-- /hero-game-screen -->
+</section>
+
+<!-- AHA MOMENT -->
+<section class="aha-section reveal">
+  <div class="section-label">Даём прожить aha-момент</div>
+  <h2>Почувствуй разницу<br/>с первой попытки</h2>
+  <p class="section-intro">Не объясняем — даём сделать. Результат виден сразу.</p>
+
+  <div class="aha-grid">
+    <div class="aha-card reveal reveal-delay-1">
+      <!-- AHA SCENE 1: Terminal with drone taking off -->
+      <svg class="aha-scene" viewBox="0 0 420 140" xmlns="http://www.w3.org/2000/svg">
+        <rect width="420" height="140" fill="#040C1A"/>
+        <!-- scan line -->
+        <rect x="0" y="0" width="420" height="2" fill="#00D4FF" opacity="0.15" style="animation: scanLine 4s linear infinite"/>
+        <!-- Code lines -->
+        <text x="18" y="28" fill="#4ADE80" font-size="11" font-family="'Courier New',monospace">def pilot_mission():</text>
+        <text x="18" y="45" fill="#7DD3FC" font-size="11" font-family="'Courier New',monospace">  drone.takeoff(alt=120)</text>
+        <text x="18" y="62" fill="#7DD3FC" font-size="11" font-family="'Courier New',monospace">  drone.fly_to(neom)</text>
+        <text x="18" y="79" fill="#FCD34D" font-size="11" font-family="'Courier New',monospace">  drone.deliver(cargo)</text>
+        <text x="18" y="96" fill="#4ADE80" font-size="11" font-family="'Courier New',monospace">  return "SUCCESS"</text>
+        <rect x="18" y="102" width="7" height="12" fill="#00D4FF" opacity="0.8">
+          <animate attributeName="opacity" values="0.8;0;0.8" dur="1s" repeatCount="indefinite"/>
+        </rect>
+        <!-- Output panel -->
+        <rect x="210" y="8" width="198" height="124" fill="#050F1C" rx="4" stroke="#00D4FF" stroke-width="0.6" stroke-opacity="0.4"/>
+        <text x="220" y="26" fill="#00D4FF" font-size="9" font-family="'Courier New',monospace" font-weight="bold">▶ OUTPUT</text>
+        <!-- Drone in output panel -->
+        <g style="animation: droneHover 2.5s ease-in-out infinite; transform-origin: 300px 75px">
+          <!-- Body -->
+          <rect x="285" y="70" width="30" height="12" rx="3" fill="#00D4FF" opacity="0.85"/>
+          <!-- Rotors arms -->
+          <line x1="285" y1="73" x2="272" y2="66" stroke="#00D4FF" stroke-width="1.5"/>
+          <line x1="315" y1="73" x2="328" y2="66" stroke="#00D4FF" stroke-width="1.5"/>
+          <!-- Rotor discs -->
+          <ellipse cx="272" cy="65" rx="8" ry="2.5" fill="none" stroke="#00D4FF" stroke-width="1" style="transform-origin:272px 65px; animation: rotorSpin 0.12s linear infinite"/>
+          <ellipse cx="328" cy="65" rx="8" ry="2.5" fill="none" stroke="#00D4FF" stroke-width="1" style="transform-origin:328px 65px; animation: rotorSpin 0.12s linear infinite reverse"/>
+          <!-- Package -->
+          <line x1="300" y1="82" x2="300" y2="94" stroke="#00D4FF" stroke-width="1" opacity="0.6"/>
+          <rect x="293" y="94" width="14" height="10" rx="2" fill="#FF6B35" opacity="0.8"/>
+          <!-- Downwash lines -->
+          <line x1="270" y1="68" x2="268" y2="80" stroke="#00D4FF" stroke-width="0.5" opacity="0.3"/>
+          <line x1="272" y1="68" x2="272" y2="82" stroke="#00D4FF" stroke-width="0.5" opacity="0.3"/>
+          <line x1="274" y1="68" x2="276" y2="80" stroke="#00D4FF" stroke-width="0.5" opacity="0.3"/>
+        </g>
+        <text x="220" y="122" fill="#4ADE80" font-size="9" font-family="'Courier New',monospace">✓ AIRBORNE · ALT 120m</text>
+        <!-- divider -->
+        <line x1="210" y1="8" x2="210" y2="132" stroke="#00D4FF" stroke-width="0.5" opacity="0.15"/>
+      </svg>
+      <div class="aha-body">
+        <h3>Дрон взлетит после первой строчки кода</h3>
+        <p>Ты поймёшь, каково это на самом деле — быть программистом. Не читая учебник, а делая своими руками.</p>
+      </div>
+    </div>
+
+    <div class="aha-card reveal reveal-delay-2">
+      <!-- AHA SCENE 2: Career profile dashboard -->
+      <svg class="aha-scene" viewBox="0 0 420 140" xmlns="http://www.w3.org/2000/svg">
+        <rect width="420" height="140" fill="#040C1A"/>
+        <!-- Title bar -->
+        <rect width="420" height="22" fill="#06111F"/>
+        <text x="16" y="15" fill="#00D4FF" font-size="9" font-family="'Courier New',monospace" font-weight="bold">CAREER_PROFILE.dashboard</text>
+        <!-- Profile avatar area -->
+        <circle cx="50" cy="80" r="26" fill="#0A1E38" stroke="#00D4FF" stroke-width="1"/>
+        <text x="50" y="77" text-anchor="middle" fill="#00D4FF" font-size="18" font-family="sans-serif">👤</text>
+        <text x="50" y="95" text-anchor="middle" fill="#00D4FF" font-size="7" font-family="'Courier New',monospace">PLAYER_01</text>
+        <!-- Skill bars -->
+        <g transform="translate(92, 32)">
+          <text x="0" y="12" fill="#6A8FAA" font-size="8" font-family="'Courier New',monospace">DRONE PILOT</text>
+          <rect x="0" y="16" width="160" height="6" rx="3" fill="#071528"/>
+          <rect x="0" y="16" width="128" height="6" rx="3" fill="#00D4FF" opacity="0.8"/>
+          <text x="166" y="22" fill="#00D4FF" font-size="8" font-family="'Courier New',monospace">80%</text>
+
+          <text x="0" y="38" fill="#6A8FAA" font-size="8" font-family="'Courier New',monospace">ROBOTICS</text>
+          <rect x="0" y="42" width="160" height="6" rx="3" fill="#071528"/>
+          <rect x="0" y="42" width="96" height="6" rx="3" fill="#FF6B35" opacity="0.8"/>
+          <text x="166" y="48" fill="#FF6B35" font-size="8" font-family="'Courier New',monospace">60%</text>
+
+          <text x="0" y="64" fill="#6A8FAA" font-size="8" font-family="'Courier New',monospace">ENTREPRENEURSHIP</text>
+          <rect x="0" y="68" width="160" height="6" rx="3" fill="#071528"/>
+          <rect x="0" y="68" width="144" height="6" rx="3" fill="#FFD166" opacity="0.8"/>
+          <text x="166" y="74" fill="#FFD166" font-size="8" font-family="'Courier New',monospace">90%</text>
+        </g>
+        <!-- Recommendation box -->
+        <rect x="92" y="108" width="310" height="22" rx="3" fill="#0A1E38" stroke="#FFD166" stroke-width="0.8"/>
+        <text x="100" y="123" fill="#FFD166" font-size="8" font-family="'Courier New',monospace" font-weight="bold">★ РЕКОМЕНДАЦИЯ: Tech Entrepreneur · Уверенность 90%</text>
+      </svg>
+      <div class="aha-body">
+        <h3>После трёх ролей — твой карьерный профиль</h3>
+        <p>Где ты силён, к какой профессии тянешься, куда расти дальше. Данные, а не мнение учителя.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MISSIONS -->
+<section class="missions-section">
+  <div class="missions-header">
+    <div class="missions-header-text">
+      <div class="section-label">Три роли · Один вечер</div>
+      <h2>Попробуй профессии<br/>на практике</h2>
+      <p class="section-intro">Каждая роль — отдельный тип мышления и набор задач. Почувствуй разницу сам.</p>
+    </div>
+    <div class="missions-header-img" aria-hidden="true">
+      <img src="characters-pics/saudi_robots.jpg" alt="">
+    </div>
+  </div>
+
+  <div class="missions-grid">
+
+    <!-- MISSION 1: DRONE PROGRAMMER -->
+    <div class="mission-card cyan reveal reveal-delay-1">
+      <svg class="mission-scene" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="sky-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#050D1C"/>
+            <stop offset="100%" stop-color="#0A1E38"/>
+          </linearGradient>
+        </defs>
+        <rect width="340" height="190" fill="#040C1A"/>
+        <!-- Header bar -->
+        <rect width="340" height="20" fill="#06111F"/>
+        <circle cx="10" cy="10" r="3" fill="#FF5F57"/>
+        <circle cx="20" cy="10" r="3" fill="#FFBD2E"/>
+        <circle cx="30" cy="10" r="3" fill="#28CA41"/>
+        <text x="44" y="14" fill="#00D4FF" font-size="8" font-family="'Courier New',monospace">MISSION_01 // DRONE_PROGRAMMER</text>
+        <!-- Code editor left panel -->
+        <rect x="0" y="20" width="155" height="170" fill="#050F1C"/>
+        <rect x="0" y="20" width="30" height="170" fill="#040A14"/>
+        <!-- Line numbers -->
+        <text x="8" y="38" fill="#2A4060" font-size="8" font-family="'Courier New',monospace">01</text>
+        <text x="8" y="52" fill="#2A4060" font-size="8" font-family="'Courier New',monospace">02</text>
+        <text x="8" y="66" fill="#2A4060" font-size="8" font-family="'Courier New',monospace">03</text>
+        <text x="8" y="80" fill="#2A4060" font-size="8" font-family="'Courier New',monospace">04</text>
+        <text x="8" y="94" fill="#2A4060" font-size="8" font-family="'Courier New',monospace">05</text>
+        <text x="8" y="108" fill="#2A4060" font-size="8" font-family="'Courier New',monospace">06</text>
+        <text x="8" y="122" fill="#2A4060" font-size="8" font-family="'Courier New',monospace">07</text>
+        <!-- Code -->
+        <text x="38" y="38" fill="#C084FC" font-size="8" font-family="'Courier New',monospace">def</text>
+        <text x="56" y="38" fill="#7DD3FC" font-size="8" font-family="'Courier New',monospace">fly_mission():</text>
+        <text x="38" y="52" fill="#7DD3FC" font-size="8" font-family="'Courier New',monospace">  drone.<text fill="#4ADE80">arm()</text></text>
+        <text x="38" y="66" fill="#7DD3FC" font-size="8" font-family="'Courier New',monospace">  drone.alt = <text fill="#FCD34D">120</text></text>
+        <text x="38" y="80" fill="#7DD3FC" font-size="8" font-family="'Courier New',monospace">  target = NEOM</text>
+        <text x="38" y="94" fill="#4ADE80" font-size="8" font-family="'Courier New',monospace">  drone.go(target)</text>
+        <text x="38" y="108" fill="#4ADE80" font-size="8" font-family="'Courier New',monospace">  deliver(cargo)</text>
+        <!-- Active line highlight -->
+        <rect x="30" y="86" width="125" height="12" fill="#00D4FF" opacity="0.06"/>
+        <!-- Cursor -->
+        <rect x="38" y="120" width="5" height="10" fill="#00D4FF" opacity="0.9">
+          <animate attributeName="opacity" values="0.9;0;0.9" dur="0.9s" repeatCount="indefinite"/>
+        </rect>
+        <!-- Divider -->
+        <line x1="155" y1="20" x2="155" y2="190" stroke="#00D4FF" stroke-width="0.6" opacity="0.2"/>
+        <!-- Sky / viewport right panel -->
+        <rect x="155" y="20" width="185" height="170" fill="url(#sky-grad)"/>
+        <!-- Stars -->
+        <circle cx="170" cy="32" r="1" fill="white" opacity="0.4"/>
+        <circle cx="195" cy="45" r="0.8" fill="white" opacity="0.3"/>
+        <circle cx="220" cy="30" r="1" fill="white" opacity="0.35"/>
+        <circle cx="255" cy="40" r="0.8" fill="white" opacity="0.3"/>
+        <circle cx="290" cy="28" r="1" fill="white" opacity="0.4"/>
+        <circle cx="318" cy="38" r="0.8" fill="white" opacity="0.25"/>
+        <!-- NEOM City silhouette -->
+        <g fill="#071E36" stroke="#00D4FF" stroke-width="0.4" stroke-opacity="0.35">
+          <rect x="158" y="140" width="14" height="50"/>
+          <rect x="174" y="128" width="12" height="62"/>
+          <rect x="188" y="148" width="10" height="42"/>
+          <rect x="200" y="133" width="18" height="57"/>
+          <!-- Tall tower NEOM style -->
+          <rect x="220" y="110" width="12" height="80"/>
+          <polygon points="220,110 226,98 232,110"/>
+          <rect x="235" y="138" width="14" height="52"/>
+          <rect x="252" y="145" width="10" height="45"/>
+          <rect x="264" y="125" width="18" height="65"/>
+          <rect x="285" y="135" width="12" height="55"/>
+          <rect x="300" y="148" width="10" height="42"/>
+          <rect x="312" y="130" width="22" height="60"/>
+        </g>
+        <!-- Ground / sand -->
+        <rect x="155" y="180" width="185" height="10" fill="#041018" opacity="0.8"/>
+        <!-- Drone animated -->
+        <g style="animation: droneHover 3s ease-in-out infinite; transform-origin: 248px 80px">
+          <rect x="232" y="75" width="32" height="12" rx="3" fill="#00D4FF" opacity="0.9"/>
+          <!-- Drone detail -->
+          <line x1="237" y1="79" x2="237" y2="77" stroke="#00D4FF" stroke-width="0.8"/>
+          <line x1="248" y1="79" x2="248" y2="77" stroke="#00D4FF" stroke-width="0.8"/>
+          <line x1="259" y1="79" x2="259" y2="77" stroke="#00D4FF" stroke-width="0.8"/>
+          <!-- Rotor arms -->
+          <line x1="232" y1="78" x2="218" y2="70" stroke="#00D4FF" stroke-width="1.2"/>
+          <line x1="264" y1="78" x2="278" y2="70" stroke="#00D4FF" stroke-width="1.2"/>
+          <!-- Rotor discs spinning -->
+          <ellipse cx="218" cy="70" rx="10" ry="2.5" fill="none" stroke="#00D4FF" stroke-width="0.9" opacity="0.7" style="transform-origin:218px 70px; animation:rotorSpin 0.12s linear infinite"/>
+          <ellipse cx="278" cy="70" rx="10" ry="2.5" fill="none" stroke="#00D4FF" stroke-width="0.9" opacity="0.7" style="transform-origin:278px 70px; animation:rotorSpin 0.12s linear infinite reverse"/>
+          <!-- Package -->
+          <line x1="248" y1="87" x2="248" y2="100" stroke="#00D4FF" stroke-width="0.8" opacity="0.6"/>
+          <rect x="241" y="100" width="14" height="10" rx="2" fill="#FF6B35" opacity="0.85"/>
+          <!-- Crosshair targeting -->
+          <circle cx="248" cy="80" r="20" fill="none" stroke="#00D4FF" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.3">
+            <animateTransform attributeName="transform" type="rotate" from="0 248 80" to="360 248 80" dur="8s" repeatCount="indefinite"/>
+          </circle>
+        </g>
+        <!-- HUD elements -->
+        <text x="162" y="34" fill="#00D4FF" font-size="7" font-family="'Courier New',monospace">ALT: 120m</text>
+        <text x="162" y="44" fill="#4ADE80" font-size="7" font-family="'Courier New',monospace">STATUS: AIRBORNE</text>
+        <rect x="280" y="26" width="50" height="5" rx="2" fill="#071528"/>
+        <rect x="280" y="26" width="38" height="5" rx="2" fill="#4ADE80" opacity="0.8"/>
+        <text x="280" y="22" fill="#6A8FAA" font-size="6" font-family="'Courier New',monospace">BATTERY</text>
+      </svg>
+      <div class="mission-body">
+        <div class="mission-number">01</div>
+        <h3>Программист дрона</h3>
+        <p>Пишешь код через визуальный редактор. Дрон выполняет задание в NEOM. Сразу чувствуешь разницу между теорией и реальной работой.</p>
+        <div class="mission-arrow">Попробовать роль →</div>
+      </div>
+    </div>
+
+    <!-- MISSION 2: ROBOT CONSTRUCTOR -->
+    <div class="mission-card orange reveal reveal-delay-2">
+      <svg class="mission-scene" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+        <rect width="340" height="190" fill="#0A0C0A"/>
+        <!-- Header -->
+        <rect width="340" height="20" fill="#0E1209"/>
+        <circle cx="10" cy="10" r="3" fill="#FF5F57"/>
+        <circle cx="20" cy="10" r="3" fill="#FFBD2E"/>
+        <circle cx="30" cy="10" r="3" fill="#28CA41"/>
+        <text x="44" y="14" fill="#FF6B35" font-size="8" font-family="'Courier New',monospace">MISSION_02 // ROBOT_CONSTRUCTOR</text>
+        <!-- Assembly grid background -->
+        <g stroke="#FF6B35" stroke-width="0.3" opacity="0.1">
+          <line x1="0" y1="50" x2="340" y2="50"/>
+          <line x1="0" y1="80" x2="340" y2="80"/>
+          <line x1="0" y1="110" x2="340" y2="110"/>
+          <line x1="0" y1="140" x2="340" y2="140"/>
+          <line x1="0" y1="170" x2="340" y2="170"/>
+          <line x1="60" y1="20" x2="60" y2="190"/>
+          <line x1="120" y1="20" x2="120" y2="190"/>
+          <line x1="180" y1="20" x2="180" y2="190"/>
+          <line x1="240" y1="20" x2="240" y2="190"/>
+          <line x1="300" y1="20" x2="300" y2="190"/>
+        </g>
+        <!-- ROBOT CENTER - assembled from modules -->
+        <!-- Torso hex -->
+        <polygon points="170,75 185,67 200,75 200,95 185,103 170,95" fill="#0E1E0C" stroke="#FF6B35" stroke-width="1.5"/>
+        <!-- Torso inner panel -->
+        <polygon points="174,78 185,72 196,78 196,93 185,99 174,93" fill="#141F10" stroke="#FF6B35" stroke-width="0.6" opacity="0.5"/>
+        <!-- Torso LED -->
+        <circle cx="185" cy="86" r="4" fill="#FF6B35" opacity="0.6">
+          <animate attributeName="opacity" values="0.6;0.2;0.6" dur="1.8s" repeatCount="indefinite"/>
+        </circle>
+        <!-- Head module -->
+        <rect x="175" y="45" width="20" height="22" rx="3" fill="#0E1E0C" stroke="#FF6B35" stroke-width="1.2"/>
+        <rect x="179" y="50" width="5" height="5" rx="1" fill="#FF6B35" opacity="0.9"/>
+        <rect x="186" y="50" width="5" height="5" rx="1" fill="#FF6B35" opacity="0.9"/>
+        <rect x="180" y="60" width="10" height="3" rx="1" fill="#FF6B35" opacity="0.4"/>
+        <line x1="185" y1="45" x2="185" y2="75" stroke="#FF6B35" stroke-width="0.8" stroke-dasharray="2 2" opacity="0.5"/>
+        <!-- Left arm module -->
+        <rect x="138" y="72" width="28" height="10" rx="3" fill="#0E1E0C" stroke="#FF6B35" stroke-width="1"/>
+        <line x1="170" y1="77" x2="138" y2="77" stroke="#FF6B35" stroke-width="0.8" stroke-dasharray="2 2" opacity="0.5"/>
+        <!-- Right arm module -->
+        <rect x="202" y="72" width="28" height="10" rx="3" fill="#0E1E0C" stroke="#FF6B35" stroke-width="1"/>
+        <line x1="200" y1="77" x2="230" y2="77" stroke="#FF6B35" stroke-width="0.8" stroke-dasharray="2 2" opacity="0.5"/>
+        <!-- Claw left -->
+        <path d="M 138 72 L 126 68 L 124 78 L 138 82" fill="#0E1E0C" stroke="#FF6B35" stroke-width="1"/>
+        <!-- Claw right -->
+        <path d="M 230 72 L 242 68 L 244 78 L 230 82" fill="#0E1E0C" stroke="#FF6B35" stroke-width="1"/>
+        <!-- Legs -->
+        <rect x="178" y="103" width="8" height="24" rx="2" fill="#0E1E0C" stroke="#FF6B35" stroke-width="1"/>
+        <rect x="190" y="103" width="8" height="24" rx="2" fill="#0E1E0C" stroke="#FF6B35" stroke-width="1"/>
+        <line x1="182" y1="127" x2="178" y2="140" stroke="#FF6B35" stroke-width="1.2"/>
+        <line x1="194" y1="127" x2="198" y2="140" stroke="#FF6B35" stroke-width="1.2"/>
+        <!-- Feet -->
+        <rect x="174" y="138" width="12" height="5" rx="2" fill="#FF6B35" opacity="0.5"/>
+        <rect x="192" y="138" width="12" height="5" rx="2" fill="#FF6B35" opacity="0.5"/>
+        <!-- Modules panel (left) -->
+        <rect x="18" y="30" width="72" height="150" fill="#0A1208" rx="4" stroke="#FF6B35" stroke-width="0.6" opacity="0.4"/>
+        <text x="28" y="44" fill="#FF6B35" font-size="7" font-family="'Courier New',monospace" font-weight="bold">MODULES</text>
+        <rect x="24" y="50" width="60" height="14" rx="2" fill="#141F10" stroke="#FF6B35" stroke-width="0.6"/>
+        <text x="29" y="61" fill="#4ADE80" font-size="7" font-family="'Courier New',monospace">✓ HEAD</text>
+        <rect x="24" y="68" width="60" height="14" rx="2" fill="#141F10" stroke="#FF6B35" stroke-width="0.6"/>
+        <text x="29" y="79" fill="#4ADE80" font-size="7" font-family="'Courier New',monospace">✓ TORSO</text>
+        <rect x="24" y="86" width="60" height="14" rx="2" fill="#141F10" stroke="#FF6B35" stroke-width="0.6"/>
+        <text x="29" y="97" fill="#4ADE80" font-size="7" font-family="'Courier New',monospace">✓ ARMS</text>
+        <rect x="24" y="104" width="60" height="14" rx="2" fill="#141F10" stroke="#FF6B35" stroke-width="0.6"/>
+        <text x="29" y="115" fill="#FCD34D" font-size="7" font-family="'Courier New',monospace">◎ LEGS</text>
+        <rect x="24" y="122" width="60" height="14" rx="2" fill="#071005" stroke="#FF6B35" stroke-width="0.4" opacity="0.5"/>
+        <text x="29" y="133" fill="#2A4030" font-size="7" font-family="'Courier New',monospace">○ SENSORS</text>
+        <!-- Progress -->
+        <text x="24" y="155" fill="#6A8FAA" font-size="7" font-family="'Courier New',monospace">BUILD</text>
+        <rect x="24" y="158" width="60" height="6" rx="3" fill="#071005"/>
+        <rect x="24" y="158" width="37" height="6" rx="3" fill="#FF6B35" opacity="0.8"/>
+        <text x="24" y="174" fill="#FF6B35" font-size="8" font-family="'Courier New',monospace" font-weight="bold">62%</text>
+        <!-- Specs panel right -->
+        <rect x="260" y="30" width="72" height="150" fill="#0A1208" rx="4" stroke="#FF6B35" stroke-width="0.6" opacity="0.4"/>
+        <text x="268" y="44" fill="#FF6B35" font-size="7" font-family="'Courier New',monospace" font-weight="bold">SPECS</text>
+        <text x="268" y="60" fill="#6A8FAA" font-size="7" font-family="'Courier New',monospace">PWR:</text>
+        <text x="268" y="72" fill="#4ADE80" font-size="7" font-family="'Courier New',monospace">4.2 kW</text>
+        <text x="268" y="88" fill="#6A8FAA" font-size="7" font-family="'Courier New',monospace">LOAD:</text>
+        <text x="268" y="100" fill="#4ADE80" font-size="7" font-family="'Courier New',monospace">850 kg</text>
+        <text x="268" y="116" fill="#6A8FAA" font-size="7" font-family="'Courier New',monospace">REACH:</text>
+        <text x="268" y="128" fill="#4ADE80" font-size="7" font-family="'Courier New',monospace">3.2 m</text>
+        <text x="268" y="144" fill="#6A8FAA" font-size="7" font-family="'Courier New',monospace">MODE:</text>
+        <text x="268" y="156" fill="#FCD34D" font-size="7" font-family="'Courier New',monospace">AUTO</text>
+        <!-- Connecting dots animated -->
+        <circle cx="185" cy="86" r="6" fill="none" stroke="#FF6B35" stroke-width="0.6" opacity="0.3" style="transform-origin:185px 86px">
+          <animate attributeName="r" values="6;14;6" dur="2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.3;0;0.3" dur="2s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+      <div class="mission-body">
+        <div class="mission-number">02</div>
+        <h3>Конструктор робота</h3>
+        <p>Собираешь машину из модулей под конкретную задачу: автоматизация нефтяной платформы. Понимаешь, нравится ли тебе работать с железом.</p>
+        <div class="mission-arrow">Попробовать роль →</div>
+      </div>
+    </div>
+
+    <!-- MISSION 3: TECH ENTREPRENEUR -->
+    <div class="mission-card gold reveal reveal-delay-3">
+      <svg class="mission-scene" viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+        <rect width="340" height="190" fill="#0C0A04"/>
+        <!-- Header -->
+        <rect width="340" height="20" fill="#131006"/>
+        <circle cx="10" cy="10" r="3" fill="#FF5F57"/>
+        <circle cx="20" cy="10" r="3" fill="#FFBD2E"/>
+        <circle cx="30" cy="10" r="3" fill="#28CA41"/>
+        <text x="44" y="14" fill="#FFD166" font-size="8" font-family="'Courier New',monospace">MISSION_03 // TECH_FOUNDER</text>
+        <!-- World map simplified (dots for cities) -->
+        <!-- Middle East cluster (Saudi Arabia) -->
+        <circle cx="200" cy="90" r="5" fill="#FFD166" opacity="0.9">
+          <animate attributeName="r" values="5;7;5" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="195" cy="98" r="3" fill="#FFD166" opacity="0.5"/>
+        <circle cx="210" cy="86" r="2.5" fill="#FFD166" opacity="0.4"/>
+        <!-- Russia cluster -->
+        <circle cx="230" cy="55" r="4" fill="#00D4FF" opacity="0.8">
+          <animate attributeName="r" values="4;6;4" dur="2.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="220" cy="50" r="2.5" fill="#00D4FF" opacity="0.4"/>
+        <circle cx="245" cy="52" r="2" fill="#00D4FF" opacity="0.3"/>
+        <!-- India cluster -->
+        <circle cx="240" cy="108" r="4" fill="#4ADE80" opacity="0.8">
+          <animate attributeName="r" values="4;6;4" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="250" cy="115" r="2.5" fill="#4ADE80" opacity="0.4"/>
+        <!-- Connection lines between hubs -->
+        <line x1="200" y1="90" x2="230" y2="55" stroke="#FFD166" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.5" style="animation: dashFlow 1s linear infinite"/>
+        <line x1="200" y1="90" x2="240" y2="108" stroke="#FFD166" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.5" style="animation: dashFlow 1.2s linear infinite"/>
+        <line x1="230" y1="55" x2="240" y2="108" stroke="#00D4FF" stroke-width="0.8" stroke-dasharray="3 4" opacity="0.3" style="animation: dashFlow 1.5s linear infinite"/>
+        <!-- USA/Europe hint -->
+        <circle cx="100" cy="70" r="3" fill="#FFD166" opacity="0.35"/>
+        <line x1="100" y1="70" x2="200" y2="90" stroke="#FFD166" stroke-width="0.6" stroke-dasharray="3 6" opacity="0.2"/>
+        <!-- Background continent shapes (very simplified) -->
+        <path d="M 60 60 Q 80 40 100 55 Q 120 50 130 70 Q 120 90 100 88 Q 80 90 60 78 Z" fill="#FFD166" opacity="0.04"/>
+        <path d="M 175 50 Q 200 42 230 50 Q 255 55 265 75 Q 270 100 250 115 Q 230 125 205 118 Q 185 108 178 90 Q 170 70 175 50 Z" fill="#FFD166" opacity="0.04"/>
+        <!-- KPI metrics panel top right -->
+        <rect x="260" y="26" width="72" height="90" fill="#13100A" rx="4" stroke="#FFD166" stroke-width="0.6" opacity="0.5"/>
+        <text x="268" y="40" fill="#FFD166" font-size="7" font-family="'Courier New',monospace" font-weight="bold">METRICS</text>
+        <text x="268" y="56" fill="#4ADE80" font-size="9" font-family="'Courier New',monospace" font-weight="bold">+247%</text>
+        <text x="268" y="66" fill="#6A8FAA" font-size="6" font-family="'Courier New',monospace">GROWTH MoM</text>
+        <text x="268" y="80" fill="#FFD166" font-size="9" font-family="'Courier New',monospace" font-weight="bold">3</text>
+        <text x="268" y="90" fill="#6A8FAA" font-size="6" font-family="'Courier New',monospace">MARKETS</text>
+        <text x="268" y="104" fill="#00D4FF" font-size="9" font-family="'Courier New',monospace" font-weight="bold">12K</text>
+        <text x="268" y="114" fill="#6A8FAA" font-size="6" font-family="'Courier New',monospace">USERS</text>
+        <!-- Revenue chart bottom -->
+        <rect x="18" y="26" width="100" height="90" fill="#13100A" rx="4" stroke="#FFD166" stroke-width="0.6" opacity="0.5"/>
+        <text x="26" y="40" fill="#FFD166" font-size="7" font-family="'Courier New',monospace" font-weight="bold">REVENUE</text>
+        <!-- Chart bars -->
+        <g transform="translate(24, 108) scale(1, -1)">
+          <rect x="0" y="0" width="10" height="18" rx="1" fill="#FFD166" opacity="0.35"/>
+          <rect x="14" y="0" width="10" height="28" rx="1" fill="#FFD166" opacity="0.45"/>
+          <rect x="28" y="0" width="10" height="22" rx="1" fill="#FFD166" opacity="0.4"/>
+          <rect x="42" y="0" width="10" height="38" rx="1" fill="#FFD166" opacity="0.55"/>
+          <rect x="56" y="0" width="10" height="45" rx="1" fill="#FFD166" opacity="0.65"/>
+          <rect x="70" y="0" width="10" height="58" rx="1" fill="#FFD166" opacity="0.85"/>
+          <!-- Trend line -->
+          <polyline points="5,18 19,28 33,22 47,38 61,45 75,58" fill="none" stroke="#FFD166" stroke-width="1.2" opacity="0.9"/>
+        </g>
+        <line x1="18" y1="108" x2="118" y2="108" stroke="#FFD166" stroke-width="0.5" opacity="0.3"/>
+        <!-- Bottom status -->
+        <rect x="0" y="170" width="340" height="20" fill="#13100A"/>
+        <circle cx="14" cy="180" r="4" fill="#4ADE80" opacity="0.8">
+          <animate attributeName="opacity" values="0.8;0.3;0.8" dur="1.5s" repeatCount="indefinite"/>
+        </circle>
+        <text x="24" y="184" fill="#4ADE80" font-size="8" font-family="'Courier New',monospace">LIVE · 3 рынка · 12 437 пользователей</text>
+      </svg>
+      <div class="mission-body">
+        <div class="mission-number">03</div>
+        <h3>Технопредприниматель</h3>
+        <p>Принимаешь решения по запуску edtech-стартапа. Выходишь на международный рынок. Узнаёшь, где твоё место: создавать или строить бизнес.</p>
+        <div class="mission-arrow">Попробовать роль →</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section class="reveal">
+  <div class="section-label">Что ты получишь</div>
+  <h2>Четыре результата<br/>после трёх миссий</h2>
+
+  <div class="benefits-grid">
+    <div class="benefit-card reveal reveal-delay-1">
+      <div class="benefit-icon-wrap">
+        <svg viewBox="0 0 40 40" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="14" fill="none" stroke="#00D4FF" stroke-width="1.5"/>
+          <circle cx="20" cy="20" r="8" fill="none" stroke="#00D4FF" stroke-width="1" opacity="0.5"/>
+          <circle cx="20" cy="20" r="3" fill="#00D4FF"/>
+          <line x1="20" y1="6" x2="20" y2="12" stroke="#00D4FF" stroke-width="1.5"/>
+          <line x1="20" y1="28" x2="20" y2="34" stroke="#00D4FF" stroke-width="1.5"/>
+          <line x1="6" y1="20" x2="12" y2="20" stroke="#00D4FF" stroke-width="1.5"/>
+          <line x1="28" y1="20" x2="34" y2="20" stroke="#00D4FF" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div>
+        <h3>Ясность</h3>
+        <p>Узнаешь разницу между инженером-робототехником и программистом дрона — не по книге, а на практике.</p>
+      </div>
+    </div>
+    <div class="benefit-card reveal reveal-delay-2">
+      <div class="benefit-icon-wrap">
+        <svg viewBox="0 0 40 40" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="14" width="24" height="18" rx="3" fill="none" stroke="#00D4FF" stroke-width="1.5"/>
+          <path d="M 14 14 L 14 10 Q 14 7 17 7 L 23 7 Q 26 7 26 10 L 26 14" fill="none" stroke="#00D4FF" stroke-width="1.5"/>
+          <line x1="14" y1="22" x2="26" y2="22" stroke="#00D4FF" stroke-width="1.2" opacity="0.6"/>
+          <line x1="14" y1="27" x2="22" y2="27" stroke="#00D4FF" stroke-width="1.2" opacity="0.4"/>
+          <circle cx="29" cy="28" r="5" fill="#00D4FF" opacity="0.15" stroke="#00D4FF" stroke-width="1"/>
+          <text x="29" y="31" text-anchor="middle" fill="#00D4FF" font-size="7" font-family="sans-serif" font-weight="bold">✓</text>
+        </svg>
+      </div>
+      <div>
+        <h3>Аргументы для семьи</h3>
+        <p>Реальные данные о твоих сильных сторонах, чтобы разговор о выборе пути стал конкретным.</p>
+      </div>
+    </div>
+    <div class="benefit-card reveal reveal-delay-3">
+      <div class="benefit-icon-wrap">
+        <svg viewBox="0 0 40 40" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="20" cy="20" rx="13" ry="13" fill="none" stroke="#00D4FF" stroke-width="1.5"/>
+          <ellipse cx="20" cy="20" rx="5" ry="13" fill="none" stroke="#00D4FF" stroke-width="1" opacity="0.5"/>
+          <line x1="7" y1="20" x2="33" y2="20" stroke="#00D4FF" stroke-width="1" opacity="0.5"/>
+          <line x1="20" y1="7" x2="20" y2="33" stroke="#00D4FF" stroke-width="1" opacity="0.5"/>
+          <circle cx="20" cy="20" r="2.5" fill="#00D4FF"/>
+        </svg>
+      </div>
+      <div>
+        <h3>Международный опыт</h3>
+        <p>Поработаешь в команде с ровесниками из России и Индии — без стажировки, без визы, без одновременного онлайна.</p>
+      </div>
+    </div>
+    <div class="benefit-card reveal reveal-delay-4">
+      <div class="benefit-icon-wrap">
+        <svg viewBox="0 0 40 40" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="10" width="24" height="20" rx="2" fill="none" stroke="#00D4FF" stroke-width="1.5"/>
+          <line x1="8" y1="16" x2="32" y2="16" stroke="#00D4FF" stroke-width="0.8" opacity="0.4"/>
+          <rect x="12" y="19" width="4" height="8" rx="1" fill="#00D4FF" opacity="0.4"/>
+          <rect x="18" y="22" width="4" height="5" rx="1" fill="#00D4FF" opacity="0.6"/>
+          <rect x="24" y="17" width="4" height="10" rx="1" fill="#00D4FF" opacity="0.9"/>
+          <polyline points="12,27 16,27 20,24 24,22 28,17" fill="none" stroke="#00D4FF" stroke-width="1.2"/>
+          <polygon points="11,32 29,32 20,39" fill="#00D4FF" opacity="0.15"/>
+        </svg>
+      </div>
+      <div>
+        <h3>Карьерный профиль</h3>
+        <p>Персональный дашборд с итоговой рекомендацией профессии. Входит в экосистему RobodexBRICS.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PAIN POINTS -->
+<section class="pain-section reveal">
+  <div class="section-label">Узнаёшь себя?</div>
+  <h2>Ты хочешь стать<br/>частью Vision 2030</h2>
+
+  <ul class="pain-list">
+    <li class="pain-item reveal reveal-delay-1">
+      <svg class="pain-check" viewBox="0 0 20 20" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="10,2 12,8 18,8 13,12 15,18 10,14 5,18 7,12 2,8 8,8" fill="#FF6B35" opacity="0.8"/>
+      </svg>
+      <p>Каждый день слышишь про <strong>NEOM и роботов</strong>, но не понимаешь, как туда попасть именно тебе?</p>
+    </li>
+    <li class="pain-item reveal reveal-delay-2">
+      <svg class="pain-check" viewBox="0 0 20 20" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="10,2 12,8 18,8 13,12 15,18 10,14 5,18 7,12 2,8 8,8" fill="#FF6B35" opacity="0.8"/>
+      </svg>
+      <p>Скоро выбирать специальность, а ответа на вопрос <strong>«кем хочу быть»</strong> — нет?</p>
+    </li>
+    <li class="pain-item reveal reveal-delay-2">
+      <svg class="pain-check" viewBox="0 0 20 20" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="10,2 12,8 18,8 13,12 15,18 10,14 5,18 7,12 2,8 8,8" fill="#FF6B35" opacity="0.8"/>
+      </svg>
+      <p>Семья ждёт «традиционного» пути: медицина, бизнес, нефтянка — а тебя <strong>тянет в технологии</strong>?</p>
+    </li>
+    <li class="pain-item reveal reveal-delay-3">
+      <svg class="pain-check" viewBox="0 0 20 20" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="10,2 12,8 18,8 13,12 15,18 10,14 5,18 7,12 2,8 8,8" fill="#FF6B35" opacity="0.8"/>
+      </svg>
+      <p>Школа даёт теорию, но не объясняет, как выглядит <strong>настоящая работа инженера</strong> изнутри?</p>
+    </li>
+    <li class="pain-item reveal reveal-delay-4">
+      <svg class="pain-check" viewBox="0 0 20 20" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="10,2 12,8 18,8 13,12 15,18 10,14 5,18 7,12 2,8 8,8" fill="#FF6B35" opacity="0.8"/>
+      </svg>
+      <p>Чувствуешь, что остаёшься наблюдателем, пока иностранные специалисты <strong>строят твою страну</strong>?</p>
+    </li>
+  </ul>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="section-label">Как ты решишь свою задачу</div>
+  <h2>Три шага<br/>к ясности</h2>
+
+  <div class="how-steps">
+    <div class="how-step reveal reveal-delay-1">
+      <div class="step-num">1</div>
+      <h3>Попробуй три роли</h3>
+      <ul>
+        <li>Программист дрона — пишешь код, дрон взлетает</li>
+        <li>Конструктор робота — собираешь под задачу</li>
+        <li>Технопредприниматель — запускаешь стартап</li>
+      </ul>
+    </div>
+    <div class="how-step reveal reveal-delay-2">
+      <div class="step-num">2</div>
+      <h3>Получи обратную связь</h3>
+      <ul>
+        <li>После каждой роли — твои сильные стороны</li>
+        <li>Что получается, что стоит прокачать</li>
+        <li>Это твои данные, не мнение учителя</li>
+      </ul>
+    </div>
+    <div class="how-step reveal reveal-delay-3">
+      <div class="step-num">3</div>
+      <h3>Работай с командой БРИКС+</h3>
+      <ul>
+        <li>Система сама находит напарника из РФ или Индии</li>
+        <li>Асинхронный формат — ждать онлайна не нужно</li>
+        <li>Фразы с автопереводом на 8 языков</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- BRICS BANNER -->
+<div class="brics-banner reveal">
+  <div class="brics-text">
+    <h3>Пилот в трёх странах одновременно</h3>
+    <p>Саудовская Аравия · Россия · Индия — 2025/2026</p>
+  </div>
+  <div class="brics-flags">
+    <div class="brics-flag-wrap">
+      <svg viewBox="0 0 60 40" width="60" height="40" xmlns="http://www.w3.org/2000/svg">
+        <rect width="60" height="40" fill="#006C35"/>
+        <!-- Shahada — арабский текст (شهادة) -->
+        <text x="30" y="13" text-anchor="middle" fill="white" font-size="6.5" font-weight="bold"
+          font-family="'Noto Naskh Arabic','Arabic Typesetting','Arial Unicode MS',Arial,serif">لا إله إلا الله</text>
+        <text x="30" y="22" text-anchor="middle" fill="white" font-size="6" font-weight="bold"
+          font-family="'Noto Naskh Arabic','Arabic Typesetting','Arial Unicode MS',Arial,serif">محمد رسول الله</text>
+        <!-- Меч (сабля, остриё влево) -->
+        <!-- Лезвие: сужается к острию, слегка изогнуто -->
+        <path d="M 50,28 C 38,26.5 22,27 10,29 L 11.5,31 C 23,29.5 38,30 50,31.5 Z" fill="white"/>
+        <!-- Рукоять -->
+        <rect x="50" y="27" width="4" height="5" rx="0.8" fill="white"/>
+        <!-- Гарда (крестовина) -->
+        <rect x="49" y="24.5" width="1.5" height="11" rx="0.5" fill="white"/>
+        <!-- Навершие (pommel) -->
+        <circle cx="55" cy="29.5" r="2.2" fill="white"/>
+      </svg>
+      <div class="brics-flag-label">Саудовская Аравия</div>
+    </div>
+    <div class="brics-flag-wrap">
+      <svg viewBox="0 0 60 40" width="60" height="40" xmlns="http://www.w3.org/2000/svg">
+        <rect width="60" height="14" fill="#FFFFFF"/>
+        <rect y="13" width="60" height="14" fill="#003DA5"/>
+        <rect y="26" width="60" height="14" fill="#C8132E"/>
+      </svg>
+      <div class="brics-flag-label">Россия</div>
+    </div>
+    <div class="brics-flag-wrap">
+      <svg viewBox="0 0 60 40" width="60" height="40" xmlns="http://www.w3.org/2000/svg">
+        <rect width="60" height="14" fill="#FF9933"/>
+        <rect y="13" width="60" height="14" fill="white"/>
+        <rect y="26" width="60" height="14" fill="#138808"/>
+        <!-- Ashoka Chakra - 24 spokes -->
+        <circle cx="30" cy="20" r="5.5" fill="none" stroke="#000088" stroke-width="0.8"/>
+        <circle cx="30" cy="20" r="1.4" fill="#000088"/>
+        <g stroke="#000088" stroke-width="0.45">
+          <line x1="31.5" y1="20" x2="35.5" y2="20"/><line x1="28.5" y1="20" x2="24.5" y2="20"/>
+          <line x1="30" y1="21.5" x2="30" y2="25.5"/><line x1="30" y1="18.5" x2="30" y2="14.5"/>
+          <line x1="31.06" y1="21.06" x2="33.89" y2="23.89"/><line x1="28.94" y1="18.94" x2="26.11" y2="16.11"/>
+          <line x1="28.94" y1="21.06" x2="26.11" y2="23.89"/><line x1="31.06" y1="18.94" x2="33.89" y2="16.11"/>
+          <line x1="31.45" y1="20.39" x2="35.31" y2="21.42"/><line x1="28.55" y1="19.61" x2="24.69" y2="18.58"/>
+          <line x1="31.3" y1="20.75" x2="34.76" y2="22.75"/><line x1="28.7" y1="19.25" x2="25.24" y2="17.25"/>
+          <line x1="30.75" y1="21.3" x2="32.75" y2="24.76"/><line x1="29.25" y1="18.7" x2="27.25" y2="15.24"/>
+          <line x1="30.39" y1="21.45" x2="31.42" y2="25.31"/><line x1="29.61" y1="18.55" x2="28.58" y2="14.69"/>
+          <line x1="28.55" y1="20.39" x2="24.69" y2="21.42"/><line x1="31.45" y1="19.61" x2="35.31" y2="18.58"/>
+          <line x1="28.7" y1="20.75" x2="25.24" y2="22.75"/><line x1="31.3" y1="19.25" x2="34.76" y2="17.25"/>
+          <line x1="29.25" y1="21.3" x2="27.25" y2="24.76"/><line x1="30.75" y1="18.7" x2="32.75" y2="15.24"/>
+          <line x1="29.61" y1="21.45" x2="28.58" y2="25.31"/><line x1="30.39" y1="18.55" x2="31.42" y2="14.69"/>
+        </g>
+      </svg>
+      <div class="brics-flag-label">Индия</div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<section class="results-section reveal">
+  <div class="section-label">К чему ты придёшь</div>
+  <h2>Что изменится<br/>после трёх миссий</h2>
+
+  <div class="results-cols">
+    <div class="results-col">
+      <h3>Почувствуешь</h3>
+      <ul class="results-list">
+        <li><strong>Уверенность:</strong> знаешь, что тебе интересно и что у тебя реально получается</li>
+        <li><strong>Причастность:</strong> Vision 2030 — это про тебя, не про иностранных специалистов</li>
+        <li><strong>Связь:</strong> рядом окажутся ровесники-технари из других стран</li>
+      </ul>
+    </div>
+    <div class="results-col">
+      <h3>Получишь</h3>
+      <ul class="results-list">
+        <li>Минимум <strong>три технологические профессии</strong> на практике, а не в теории</li>
+        <li><strong>Аргументированный ответ</strong> «кем хочу быть» — для себя, семьи и поступления</li>
+        <li>Хотя бы <strong>один реальный международный проект</strong> в портфолио</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section">
+  <div class="faq-layout">
+    <div class="faq-content">
+      <div class="section-label">У тебя есть сомнения?</div>
+      <h2>Честные ответы<br/>на честные вопросы</h2>
+
+      <div class="faq-list">
+        <div class="faq-item reveal reveal-delay-1">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span class="faq-q-text">«Родители не разрешат»</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-a">В RoboJunior есть семейный аккаунт: родитель видит всю активность, одобряет контакты и может включить режим «только верифицированные игроки». Можно показать им это до регистрации.</div>
+        </div>
+        <div class="faq-item reveal reveal-delay-2">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span class="faq-q-text">«Я ничего не знаю о программировании»</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-a">Первая миссия специально создана для нуля: визуальное программирование, пошаговые подсказки, нет оценок — только результат. Если получилось у тебя — значит, ты уже программист.</div>
+        </div>
+        <div class="faq-item reveal reveal-delay-3">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span class="faq-q-text">«Это просто игра, не настоящий опыт»</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-a">Достижения в RoboJunior — это реальные данные о твоих способностях. Они входят в профиль экосистемы RobodexBRICS и могут быть использованы для рекомендаций в стажировки и хакатоны.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-img-col" aria-hidden="true">
+      <img src="characters-pics/all_robots_in_palace.jpg" alt="">
+    </div>
+  </div>
+</section>
+
+<!-- VS COMPETITORS -->
+<section class="vs-section reveal">
+  <div class="section-label">Почему не другие варианты</div>
+  <h2>RoboJunior vs<br/>всё остальное</h2>
+
+  <div class="vs-grid">
+    <div class="vs-card reveal reveal-delay-1">
+      <div class="vs-them">Учебник и школа</div>
+      <p class="vs-their-desc">Объясняют теорию, но не показывают, каково это — быть инженером.</p>
+      <div class="vs-us">RoboJunior</div>
+      <p class="vs-our-desc">Ставит тебя в роль с первой минуты — а не через пять лет учёбы.</p>
+    </div>
+    <div class="vs-card reveal reveal-delay-2">
+      <div class="vs-them">YouTube и курсы</div>
+      <p class="vs-their-desc">Смотришь, как делают другие, и не знаешь, получится ли у тебя.</p>
+      <div class="vs-us">RoboJunior</div>
+      <p class="vs-our-desc">Делаешь сам и сразу видишь результат: дрон полетел или нет.</p>
+    </div>
+    <div class="vs-card reveal reveal-delay-3">
+      <div class="vs-them">Стажировки и обмены</div>
+      <p class="vs-their-desc">Доступны только тем, у кого уже есть опыт и связи.</p>
+      <div class="vs-us">RoboJunior</div>
+      <p class="vs-our-desc">Способ получить этот опыт прямо сейчас, чтобы потом попасть на настоящую стажировку.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-section reveal" id="cta">
+  <div class="section-label">Начни прямо сейчас</div>
+  <h2>Твоя первая миссия<br/>займёт <span style="color:var(--cyan)">15 минут</span></h2>
+  <p>Бесплатно. В браузере. Без установки. Попробуй — и узнай, твоё ли это.</p>
+  <a href="/register" class="btn-primary">Начать первую миссию →</a>
+</section>
+
+<footer>
+  <div class="footer-logo">Robo<span>Junior</span></div>
+  <div class="footer-text">Образовательная игра для подростков 14–17 лет из стран БРИКС+</div>
+  <div class="footer-text">© 2026 RobodexBRICS Ecosystem</div>
+</footer>
+
+<script>
+  const isMobile = window.innerWidth <= 900;
+  if (!isMobile) {
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }),
+      { threshold: 0.1, rootMargin: '0px 0px -20px 0px' }
+    );
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  }
+
+  function toggleFaq(btn) { btn.closest('.faq-item').classList.toggle('open'); }
+</script>
+</body>
+</html>

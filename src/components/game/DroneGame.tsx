@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useCallback, useRef, useMemo } from 'react'
+import { useState, useCallback, useRef, useMemo, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
+import { useRouter as useNextRouter } from 'next/navigation'
 import clsx from 'clsx'
 import { completeMission } from '@/lib/game/scoring'
 import { getMissionConfig } from '@/lib/game/missions'
@@ -162,6 +163,7 @@ const CELEBRATION_CSS = `
 export default function DroneGame({ userId, missionNumber, difficulty, isCompleted, onComplete }: DroneGameProps) {
   const t = useTranslations('game')
   const router = useRouter()
+  const nextRouter = useNextRouter()
 
   const config = getMissionConfig('drone_programmer', missionNumber, difficulty)
   const gridSize = config?.gridSize ?? 5
@@ -186,6 +188,14 @@ export default function DroneGame({ userId, missionNumber, difficulty, isComplet
   const [score, setScore] = useState(0)
   const startTimeRef = useRef(Date.now())
   const abortRef = useRef(false)
+
+  // Reset when switching missions
+  useEffect(() => {
+    setDone(isCompleted)
+    setProgram([])
+    setMissionResult(null)
+    setScore(0)
+  }, [missionNumber, difficulty, isCompleted])
 
   // Command palette
   const PALETTE: { type: CommandType; labelKey: string; color: string; icon: string }[] = [
@@ -324,13 +334,14 @@ export default function DroneGame({ userId, missionNumber, difficulty, isComplet
         })
         setMissionResult(result)
         fireGameToast({ xp: result.xpEarned, score: finalScore, badge: result.newBadges[0] })
-      } catch {
+      } catch (err) {
+        console.error('completeMission error:', err)
         fireGameToast({ xp: 0, score: finalScore })
       }
 
-      router.refresh()
+      nextRouter.refresh()
     }
-  }, [program, level, gridSize, maxBlocks, userId, missionNumber, difficulty, router, resetSimulation, running, onComplete])
+  }, [program, level, gridSize, maxBlocks, userId, missionNumber, difficulty, router, nextRouter, resetSimulation, running, onComplete])
 
   // Lookup sets for rendering
   const obstacleSet = useMemo(
@@ -363,9 +374,14 @@ export default function DroneGame({ userId, missionNumber, difficulty, isComplet
       <>
         <style>{CELEBRATION_CSS}</style>
         <div
-          className="bg-[var(--brand-panel)] border border-green-500/40 rounded-2xl p-8 text-center"
+          className="relative bg-[var(--brand-panel)] border border-green-500/40 rounded-2xl p-8 text-center"
           style={{ animation: 'drone-celebrate 0.6s ease-out' }}
         >
+          <button
+            onClick={() => { setDone(false); setMissionResult(null) }}
+            className="absolute top-3 right-3 text-gray-500 hover:text-white text-xl leading-none"
+            aria-label="Close"
+          >×</button>
           <div className="w-20 h-20 mx-auto mb-4">
             <DroneSVG facing="N" hasPackage={false} />
           </div>

@@ -10,7 +10,15 @@ const nextConfig = {
         protocol: 'https',
         hostname: '*.supabase.co',
       },
+      {
+        protocol: 'https',
+        hostname: 'flagcdn.com',
+      },
     ],
+  },
+  webpack: (config) => {
+    config.cache = false
+    return config
   },
 }
 
