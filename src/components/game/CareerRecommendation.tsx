@@ -73,9 +73,9 @@ function getProfessions(scores: CompetencyScore | null): Profession[] {
 
     // === Engineering / Robot role careers ===
     {
-      title: 'Robotics Engineer',
-      titleRu: 'Инженер-робототехник',
-      titleAr: 'مهندس روبوتات',
+      title: 'Robot Constructor',
+      titleRu: 'Конструктор робота',
+      titleAr: 'مصمم الروبوتات',
       emoji: '🤖',
       match: Math.round(scores.technical_precision * 0.4 + scores.analytical_thinking * 0.4 + scores.creativity * 0.2),
       reason: 'Your precision and analytical skills are perfect for designing robots',

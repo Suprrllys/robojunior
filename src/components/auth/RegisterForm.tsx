@@ -62,7 +62,7 @@ export default function RegisterForm() {
     password: '',
     confirmPassword: '',
     username: '',
-    country: 'SA' as Country,
+    country: (locale === 'ru' ? 'RU' : 'SA') as Country,
     birthDate: '',
     isParent: false,
   })
@@ -86,6 +86,14 @@ export default function RegisterForm() {
     setForm(prev => ({ ...prev, [field]: value }))
   }
 
+  function mapAuthError(message: string): string {
+    const lower = message.toLowerCase()
+    if (lower.includes('invalid') || lower.includes('not valid')) return t('invalidEmail')
+    if (lower.includes('already registered') || lower.includes('already been registered')) return t('emailAlreadyUsed')
+    if (lower.includes('password') && lower.includes('6')) return t('passwordTooShort')
+    return t('registrationError')
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
@@ -101,7 +109,7 @@ export default function RegisterForm() {
     }
 
     if (form.password !== form.confirmPassword) {
-      setError('Passwords do not match')
+      setError(t('passwordMismatch'))
       return
     }
 
@@ -133,7 +141,7 @@ export default function RegisterForm() {
     })
 
     if (error) {
-      setError(error.message)
+      setError(mapAuthError(error.message))
       setLoading(false)
     } else {
       router.push('/roles')
@@ -248,6 +256,7 @@ export default function RegisterForm() {
           className="w-full bg-brand-dark border border-brand-border rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-brand-blue transition-colors"
           placeholder="••••••••"
         />
+        <p className="text-xs text-gray-500 mt-1">{t('passwordHint')}</p>
       </div>
 
       <div>

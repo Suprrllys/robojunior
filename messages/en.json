@@ -62,7 +62,11 @@
     "passwordUpdated": "Password updated successfully!",
     "backToLogin": "Back to login",
     "passwordMismatch": "Passwords do not match",
-    "passwordTooShort": "Password must be at least 6 characters"
+    "passwordTooShort": "Password must be at least 6 characters",
+    "invalidEmail": "Invalid email format",
+    "emailAlreadyUsed": "This email is already registered",
+    "registrationError": "Registration error. Please try again",
+    "passwordHint": "Minimum 6 characters"
   },
   "roles": {
     "title": "Choose Your Role",
@@ -147,7 +151,7 @@
         "fail": "The drone didn't reach the target. Try adjusting your program.",
         "onboarding": {
           "step1": {
-            "title": "Welcome, Drone Pilot!",
+            "title": "Welcome, Drone Programmer!",
             "description": "You've been recruited to help build BRICS City. Your job: program delivery drones."
           },
           "step2": {
@@ -953,8 +957,8 @@
     },
     "missionProgress": "Mission Progress",
     "roles": {
-      "drone": "Drone Pilot",
-      "robot": "Robot Engineer",
+      "drone": "Drone Programmer",
+      "robot": "Robot Constructor",
       "entrepreneur": "Entrepreneur"
     },
     "independenceMeter": "Independence Meter",
@@ -1060,8 +1064,8 @@
     "startupDesc": "Launch a tech startup: entrepreneur's business plan + drone programmer's tech",
     "chooseRole": "Choose Your Role",
     "roleLabels": {
-      "drone_programmer": "Drone Pilot",
-      "robot_constructor": "Robot Builder",
+      "drone_programmer": "Drone Programmer",
+      "robot_constructor": "Robot Constructor",
       "entrepreneur": "Entrepreneur"
     },
     "playersJoined": "players",
@@ -1461,8 +1465,8 @@
     "badges": "Badges",
     "completed": "completed",
     "roles": {
-      "drone_programmer": "Drone Pilot",
-      "robot_constructor": "Robot Builder",
+      "drone_programmer": "Drone Programmer",
+      "robot_constructor": "Robot Constructor",
       "entrepreneur": "Entrepreneur"
     }
   },
@@ -2307,8 +2311,8 @@
     "awesome": "Awesome!",
     "rewardSkin": "Reward",
     "unlockedOn": "Unlocked {date}",
-    "category_drone": "Drone Pilot",
-    "category_robot": "Robot Engineer",
+    "category_drone": "Drone Programmer",
+    "category_robot": "Robot Constructor",
     "category_entrepreneur": "Entrepreneur",
     "category_cross": "Cross-Role",
     "skins_drone_easy": "Pilot Cadet",
@@ -2501,8 +2505,8 @@
     "accountStatus": "Account Status",
     "accountActive": "Active, no issues",
     "roles": {
-      "drone": "Drone Pilot",
-      "robot": "Robot Engineer",
+      "drone": "Drone Programmer",
+      "robot": "Robot Constructor",
       "entrepreneur": "Entrepreneur"
     },
     "skills": {

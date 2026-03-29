@@ -68,6 +68,7 @@ export default function SkinShop({ balance, ownedSkinIds, dbAvatarAccessory, ava
   const buyingRef = useRef(false) // instant guard against double-click
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [purchasedItemId, setPurchasedItemId] = useState<string | null>(null)
 
   // Load config from DB first (source of truth), fallback to localStorage
   useEffect(() => {
@@ -147,6 +148,8 @@ export default function SkinShop({ balance, ownedSkinIds, dbAvatarAccessory, ava
       })
 
       setSuccess(t('purchaseSuccess'))
+      setPurchasedItemId(itemId)
+      setTimeout(() => setPurchasedItemId(null), 500)
       setTimeout(() => setSuccess(null), 2500)
       startTransition(() => router.refresh())
     } finally {
@@ -270,6 +273,7 @@ export default function SkinShop({ balance, ownedSkinIds, dbAvatarAccessory, ava
                       ? 'border-[var(--brand-gold)]/50 ring-1 ring-[var(--brand-gold)]/30 bg-[var(--brand-gold)]/5'
                       : 'border-gray-700/40 hover:border-gray-600/60 hover:bg-gray-800/40',
                   )}
+                  style={purchasedItemId === item.id ? { animation: 'purchase-bounce 0.4s ease-out' } : undefined}
                 >
                   <div className="flex items-center gap-3">
                     {/* Mini preview */}
@@ -290,7 +294,7 @@ export default function SkinShop({ balance, ownedSkinIds, dbAvatarAccessory, ava
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-white font-bold text-sm truncate">
+                      <h3 className="text-white font-bold text-sm truncate" title={t(`items.${item.nameKey}`)}>
                         {t(`items.${item.nameKey}`)}
                       </h3>
                       <div className="flex items-center gap-1.5 mt-1">

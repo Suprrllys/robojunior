@@ -508,7 +508,7 @@ const PROFESSION_ICON_MAP: Record<string, (props: IconProps) => JSX.Element> = {
   'Software Developer': IconLaptop,
   'AI / Machine Learning Engineer': IconBrain,
   'Data Scientist': IconChart,
-  'Robotics Engineer': IconRobot,
+  'Robot Constructor': IconRobot,
   'Mechanical Engineer': IconGear,
   'IoT / Embedded Systems Engineer': IconSatellite,
   'Quality Assurance Engineer': IconMagnifier,
