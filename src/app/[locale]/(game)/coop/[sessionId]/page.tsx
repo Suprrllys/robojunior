@@ -48,9 +48,10 @@ export default async function CoopSessionPage({ params }: Props) {
       .from('coop_participants')
       .select('coop_session_id, coop_sessions!inner(status)')
       .eq('user_id', user!.id)
-    const alreadyActive = existingParts?.some((p: { coop_sessions: { status: string } }) =>
-      p.coop_sessions.status === 'waiting' || p.coop_sessions.status === 'active'
-    ) ?? false
+    const alreadyActive = existingParts?.some((p: { coop_sessions: { status: string }[] | { status: string } }) => {
+      const sessions = Array.isArray(p.coop_sessions) ? p.coop_sessions : [p.coop_sessions]
+      return sessions.some(s => s.status === 'waiting' || s.status === 'active')
+    }) ?? false
 
     if (!alreadyActive) {
       const takenRoles = new Set(participants?.map(p => p.role) ?? [])
