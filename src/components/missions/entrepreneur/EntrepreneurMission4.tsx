@@ -938,24 +938,24 @@ export default function EntrepreneurMission4({ userId, onComplete }: Entrepreneu
         <h3 className="text-sm font-bold text-indigo-300 mb-2">{isRu ? 'Твоя миссия' : isAr ? 'مهمتك' : 'Your Mission'}</h3>
         <ul className="space-y-1.5 text-sm text-gray-300">
           <li className="flex items-start gap-2">
-            <span className="text-indigo-400 mt-0.5">&#x2022;</span>
-            {isRu
+            <span className="shrink-0 text-indigo-400 mt-0.5">&#x2022;</span>
+            <span className="flex-1">{isRu
               ? <>Расположи <span className="font-bold text-white">6 слайдов питч-дека</span> в правильном порядке.</>
               : isAr
               ? <>رتّب <span className="font-bold text-white">6 شرائح العرض</span> بالترتيب الصحيح.</>
-              : <>Arrange your <span className="font-bold text-white">6 pitch deck slides</span> in the correct order.</>}
+              : <>Arrange your <span className="font-bold text-white">6 pitch deck slides</span> in the correct order.</>}</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-yellow-400 mt-0.5">&#x26A0;</span>
-            {isRu ? 'Перетаскивай слайды или используй стрелки для изменения порядка.' : isAr ? 'اسحب الشرائح أو استخدم الأسهم لتغيير الترتيب.' : 'Drag slides up/down or use the arrow buttons to reorder them.'}
+            <span className="shrink-0 text-yellow-400 mt-0.5">&#x26A0;</span>
+            <span className="flex-1">{isRu ? 'Перетаскивай слайды или используй стрелки для изменения порядка.' : isAr ? 'اسحب الشرائح أو استخدم الأسهم لتغيير الترتيب.' : 'Drag slides up/down or use the arrow buttons to reorder them.'}</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-green-400 mt-0.5">&#x1F3AF;</span>
-            {isRu
+            <span className="shrink-0 text-green-400 mt-0.5">&#x1F3AF;</span>
+            <span className="flex-1">{isRu
               ? <>Хороший питч рассказывает <span className="font-bold text-green-300">логичную историю</span> от проблемы до запроса.</>
               : isAr
               ? <>العرض الرائع يروي <span className="font-bold text-green-300">قصة منطقية</span> من المشكلة إلى الطلب.</>
-              : <>A great pitch tells a <span className="font-bold text-green-300">logical story</span> from problem to ask.</>}
+              : <>A great pitch tells a <span className="font-bold text-green-300">logical story</span> from problem to ask.</>}</span>
           </li>
         </ul>
       </div>

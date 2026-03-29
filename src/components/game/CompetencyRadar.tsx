@@ -10,6 +10,26 @@ interface CompetencyRadarProps {
   scores: CompetencyScore
 }
 
+function CustomTick({ payload, x, y, textAnchor, ...rest }: Record<string, unknown>) {
+  const text = String(payload && typeof payload === 'object' && 'value' in payload ? (payload as { value: string }).value : '')
+  // Split long labels into two lines
+  const words = text.split(' ')
+  let lines: string[]
+  if (words.length >= 2 && text.length > 10) {
+    const mid = Math.ceil(words.length / 2)
+    lines = [words.slice(0, mid).join(' '), words.slice(mid).join(' ')]
+  } else {
+    lines = [text]
+  }
+  return (
+    <text x={x as number} y={y as number} textAnchor={textAnchor as string} fill="#9CA3AF" fontSize={11} {...rest}>
+      {lines.map((line, i) => (
+        <tspan key={i} x={x as number} dy={i === 0 ? 0 : 14}>{line}</tspan>
+      ))}
+    </text>
+  )
+}
+
 export default function CompetencyRadar({ scores }: CompetencyRadarProps) {
   const t = useTranslations('dashboard.axes')
   const tDash = useTranslations('dashboard')
@@ -24,12 +44,12 @@ export default function CompetencyRadar({ scores }: CompetencyRadarProps) {
   ]
 
   return (
-    <ResponsiveContainer width="100%" height={320}>
-      <RadarChart data={data} margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
+    <ResponsiveContainer width="100%" height={350}>
+      <RadarChart data={data} margin={{ top: 20, right: 40, bottom: 20, left: 40 }}>
         <PolarGrid stroke="#1F2937" />
         <PolarAngleAxis
           dataKey="axis"
-          tick={{ fill: '#9CA3AF', fontSize: 12 }}
+          tick={CustomTick}
         />
         <Radar
           name={tDash('competencies')}

@@ -606,24 +606,24 @@ export default function EntrepreneurMission5({ userId, onComplete }: Entrepreneu
         <h3 className="text-sm font-bold text-indigo-300 mb-2">{locale === 'ru' ? 'Ваша миссия' : locale === 'ar' ? 'مهمتك' : 'Your Mission'}</h3>
         <ul className="space-y-1.5 text-sm text-gray-300">
           <li className="flex items-start gap-2">
-            <span className="text-indigo-400 mt-0.5">&#x2022;</span>
-            {locale === 'ru'
+            <span className="shrink-0 text-indigo-400 mt-0.5">&#x2022;</span>
+            <span className="flex-1">{locale === 'ru'
               ? <>Установите <span className="font-bold text-white">правильную цену</span> и <span className="font-bold text-white">бюджет на маркетинг</span> для вашего продукта.</>
               : locale === 'ar'
               ? <>حدد <span className="font-bold text-white">السعر المناسب</span> و<span className="font-bold text-white">ميزانية التسويق</span> لمنتجك.</>
-              : <>Set the <span className="font-bold text-white">right price</span> and <span className="font-bold text-white">marketing budget</span> for your product.</>}
+              : <>Set the <span className="font-bold text-white">right price</span> and <span className="font-bold text-white">marketing budget</span> for your product.</>}</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-yellow-400 mt-0.5">&#x26A0;</span>
-            {locale === 'ru' ? 'Слишком высокая цена = нет покупателей. Слишком низкая = банкротство.' : locale === 'ar' ? 'سعر مرتفع جداً = لا مشترين. منخفض جداً = إفلاس.' : 'Too high a price = no buyers. Too low = bankruptcy.'}
+            <span className="shrink-0 text-yellow-400 mt-0.5">&#x26A0;</span>
+            <span className="flex-1">{locale === 'ru' ? 'Слишком высокая цена = нет покупателей. Слишком низкая = банкротство.' : locale === 'ar' ? 'سعر مرتفع جداً = لا مشترين. منخفض جداً = إفلاس.' : 'Too high a price = no buyers. Too low = bankruptcy.'}</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-green-400 mt-0.5">&#x1F4B0;</span>
-            {locale === 'ru'
+            <span className="shrink-0 text-green-400 mt-0.5">&#x1F4B0;</span>
+            <span className="flex-1">{locale === 'ru'
               ? <>Формула: <span className="font-mono text-green-300 text-xs">Прибыль = (Цена x Клиенты) - Маркетинг - Постоянные расходы ($3,000/мес)</span></>
               : locale === 'ar'
               ? <>المعادلة: <span className="font-mono text-green-300 text-xs">الربح = (السعر x العملاء) - التسويق - التكاليف الثابتة ($3,000/شهر)</span></>
-              : <>Formula: <span className="font-mono text-green-300 text-xs">Profit = (Price x Customers) - Marketing - Fixed Costs ($3,000/mo)</span></>}
+              : <>Formula: <span className="font-mono text-green-300 text-xs">Profit = (Price x Customers) - Marketing - Fixed Costs ($3,000/mo)</span></>}</span>
           </li>
         </ul>
       </div>

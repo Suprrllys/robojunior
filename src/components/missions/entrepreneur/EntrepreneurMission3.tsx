@@ -730,16 +730,16 @@ export default function EntrepreneurMission3({ userId, onComplete }: Entrepreneu
         <h3 className="text-sm font-bold text-indigo-300 mb-2">{locale === 'ru' ? 'Ваша миссия' : locale === 'ar' ? 'مهمتك' : 'Your Mission'}</h3>
         <ul className="space-y-1.5 text-sm text-gray-300">
           <li className="flex items-start gap-2">
-            <span className="text-indigo-400 mt-0.5">&#x2022;</span>
-            {locale === 'ru' ? (<>Создайте свой <span className="font-bold text-white">MVP (минимально жизнеспособный продукт)</span> — выберите правильные функции для запуска.</>) : locale === 'ar' ? (<>ابنِ <span className="font-bold text-white">MVP (الحد الأدنى من المنتج القابل للتطبيق)</span> — اختر الميزات المناسبة للإطلاق.</>) : (<>Build your <span className="font-bold text-white">MVP (Minimum Viable Product)</span> -- choose the right features to launch.</>)}
+            <span className="text-indigo-400 mt-0.5 shrink-0">&#x2022;</span>
+            <span className="flex-1">{locale === 'ru' ? (<>Создайте свой <span className="font-bold text-white">MVP (минимально жизнеспособный продукт)</span> — выберите правильные функции для запуска.</>) : locale === 'ar' ? (<>ابنِ <span className="font-bold text-white">MVP (الحد الأدنى من المنتج القابل للتطبيق)</span> — اختر الميزات المناسبة للإطلاق.</>) : (<>Build your <span className="font-bold text-white">MVP (Minimum Viable Product)</span> -- choose the right features to launch.</>)}</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-blue-400 mt-0.5">&#x23F0;</span>
-            {locale === 'ru' ? (<>У вас есть <span className="font-bold text-blue-300">{TIME_BUDGET} недель</span> на разработку. <span className="font-bold text-blue-300">Основные</span> функции обязательны.</>) : locale === 'ar' ? (<>لديك <span className="font-bold text-blue-300">{TIME_BUDGET} أسابيع</span> للتطوير. الميزات <span className="font-bold text-blue-300">الأساسية</span> ضرورية.</>) : (<>You have <span className="font-bold text-blue-300">{TIME_BUDGET} weeks</span> of development time. <span className="font-bold text-blue-300">Core</span> features are must-haves.</>)}
+            <span className="text-blue-400 mt-0.5 shrink-0">&#x23F0;</span>
+            <span className="flex-1">{locale === 'ru' ? (<>У вас есть <span className="font-bold text-blue-300">{TIME_BUDGET} недель</span> на разработку. <span className="font-bold text-blue-300">Основные</span> функции обязательны.</>) : locale === 'ar' ? (<>لديك <span className="font-bold text-blue-300">{TIME_BUDGET} أسابيع</span> للتطوير. الميزات <span className="font-bold text-blue-300">الأساسية</span> ضرورية.</>) : (<>You have <span className="font-bold text-blue-300">{TIME_BUDGET} weeks</span> of development time. <span className="font-bold text-blue-300">Core</span> features are must-haves.</>)}</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-red-400 mt-0.5">&#x26A0;</span>
-            {locale === 'ru' ? (<>Будьте осторожны с <span className="font-bold text-red-300">рискованными</span> функциями — они могут навредить, если основы не покрыты!</>) : locale === 'ar' ? (<>كن حذراً مع الميزات <span className="font-bold text-red-300">المحفوفة بالمخاطر</span> — قد تأتي بنتائج عكسية إذا لم تُغطَّ الأساسيات!</>) : (<>Be careful with <span className="font-bold text-red-300">Risky</span> features -- they can backfire if basics aren&apos;t covered!</>)}
+            <span className="text-red-400 mt-0.5 shrink-0">&#x26A0;</span>
+            <span className="flex-1">{locale === 'ru' ? (<>Будьте осторожны с <span className="font-bold text-red-300">рискованными</span> функциями — они могут навредить, если основы не покрыты!</>) : locale === 'ar' ? (<>كن حذراً مع الميزات <span className="font-bold text-red-300">المحفوفة بالمخاطر</span> — قد تأتي بنتائج عكسية إذا لم تُغطَّ الأساسيات!</>) : (<>Be careful with <span className="font-bold text-red-300">Risky</span> features -- they can backfire if basics aren&apos;t covered!</>)}</span>
           </li>
         </ul>
       </div>

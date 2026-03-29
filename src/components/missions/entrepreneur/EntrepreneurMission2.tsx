@@ -755,28 +755,28 @@ export default function EntrepreneurMission2({ userId, onComplete }: Entrepreneu
         <h3 className="text-sm font-bold text-indigo-300 mb-2">{ru ? 'Ваша миссия' : ar ? 'مهمتك' : 'Your Mission'}</h3>
         <ul className="space-y-1.5 text-sm text-gray-300">
           <li className="flex items-start gap-2">
-            <span className="text-indigo-400 mt-0.5">&#x2022;</span>
-            {ru
+            <span className="shrink-0 text-indigo-400 mt-0.5">&#x2022;</span>
+            <span className="flex-1">{ru
               ? <>Наймите <span className="font-bold text-white">3 членов команды</span> для стартапа: разработчика, дизайнера и маркетолога.</>
               : ar
               ? <>وظّف <span className="font-bold text-white">3 أعضاء فريق</span> لشركتك الناشئة: مطوّر ومصمم ومسوّق.</>
-              : <>Hire <span className="font-bold text-white">3 team members</span> for your startup: one Developer, one Designer, and one Marketer.</>}
+              : <>Hire <span className="font-bold text-white">3 team members</span> for your startup: one Developer, one Designer, and one Marketer.</>}</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-yellow-400 mt-0.5">&#x26A0;</span>
-            {ru
+            <span className="shrink-0 text-yellow-400 mt-0.5">&#x26A0;</span>
+            <span className="flex-1">{ru
               ? <>Следите за <span className="font-bold text-yellow-300">конфликтами характеров</span> — некоторые люди не уживаются вместе!</>
               : ar
               ? <>انتبه لـ<span className="font-bold text-yellow-300">تعارضات الشخصيات</span> — بعض الأشخاص لا يعملون معًا بشكل جيد!</>
-              : <>Watch out for <span className="font-bold text-yellow-300">personality conflicts</span> -- some people don&apos;t work well together!</>}
+              : <>Watch out for <span className="font-bold text-yellow-300">personality conflicts</span> -- some people don&apos;t work well together!</>}</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-green-400 mt-0.5">&#x1F4B0;</span>
-            {ru
+            <span className="shrink-0 text-green-400 mt-0.5">&#x1F4B0;</span>
+            <span className="flex-1">{ru
               ? <>Уложитесь в бюджет <span className="font-bold text-green-300">${BUDGET.toLocaleString()}/мес</span>.</>
               : ar
               ? <>التزم بميزانية <span className="font-bold text-green-300">${BUDGET.toLocaleString()}/شهر</span>.</>
-              : <>Stay within your <span className="font-bold text-green-300">${BUDGET.toLocaleString()}/month</span> budget.</>}
+              : <>Stay within your <span className="font-bold text-green-300">${BUDGET.toLocaleString()}/month</span> budget.</>}</span>
           </li>
         </ul>
       </div>
