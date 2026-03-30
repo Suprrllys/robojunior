@@ -351,6 +351,21 @@ export default function CoopLobby({ userId, mySessions: initialMySessions, openS
 
     const missionRoles = MISSION_ROLES[missionTemplate] ?? COOP_ROLES
     const { data: existingParts } = await supabase.from('coop_participants').select('role').eq('coop_session_id', sessionId)
+
+    // Server-side check: ensure chosen role is actually free
+    const takenRoles = new Set(existingParts?.map(p => p.role) ?? [])
+    if (takenRoles.has(chosenRole)) {
+      // Role already taken — pick the first free role instead
+      const freeRole = missionRoles.find(r => !takenRoles.has(r))
+      if (!freeRole) {
+        alert(t('sessionFull') ?? 'Session is full')
+        setLoading(false)
+        setJoiningId(null)
+        return
+      }
+      chosenRole = freeRole
+    }
+
     const shouldActivate = (existingParts?.length ?? 0) + 1 >= missionRoles.length
 
     // Insert participant FIRST — RLS requires being a participant to update the session

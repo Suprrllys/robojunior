@@ -223,6 +223,10 @@ create policy "Participants viewable by session members" on public.coop_particip
   for select using (
     user_id = auth.uid()
     or public.is_coop_participant(coop_session_id)
+    or exists (
+      select 1 from public.coop_sessions cs
+      where cs.id = coop_session_id and cs.status = 'waiting'
+    )
   );
 
 create policy "Users can join sessions" on public.coop_participants
