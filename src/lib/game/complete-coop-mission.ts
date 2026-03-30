@@ -77,8 +77,12 @@ export async function completeCoopMission(
   if (!myPart) throw new Error('Not a participant')
 
   // Use DB scores (server-authoritative) instead of client-provided scores
+  // Only count players who actually played (score > 0) to avoid penalizing teams for inactive members
   const dbMyScore = Math.min(1000, Math.max(0, myPart.score ?? 0))
-  const dbAllScores = allParticipants.map(p => Math.min(1000, Math.max(0, p.score ?? 0)))
+  const activePlayers = allParticipants.filter(p => p.score && p.score > 0)
+  const dbAllScores = activePlayers.length > 0
+    ? activePlayers.map(p => Math.min(1000, Math.max(0, p.score ?? 0)))
+    : allParticipants.map(p => Math.min(1000, Math.max(0, p.score ?? 0)))
 
   // 4. Check if this is first completion of this mission template for this user
   const { data: existing } = await supabase
@@ -138,7 +142,7 @@ export async function completeCoopMission(
     score: dbMyScore,
     stars,
     total_session_score: totalSessionScore,
-    partner_country: partnerCountries[0] ?? null,
+    partner_country: partnerCountries.filter(c => c.length >= 2).join(',') || null,
     completed_at: new Date().toISOString(),
   }, { onConflict: 'user_id, coop_session_id' })
 
