@@ -5,6 +5,7 @@ import CharacterAvatarPreview from '@/components/game/CharacterAvatarPreview'
 import RoleIcon from '@/components/game/RoleIcon'
 import ReportPlayerButton from '@/components/game/ReportPlayerButton'
 import { parseAvatarConfig, computeUnlockedSkins, ACHIEVEMENT_DEFS } from '@/lib/game/avatar-utils'
+import { AchievementIcon } from '@/components/ui/SvgIcon'
 import type { Role } from '@/types/database'
 
 const ROLES: Role[] = ['drone_programmer', 'robot_constructor', 'entrepreneur']
@@ -16,6 +17,7 @@ interface Props {
 export default async function PublicProfilePage({ params }: Props) {
   const { locale, userId } = await params
   const t = await getTranslations('publicProfile')
+  const tRewards = await getTranslations('rewards')
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -132,20 +134,22 @@ export default async function PublicProfilePage({ params }: Props) {
       {/* Achievements — only show unlocked ones */}
       {earnedAchievements.length > 0 && (
         <div className="bg-[var(--brand-panel)] border border-[var(--brand-border)] rounded-2xl p-6">
-          <h2 className="text-lg font-bold text-white mb-4">Achievements</h2>
+          <h2 className="text-lg font-bold text-white mb-4">{t('achievements')}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {earnedAchievements.map(ach => (
               <div
                 key={ach.id}
                 className="flex items-start gap-3 bg-[var(--brand-dark)] border border-green-600/40 rounded-xl p-4"
               >
-                <div className="text-2xl flex-shrink-0 mt-0.5">{ach.emoji}</div>
+                <div className="w-10 h-10 rounded-lg bg-brand-blue/20 flex items-center justify-center flex-shrink-0">
+                  <AchievementIcon id={ach.id} size={24} />
+                </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-white">{ach.name}</span>
+                    <span className="text-sm font-bold text-white">{tRewards(ach.nameKey)}</span>
                     <span className="text-xs">{'\u2705'}</span>
                   </div>
-                  <p className="text-xs text-gray-400 mt-0.5">{ach.desc}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{tRewards(ach.descKey)}</p>
                 </div>
               </div>
             ))}
