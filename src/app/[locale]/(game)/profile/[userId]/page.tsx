@@ -50,10 +50,24 @@ export default async function PublicProfilePage({ params }: Props) {
   }
   const totalMissions = completedProgress.length
 
-  // Compute achievements from mission progress
-  const unlockedSkinIds = computeUnlockedSkins(progress)
-  const unlockedSet = new Set(unlockedSkinIds)
+  // Compute solo achievements from mission progress
+  const soloUnlocked = computeUnlockedSkins(progress)
 
+  // Also fetch coop achievements from user_achievements table
+  let coopAchievementIds: string[] = []
+  try {
+    const { data, error } = await supabase
+      .from('user_achievements')
+      .select('achievement_id')
+      .eq('user_id', userId)
+    if (!error && data) {
+      coopAchievementIds = data.map(a => `${a.achievement_id}_skin`)
+    }
+  } catch {
+    // table may not exist
+  }
+
+  const unlockedSet = new Set([...soloUnlocked, ...coopAchievementIds])
   const earnedAchievements = ACHIEVEMENT_DEFS.filter(a => unlockedSet.has(a.id))
 
   return (

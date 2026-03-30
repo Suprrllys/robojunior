@@ -72,8 +72,8 @@ create table public.mission_progress (
 
 alter table public.mission_progress enable row level security;
 
-create policy "Users can view own mission progress" on public.mission_progress
-  for select using (auth.uid() = user_id);
+create policy "Mission progress viewable by authenticated users" on public.mission_progress
+  for select using (auth.uid() is not null);
 
 create policy "Users can insert own mission progress" on public.mission_progress
   for insert with check (auth.uid() = user_id);
