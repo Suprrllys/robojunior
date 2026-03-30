@@ -48,15 +48,14 @@ export async function purchaseItem(itemId: string): Promise<PurchaseResult> {
       return { success: false, error: 'Not enough coins' }
     }
 
-    // Check if already owned in user_skins (best-effort)
+    // Check if already owned in user_skins
     let useServerStorage = true
     try {
-      const { data: existing, error: checkError } = await supabase
+      const { data: existingRows, error: checkError } = await supabase
         .from('user_skins')
         .select('skin_id')
         .eq('user_id', user.id)
         .eq('skin_id', itemId)
-        .single()
 
       if (checkError && (
         checkError.message?.includes('relation') ||
@@ -65,7 +64,7 @@ export async function purchaseItem(itemId: string): Promise<PurchaseResult> {
       )) {
         // Table doesn't exist — fall back to client storage
         useServerStorage = false
-      } else if (existing) {
+      } else if (existingRows && existingRows.length > 0) {
         return { success: false, error: 'Already owned' }
       }
     } catch {
