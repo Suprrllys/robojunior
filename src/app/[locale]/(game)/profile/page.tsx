@@ -22,9 +22,26 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
     .select('role, mission_number, status')
     .eq('user_id', user!.id)
 
-  const unlockedSkinIds = computeUnlockedSkins(missionProgress)
-  const unlockedSet = new Set(unlockedSkinIds)
-  const achievementCount = unlockedSkinIds.length
+  const soloUnlocked = computeUnlockedSkins(missionProgress)
+
+  // Also fetch coop achievements from user_achievements table
+  let coopAchievementIds: string[] = []
+  try {
+    const { data, error } = await supabase
+      .from('user_achievements')
+      .select('achievement_id')
+      .eq('user_id', user!.id)
+    if (!error && data) {
+      // Map achievement_id to skin_id format used by ACHIEVEMENT_DEFS
+      coopAchievementIds = data.map(a => `${a.achievement_id}_skin`)
+    }
+  } catch {
+    // table may not exist
+  }
+
+  // Merge solo + coop achievements
+  const unlockedSet = new Set([...soloUnlocked, ...coopAchievementIds])
+  const achievementCount = unlockedSet.size
 
   // Get owned items from user_skins for the profile editor
   let ownedSkinIds: string[] = []

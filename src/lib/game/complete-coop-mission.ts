@@ -121,12 +121,13 @@ export async function completeCoopMission(
     .eq('id', userId)
     .single()
 
-  const myCountry = myProfile?.country ?? ''
+  const myCountry = (myProfile?.country ?? '').toUpperCase()
   const partnerCountries = partnerParts?.map(p => {
     const prof = p.profiles as { country: string } | null
-    return prof?.country ?? ''
+    return (prof?.country ?? '').toUpperCase()
   }) ?? []
-  const hasInternationalPartner = partnerCountries.some(c => c && c !== myCountry)
+  // BRICS United: both players must have a real country set, and they must differ
+  const hasInternationalPartner = myCountry.length >= 2 && partnerCountries.some(c => c.length >= 2 && c !== myCountry && c !== 'OTHER')
 
   // 7. Save completion record (with stars)
   await supabase.from('coop_completed_missions').upsert({
