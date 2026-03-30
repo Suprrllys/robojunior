@@ -377,14 +377,28 @@ export default function CoopSession({ userId, session, participants, initialMess
         filter: `coop_session_id=eq.${session.id}`,
       }, async (payload) => {
         const newPart = payload.new as Participant
+        let newCount = 0
         setAllParts(prev => {
-          if (prev.some(p => p.user_id === newPart.user_id)) return prev
-          return [...prev, newPart]
+          if (prev.some(p => p.user_id === newPart.user_id)) { newCount = prev.length; return prev }
+          const next = [...prev, newPart]
+          newCount = next.length
+          return next
         })
         const { data: prof } = await supabase.from('profiles').select('username, country, avatar_color, avatar_accessory').eq('id', newPart.user_id).single()
         if (prof) {
           setAllParts(prev => prev.map(p => p.user_id === newPart.user_id ? { ...p, profiles: prof } : p))
         }
+        // Auto-activate session if enough players joined (safety net)
+        setSessionStatus(prev => {
+          if (prev !== 'waiting') return prev
+          const mRoles = MISSION_ROLES[session.mission_template] ?? ['drone_programmer', 'robot_constructor', 'entrepreneur']
+          if (newCount >= mRoles.length) {
+            const expiresAt = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString()
+            supabase.from('coop_sessions').update({ status: 'active', expires_at: expiresAt }).eq('id', session.id)
+            return 'active'
+          }
+          return prev
+        })
       })
       .on('postgres_changes', {
         event: 'UPDATE', schema: 'public', table: 'coop_participants',

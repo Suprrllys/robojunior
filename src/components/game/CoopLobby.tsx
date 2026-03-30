@@ -349,7 +349,14 @@ export default function CoopLobby({ userId, mySessions: initialMySessions, openS
 
     const missionRoles = MISSION_ROLES[missionTemplate] ?? COOP_ROLES
     const { data: existingParts } = await supabase.from('coop_participants').select('role').eq('coop_session_id', sessionId)
-    if ((existingParts?.length ?? 0) + 1 >= missionRoles.length) {
+    const shouldActivate = (existingParts?.length ?? 0) + 1 >= missionRoles.length
+
+    // Insert participant FIRST — RLS requires being a participant to update the session
+    await supabase.from('coop_participants').insert({
+      coop_session_id: sessionId, user_id: userId, role: chosenRole, progress: {}, is_completed: false,
+    })
+
+    if (shouldActivate) {
       // Check if session already has expires_at (from a previous activation — don't reset timer)
       const { data: sess } = await supabase.from('coop_sessions').select('expires_at').eq('id', sessionId).single()
       const updateData: Record<string, string> = { status: 'active' }
@@ -358,10 +365,6 @@ export default function CoopLobby({ userId, mySessions: initialMySessions, openS
       }
       await supabase.from('coop_sessions').update(updateData).eq('id', sessionId)
     }
-
-    await supabase.from('coop_participants').insert({
-      coop_session_id: sessionId, user_id: userId, role: chosenRole, progress: {}, is_completed: false,
-    })
 
     setLoading(false)
     setJoiningId(null)
