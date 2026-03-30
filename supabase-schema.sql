@@ -221,11 +221,7 @@ create policy "Participants can update session" on public.coop_sessions
 create policy "Participants viewable by session members" on public.coop_participants
   for select using (
     user_id = auth.uid()
-    or exists (
-      select 1 from public.coop_sessions cs
-      where cs.id = coop_session_id
-        and (cs.created_by = auth.uid() or cs.status = 'waiting')
-    )
+    or public.is_coop_participant(coop_session_id)
   );
 
 create policy "Users can join sessions" on public.coop_participants
