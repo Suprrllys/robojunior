@@ -13,6 +13,8 @@ import {
   generateFail,
   generateStar,
   generateHint,
+  generateMenuMusic,
+  type MusicHandle,
 } from './sound-generator'
 
 type SFXName = 'click' | 'success' | 'fail' | 'star' | 'hint'
@@ -34,8 +36,7 @@ class AudioManager {
   private musicGain: GainNode | null = null
   private sfxGain: GainNode | null = null
 
-  private musicElement: HTMLAudioElement | null = null
-  private musicSource: MediaElementAudioSourceNode | null = null
+  private musicHandle: MusicHandle | null = null
   private musicPlaying = false
 
   private globalVolume = 0.7
@@ -90,7 +91,8 @@ class AudioManager {
       if (this.unlocked) return
       this.unlocked = true
       this.ensureContext()
-      // Do NOT auto-start music — let pages opt-in via MenuMusicPlayer
+      // Auto-start music on first interaction
+      this.startMusic()
       ;['click', 'touchstart', 'keydown'].forEach((evt) => {
         document.removeEventListener(evt, unlock, true)
       })
@@ -101,7 +103,7 @@ class AudioManager {
     })
   }
 
-  // ---- Music (single looping MP3) ----
+  // ---- Music (procedural ambient — no MP3 needed) ----
 
   startMusic() {
     if (typeof window === 'undefined' || this.disposed || this.musicPlaying) return
@@ -110,17 +112,7 @@ class AudioManager {
     if (!ctx || !this.musicGain) return
 
     try {
-      if (!this.musicElement) {
-        this.musicElement = new Audio('/audio/music.mp3')
-        this.musicElement.loop = true
-        this.musicElement.volume = 1 // volume controlled via gain node
-        this.musicSource = ctx.createMediaElementSource(this.musicElement)
-        this.musicSource.connect(this.musicGain)
-      }
-
-      this.musicElement.play().catch(() => {
-        // Browser may block autoplay — will retry on next user interaction
-      })
+      this.musicHandle = generateMenuMusic(ctx, this.musicGain)
       this.musicPlaying = true
     } catch {
       // Audio not available
@@ -128,8 +120,9 @@ class AudioManager {
   }
 
   stopMusic() {
-    if (this.musicElement) {
-      this.musicElement.pause()
+    if (this.musicHandle) {
+      this.musicHandle.stop()
+      this.musicHandle = null
     }
     this.musicPlaying = false
   }
@@ -216,13 +209,12 @@ class AudioManager {
 
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
-        if (this.musicElement && this.musicPlaying) {
-          this.musicElement.pause()
+        // Suspend audio context to pause procedural music
+        if (this.ctx && this.musicPlaying) {
+          this.ctx.suspend().catch(() => {})
         }
       } else {
-        if (this.musicElement && this.musicPlaying) {
-          this.musicElement.play().catch(() => {})
-        }
+        // Resume audio context to continue procedural music
         if (this.ctx?.state === 'suspended') {
           this.ctx.resume().catch(() => {})
         }
