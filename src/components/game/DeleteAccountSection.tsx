@@ -2,12 +2,12 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { useRouter } from 'next/navigation'
+import { useLocale } from 'next-intl'
 import { deleteAccount } from '@/lib/game/delete-account'
 
 export default function DeleteAccountSection() {
   const t = useTranslations('profile')
-  const router = useRouter()
+  const locale = useLocale()
   const [showConfirm, setShowConfirm] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
@@ -47,7 +47,7 @@ export default function DeleteAccountSection() {
                   setDeleting(true)
                   const result = await deleteAccount()
                   if (result.success) {
-                    router.push('/')
+                    window.location.href = `/${locale}/register`
                   } else {
                     setDeleting(false)
                     setShowConfirm(false)
