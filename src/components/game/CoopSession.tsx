@@ -369,17 +369,17 @@ export default function CoopSession({ userId, session, participants, initialMess
         filter: `coop_session_id=eq.${session.id}`,
       }, async (payload) => {
         const newMsg = payload.new as Message
-        // Skip if this is our own message (already added optimistically)
-        if (newMsg.user_id === userId) {
-          // Replace optimistic message with real one (to get the real id)
-          setMessages(prev => {
-            const withoutOptimistic = prev.filter(m => !m.id.startsWith('optimistic-') || m.user_id !== userId || m.content !== newMsg.content)
-            return [...withoutOptimistic, { ...newMsg, profiles: prev.find(m => m.user_id === userId)?.profiles }]
-          })
-          return
-        }
+        // Skip if already in state (from sendMessage or previous realtime)
+        setMessages(prev => {
+          if (prev.some(m => m.id === newMsg.id)) return prev
+          return prev
+        })
+        // Fetch username for the sender
         const { data: prof } = await supabase.from('profiles').select('username').eq('id', newMsg.user_id).single()
-        setMessages(prev => [...prev, { ...newMsg, profiles: prof ?? undefined }])
+        setMessages(prev => {
+          if (prev.some(m => m.id === newMsg.id)) return prev
+          return [...prev, { ...newMsg, profiles: prof ?? undefined }]
+        })
       })
       .on('postgres_changes', {
         event: 'INSERT', schema: 'public', table: 'coop_participants',
@@ -457,13 +457,8 @@ export default function CoopSession({ userId, session, participants, initialMess
         .eq('coop_session_id', session.id)
         .order('created_at', { ascending: true })
         .limit(100)
-      if (freshMsgs && freshMsgs.length > 0) {
-        setMessages(prev => {
-          // Merge: keep optimistic messages not yet confirmed, add new ones
-          const realIds = new Set(freshMsgs.map(m => m.id))
-          const optimistic = prev.filter(m => m.id.startsWith('optimistic-') && !realIds.has(m.id))
-          return [...freshMsgs, ...optimistic]
-        })
+      if (freshMsgs) {
+        setMessages(freshMsgs)
       }
       const { data: freshParts } = await supabase
         .from('coop_participants')
@@ -506,20 +501,17 @@ export default function CoopSession({ userId, session, participants, initialMess
 
   const sendMessage = useCallback(async (content: string, isPreset = false) => {
     const safeContent = isPreset ? content : censorMessage(content)
-    // Optimistically add message to local state so sender sees it immediately
-    const optimisticMsg: Message = {
-      id: `optimistic-${Date.now()}`,
-      user_id: userId,
-      content: safeContent,
-      is_preset: isPreset,
-      created_at: new Date().toISOString(),
-      profiles: { username: allParts.find(p => p.user_id === userId)?.profiles?.username ?? '' },
-    }
-    setMessages(prev => [...prev, optimisticMsg])
-
-    await supabase.from('chat_messages').insert({
+    const { data: inserted } = await supabase.from('chat_messages').insert({
       coop_session_id: session.id, user_id: userId, content: safeContent, is_preset: isPreset,
-    })
+    }).select('*').single()
+    // Add sent message to local state immediately (with real server data)
+    if (inserted) {
+      const myUsername = allParts.find(p => p.user_id === userId)?.profiles?.username ?? ''
+      setMessages(prev => {
+        if (prev.some(m => m.id === inserted.id)) return prev
+        return [...prev, { ...inserted, profiles: { username: myUsername } }]
+      })
+    }
     // Update activity timestamp on message send
     await supabase.from('coop_participants')
       .update({ last_active_at: new Date().toISOString() })
