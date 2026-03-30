@@ -65,11 +65,11 @@
     "passwordUpdated": "تم تحديث كلمة المرور بنجاح!",
     "backToLogin": "العودة لتسجيل الدخول",
     "passwordMismatch": "كلمتا المرور غير متطابقتين",
-    "passwordTooShort": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
+    "passwordTooShort": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
     "invalidEmail": "تنسيق البريد الإلكتروني غير صالح",
     "emailAlreadyUsed": "هذا البريد الإلكتروني مسجل بالفعل",
     "registrationError": "خطأ في التسجيل. يرجى المحاولة مرة أخرى",
-    "passwordHint": "٦ أحرف على الأقل"
+    "passwordHint": "٨ أحرف على الأقل"
   },
   "roles": {
     "title": "اختر دورك",

@@ -65,11 +65,11 @@
     "passwordUpdated": "Password updated successfully!",
     "backToLogin": "Back to login",
     "passwordMismatch": "Passwords do not match",
-    "passwordTooShort": "Password must be at least 6 characters",
+    "passwordTooShort": "Password must be at least 8 characters",
     "invalidEmail": "Invalid email format",
     "emailAlreadyUsed": "This email is already registered",
     "registrationError": "Registration error. Please try again",
-    "passwordHint": "Minimum 6 characters"
+    "passwordHint": "Minimum 8 characters"
   },
   "roles": {
     "title": "Choose Your Role",

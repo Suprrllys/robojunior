@@ -65,11 +65,11 @@
     "passwordUpdated": "Пароль успешно обновлён!",
     "backToLogin": "Вернуться к входу",
     "passwordMismatch": "Пароли не совпадают",
-    "passwordTooShort": "Пароль должен быть не менее 6 символов",
+    "passwordTooShort": "Пароль должен быть не менее 8 символов",
     "invalidEmail": "Неверный формат email",
     "emailAlreadyUsed": "Этот email уже зарегистрирован",
     "registrationError": "Ошибка регистрации. Попробуйте ещё раз",
-    "passwordHint": "Минимум 6 символов"
+    "passwordHint": "Минимум 8 символов"
   },
   "roles": {
     "title": "Выбери роль",
