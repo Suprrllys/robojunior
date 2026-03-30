@@ -369,6 +369,15 @@ export default function CoopSession({ userId, session, participants, initialMess
         filter: `coop_session_id=eq.${session.id}`,
       }, async (payload) => {
         const newMsg = payload.new as Message
+        // Skip if this is our own message (already added optimistically)
+        if (newMsg.user_id === userId) {
+          // Replace optimistic message with real one (to get the real id)
+          setMessages(prev => {
+            const withoutOptimistic = prev.filter(m => !m.id.startsWith('optimistic-') || m.user_id !== userId || m.content !== newMsg.content)
+            return [...withoutOptimistic, { ...newMsg, profiles: prev.find(m => m.user_id === userId)?.profiles }]
+          })
+          return
+        }
         const { data: prof } = await supabase.from('profiles').select('username').eq('id', newMsg.user_id).single()
         setMessages(prev => [...prev, { ...newMsg, profiles: prof ?? undefined }])
       })
@@ -438,6 +447,36 @@ export default function CoopSession({ userId, session, participants, initialMess
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session.id, userId])
 
+  // Polling fallback: fetch messages & participants every 10s in case realtime is blocked by RLS
+  useEffect(() => {
+    if (isCompleted) return
+    const interval = setInterval(async () => {
+      const { data: freshMsgs } = await supabase
+        .from('chat_messages')
+        .select('*, profiles(username)')
+        .eq('coop_session_id', session.id)
+        .order('created_at', { ascending: true })
+        .limit(100)
+      if (freshMsgs && freshMsgs.length > 0) {
+        setMessages(prev => {
+          // Merge: keep optimistic messages not yet confirmed, add new ones
+          const realIds = new Set(freshMsgs.map(m => m.id))
+          const optimistic = prev.filter(m => m.id.startsWith('optimistic-') && !realIds.has(m.id))
+          return [...freshMsgs, ...optimistic]
+        })
+      }
+      const { data: freshParts } = await supabase
+        .from('coop_participants')
+        .select('*, profiles(username, country, avatar_color, avatar_accessory)')
+        .eq('coop_session_id', session.id)
+      if (freshParts && freshParts.length > 0) {
+        setAllParts(freshParts)
+      }
+    }, 10000)
+    return () => clearInterval(interval)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session.id, isCompleted])
+
   // Process rewards when session is completed
   useEffect(() => {
     if (!isCompleted || coopResult || rewardsProcessing) return
@@ -467,6 +506,17 @@ export default function CoopSession({ userId, session, participants, initialMess
 
   const sendMessage = useCallback(async (content: string, isPreset = false) => {
     const safeContent = isPreset ? content : censorMessage(content)
+    // Optimistically add message to local state so sender sees it immediately
+    const optimisticMsg: Message = {
+      id: `optimistic-${Date.now()}`,
+      user_id: userId,
+      content: safeContent,
+      is_preset: isPreset,
+      created_at: new Date().toISOString(),
+      profiles: { username: allParts.find(p => p.user_id === userId)?.profiles?.username ?? '' },
+    }
+    setMessages(prev => [...prev, optimisticMsg])
+
     await supabase.from('chat_messages').insert({
       coop_session_id: session.id, user_id: userId, content: safeContent, is_preset: isPreset,
     })
@@ -475,7 +525,7 @@ export default function CoopSession({ userId, session, participants, initialMess
       .update({ last_active_at: new Date().toISOString() })
       .eq('coop_session_id', session.id)
       .eq('user_id', userId)
-  }, [supabase, session.id, userId])
+  }, [supabase, session.id, userId, allParts])
 
   // Called when player completes a game attempt
   const handleGameComplete = useCallback(async (score: number) => {
