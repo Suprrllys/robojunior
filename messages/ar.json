@@ -23,7 +23,10 @@
     "coop": "التعاون",
     "shop": "المتجر",
     "parentDashboard": "لوحة الوالدين",
-    "logout": "تسجيل الخروج"
+    "logout": "تسجيل الخروج",
+    "logoutConfirm": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+    "logoutCancel": "إلغاء",
+    "logoutConfirmYes": "تسجيل الخروج"
   },
   "auth": {
     "login": "تسجيل الدخول",

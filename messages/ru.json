@@ -23,7 +23,10 @@
     "coop": "Кооператив",
     "shop": "Магазин",
     "parentDashboard": "Панель родителя",
-    "logout": "Выйти"
+    "logout": "Выйти",
+    "logoutConfirm": "Вы действительно хотите выйти из аккаунта?",
+    "logoutCancel": "Отмена",
+    "logoutConfirmYes": "Выйти"
   },
   "auth": {
     "login": "Войти",

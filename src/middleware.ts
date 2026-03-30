@@ -52,8 +52,11 @@ export async function middleware(request: NextRequest) {
       const { data, error } = await supabase.auth.getUser()
 
       if (error) {
-        // Supabase вернул ошибку — пропускаем, не блокируем
-        return intlMiddleware(request)
+        // Supabase вернул ошибку (например, невалидная сессия после логаута) — редирект на логин
+        const locale = pathname.match(/^\/(en|ru|ar)/)?.[1] || 'en'
+        const url = request.nextUrl.clone()
+        url.pathname = `/${locale}/login`
+        return NextResponse.redirect(url)
       }
 
       const user = data.user

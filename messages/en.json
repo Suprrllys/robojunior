@@ -23,7 +23,10 @@
     "coop": "Co-op",
     "shop": "Shop",
     "parentDashboard": "Parent Dashboard",
-    "logout": "Log out"
+    "logout": "Log out",
+    "logoutConfirm": "Are you sure you want to log out?",
+    "logoutCancel": "Cancel",
+    "logoutConfirmYes": "Log out"
   },
   "auth": {
     "login": "Log In",

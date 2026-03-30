@@ -1,6 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { useLocale } from 'next-intl'
 import { Link, usePathname } from '@/i18n/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from '@/i18n/navigation'
@@ -61,6 +63,8 @@ export default function GameNav({ profile }: GameNavProps) {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+  const locale = useLocale()
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
   // Build nav items — add parent dashboard if user is a parent
   const NAV_ITEMS = [
@@ -70,8 +74,8 @@ export default function GameNav({ profile }: GameNavProps) {
 
   async function handleLogout() {
     await supabase.auth.signOut()
-    router.push('/')
-    router.refresh()
+    // Hard redirect to login page to clear all cached state
+    window.location.href = `/${locale}/login`
   }
 
   return (
@@ -129,7 +133,7 @@ export default function GameNav({ profile }: GameNavProps) {
                 </div>
               </div>
               <button
-                onClick={handleLogout}
+                onClick={() => setShowLogoutConfirm(true)}
                 className="text-gray-500 hover:text-red-400 transition-colors text-sm px-2 py-1 min-h-[44px]"
               >
                 ↩
@@ -157,6 +161,29 @@ export default function GameNav({ profile }: GameNavProps) {
           </Link>
         ))}
       </div>
+
+      {/* Logout confirmation modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60">
+          <div className="bg-brand-panel border border-brand-border rounded-2xl p-6 mx-4 max-w-sm w-full text-center shadow-xl">
+            <p className="text-white text-lg font-semibold mb-6">{t('logoutConfirm')}</p>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="px-5 py-2.5 rounded-lg bg-brand-border text-gray-300 hover:text-white transition-colors font-medium min-h-[44px]"
+              >
+                {t('logoutCancel')}
+              </button>
+              <button
+                onClick={handleLogout}
+                className="px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors font-medium min-h-[44px]"
+              >
+                {t('logoutConfirmYes')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   )
 }

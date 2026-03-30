@@ -26,8 +26,8 @@ export default async function GameLayout({
     authFailed = true
   }
 
-  // Only redirect if Supabase confirmed no user (not a timeout/error)
-  if (!user && !authFailed) {
+  // No user — redirect to login (whether auth failed or confirmed no user)
+  if (!user) {
     redirect(`/${locale}/login`)
   }
 
