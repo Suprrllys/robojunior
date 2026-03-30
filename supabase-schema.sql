@@ -174,6 +174,7 @@ create table public.coop_participants (
   role text not null check (role in ('drone_programmer', 'robot_constructor', 'entrepreneur')),
   progress jsonb not null default '{}',
   is_completed boolean not null default false,
+  score integer default null,
   last_active_at timestamptz not null default now(),
   unique(coop_session_id, user_id)
 );

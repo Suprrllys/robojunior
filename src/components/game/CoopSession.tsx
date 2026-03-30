@@ -356,12 +356,16 @@ export default function CoopSession({ userId, session, participants, initialMess
 
   const rewards = COOP_REWARDS[difficulty] ?? COOP_REWARDS.medium
 
+  const prevMessageCountRef = useRef(messages.length)
   useEffect(() => {
-    // Scroll only within the chat container, not the whole page
-    const el = messagesEndRef.current
-    if (el?.parentElement) {
-      el.parentElement.scrollTop = el.parentElement.scrollHeight
+    // Only scroll chat when new messages are actually added, not on every poll
+    if (messages.length > prevMessageCountRef.current) {
+      const el = messagesEndRef.current
+      if (el?.parentElement) {
+        el.parentElement.scrollTop = el.parentElement.scrollHeight
+      }
     }
+    prevMessageCountRef.current = messages.length
   }, [messages])
 
   // Realtime
