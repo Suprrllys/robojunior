@@ -13,8 +13,6 @@ import {
   generateFail,
   generateStar,
   generateHint,
-  generateMenuMusic,
-  type MusicHandle,
 } from './sound-generator'
 
 type SFXName = 'click' | 'success' | 'fail' | 'star' | 'hint'
@@ -36,7 +34,8 @@ class AudioManager {
   private musicGain: GainNode | null = null
   private sfxGain: GainNode | null = null
 
-  private musicHandle: MusicHandle | null = null
+  private musicElement: HTMLAudioElement | null = null
+  private musicSource: MediaElementAudioSourceNode | null = null
   private musicPlaying = false
 
   private globalVolume = 0.7
@@ -103,7 +102,7 @@ class AudioManager {
     })
   }
 
-  // ---- Music (procedural ambient — no MP3 needed) ----
+  // ---- Music (single looping MP3) ----
 
   startMusic() {
     if (typeof window === 'undefined' || this.disposed || this.musicPlaying) return
@@ -112,7 +111,17 @@ class AudioManager {
     if (!ctx || !this.musicGain) return
 
     try {
-      this.musicHandle = generateMenuMusic(ctx, this.musicGain)
+      if (!this.musicElement) {
+        this.musicElement = new Audio('/audio/music.mp3')
+        this.musicElement.loop = true
+        this.musicElement.volume = 1 // volume controlled via gain node
+        this.musicSource = ctx.createMediaElementSource(this.musicElement)
+        this.musicSource.connect(this.musicGain)
+      }
+
+      this.musicElement.play().catch(() => {
+        // Browser may block autoplay — will retry on next user interaction
+      })
       this.musicPlaying = true
     } catch {
       // Audio not available
@@ -120,9 +129,8 @@ class AudioManager {
   }
 
   stopMusic() {
-    if (this.musicHandle) {
-      this.musicHandle.stop()
-      this.musicHandle = null
+    if (this.musicElement) {
+      this.musicElement.pause()
     }
     this.musicPlaying = false
   }
@@ -209,12 +217,13 @@ class AudioManager {
 
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
-        // Suspend audio context to pause procedural music
-        if (this.ctx && this.musicPlaying) {
-          this.ctx.suspend().catch(() => {})
+        if (this.musicElement && this.musicPlaying) {
+          this.musicElement.pause()
         }
       } else {
-        // Resume audio context to continue procedural music
+        if (this.musicElement && this.musicPlaying) {
+          this.musicElement.play().catch(() => {})
+        }
         if (this.ctx?.state === 'suspended') {
           this.ctx.resume().catch(() => {})
         }
