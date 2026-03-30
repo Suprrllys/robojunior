@@ -73,6 +73,11 @@ export default function GameNav({ profile }: GameNavProps) {
   ]
 
   async function handleLogout() {
+    // Clear per-user localStorage cache before signing out
+    try {
+      localStorage.removeItem('robojunior_avatar')
+      localStorage.removeItem('robojunior_inventory')
+    } catch { /* ignore */ }
     await supabase.auth.signOut()
     // Hard redirect to login page to clear all cached state
     window.location.href = `/${locale}/login`

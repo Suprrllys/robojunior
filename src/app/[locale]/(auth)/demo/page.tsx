@@ -17,6 +17,12 @@ export default function DemoPage() {
     if (didRun.current) return
     didRun.current = true
 
+    // Clear previous user's localStorage cache before signing in
+    try {
+      localStorage.removeItem('robojunior_avatar')
+      localStorage.removeItem('robojunior_inventory')
+    } catch { /* ignore */ }
+
     const supabase = createClient()
     supabase.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD })
       .then(({ error }) => {

@@ -25,6 +25,12 @@ export default function LoginForm() {
     setLoading(true)
     setError('')
 
+    // Clear previous user's localStorage cache before signing in
+    try {
+      localStorage.removeItem('robojunior_avatar')
+      localStorage.removeItem('robojunior_inventory')
+    } catch { /* ignore */ }
+
     const { error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {

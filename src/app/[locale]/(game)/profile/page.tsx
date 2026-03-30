@@ -26,6 +26,20 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
   const unlockedSet = new Set(unlockedSkinIds)
   const achievementCount = unlockedSkinIds.length
 
+  // Get owned items from user_skins for the profile editor
+  let ownedSkinIds: string[] = []
+  try {
+    const { data, error } = await supabase
+      .from('user_skins')
+      .select('skin_id')
+      .eq('user_id', user!.id)
+    if (!error && data) {
+      ownedSkinIds = data.map(s => s.skin_id)
+    }
+  } catch {
+    // table missing — empty inventory
+  }
+
   const { data: children } = await supabase
     .from('profiles')
     .select('id, username, xp, country')
@@ -38,7 +52,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
       </div>
 
       {/* 1. Profile editor (avatar, username, settings) */}
-      {profile && <ProfileEditor profile={profile} />}
+      {profile && <ProfileEditor profile={profile} ownedSkinIds={ownedSkinIds} />}
 
       {/* 2. Verification */}
       <div className="bg-brand-panel border border-brand-border rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">

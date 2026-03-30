@@ -19,7 +19,6 @@ import CharacterAvatar, {
   saveAvatarConfig,
 } from '@/components/game/CharacterAvatar'
 import {
-  loadInventory,
   SHOP_ITEMS,
 } from '@/lib/game/shop-items'
 import { saveAvatarToDB } from '@/lib/game/avatar-actions'
@@ -120,9 +119,11 @@ interface ProfileEditorProps {
     game_currency: number
     equipped_skin: string | null
   }
+  /** Server-side owned skin IDs (source of truth) */
+  ownedSkinIds?: string[]
 }
 
-export default function ProfileEditor({ profile }: ProfileEditorProps) {
+export default function ProfileEditor({ profile, ownedSkinIds = [] }: ProfileEditorProps) {
   const t = useTranslations('profile')
   const tCountries = useTranslations('countries')
   const router = useRouter()
@@ -217,8 +218,9 @@ export default function ProfileEditor({ profile }: ProfileEditorProps) {
         }))
       }
     }
-    setInventory(loadInventory())
-  }, [profile.avatar_accessory])
+    // Use server-side owned skins as source of truth
+    setInventory(new Set(ownedSkinIds))
+  }, [profile.avatar_accessory, ownedSkinIds])
 
   // Save character config to localStorage whenever it changes
   useEffect(() => {

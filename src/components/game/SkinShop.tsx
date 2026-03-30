@@ -14,7 +14,6 @@ import {
   getItemById,
   loadAvatarConfig,
   saveAvatarConfig,
-  loadInventory,
   saveInventory,
   DEFAULT_AVATAR,
 } from '@/lib/game/shop-items'
@@ -82,9 +81,8 @@ export default function SkinShop({ balance, ownedSkinIds, dbAvatarAccessory, ava
       const config = loadAvatarConfig()
       setAvatarConfig(config)
     }
-    const inv = loadInventory()
-    // Merge server-side owned skins
-    ownedSkinIds.forEach(id => inv.add(id))
+    // Use server-side owned skins as source of truth (don't merge stale localStorage)
+    const inv = new Set<string>(ownedSkinIds)
     setInventory(inv)
     saveInventory(inv)
   }, [ownedSkinIds, dbAvatarAccessory])

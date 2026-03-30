@@ -134,6 +134,12 @@ export default function RegisterForm() {
       return
     }
 
+    // Clear previous user's localStorage cache before registering
+    try {
+      localStorage.removeItem('robojunior_avatar')
+      localStorage.removeItem('robojunior_inventory')
+    } catch { /* ignore */ }
+
     const { error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
