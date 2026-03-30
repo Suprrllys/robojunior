@@ -11,14 +11,20 @@ export async function deleteAccount(): Promise<{ success: boolean; error?: strin
     return { success: false, error: 'Not authenticated' }
   }
 
-  // Delete the profile row — ON DELETE CASCADE handles related tables
-  const { error: deleteError } = await supabase
-    .from('profiles')
-    .delete()
-    .eq('id', user.id)
+  // Delete via RPC function that removes both profile (cascading all data)
+  // AND the auth.users entry so the account cannot be reused
+  const { error: rpcError } = await supabase.rpc('delete_own_account')
 
-  if (deleteError) {
-    return { success: false, error: deleteError.message }
+  if (rpcError) {
+    // Fallback: try deleting just the profile (cascade handles related tables)
+    const { error: deleteError } = await supabase
+      .from('profiles')
+      .delete()
+      .eq('id', user.id)
+
+    if (deleteError) {
+      return { success: false, error: deleteError.message }
+    }
   }
 
   // Sign out the user

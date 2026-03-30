@@ -304,6 +304,27 @@ create policy "Users can leave waiting sessions" on public.coop_participants
     )
   );
 
+-- ==============================
+-- Удаление аккаунта (полное — профиль + auth.users)
+-- ==============================
+create or replace function public.delete_own_account()
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  uid uuid;
+begin
+  uid := auth.uid();
+  if uid is null then
+    raise exception 'Not authenticated';
+  end if;
+  delete from public.profiles where id = uid;
+  delete from auth.users where id = uid;
+end;
+$$;
+
 -- Включаем realtime для чата и кооп-сессий
 alter publication supabase_realtime add table public.chat_messages;
 alter publication supabase_realtime add table public.coop_sessions;
