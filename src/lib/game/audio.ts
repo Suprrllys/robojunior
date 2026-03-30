@@ -90,8 +90,7 @@ class AudioManager {
       if (this.unlocked) return
       this.unlocked = true
       this.ensureContext()
-      // Auto-start music on first interaction
-      this.startMusic()
+      // Do NOT auto-start music — let pages opt-in via MenuMusicPlayer
       ;['click', 'touchstart', 'keydown'].forEach((evt) => {
         document.removeEventListener(evt, unlock, true)
       })
