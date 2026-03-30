@@ -135,22 +135,16 @@ export default async function PublicProfilePage({ params }: Props) {
       {earnedAchievements.length > 0 && (
         <div className="bg-[var(--brand-panel)] border border-[var(--brand-border)] rounded-2xl p-6">
           <h2 className="text-lg font-bold text-white mb-4">{t('achievements')}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="flex flex-wrap gap-2">
             {earnedAchievements.map(ach => (
               <div
                 key={ach.id}
-                className="flex items-start gap-3 bg-[var(--brand-dark)] border border-green-600/40 rounded-xl p-4"
+                className="flex items-center gap-2 bg-[var(--brand-dark)] border border-green-600/40 rounded-lg px-3 py-2"
               >
-                <div className="w-10 h-10 rounded-lg bg-brand-blue/20 flex items-center justify-center flex-shrink-0">
-                  <AchievementIcon id={ach.id} size={24} />
+                <div className="w-7 h-7 rounded-md bg-brand-blue/20 flex items-center justify-center flex-shrink-0">
+                  <AchievementIcon id={ach.id} size={18} />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-white">{tRewards(ach.nameKey)}</span>
-                    <span className="text-xs">{'\u2705'}</span>
-                  </div>
-                  <p className="text-xs text-gray-400 mt-0.5">{tRewards(ach.descKey)}</p>
-                </div>
+                <span className="text-xs font-bold text-white">{tRewards(ach.nameKey)}</span>
               </div>
             ))}
           </div>
