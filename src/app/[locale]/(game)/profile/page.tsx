@@ -184,7 +184,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
       </div>
 
       {/* 5. Delete account */}
-      <DeleteAccountSection />
+      <DeleteAccountSection isDemo={user?.email === 'team13innovatika@mail.ru'} />
     </div>
   )
 }

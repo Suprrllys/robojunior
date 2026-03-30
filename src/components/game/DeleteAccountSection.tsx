@@ -5,11 +5,13 @@ import { useTranslations } from 'next-intl'
 import { useLocale } from 'next-intl'
 import { deleteAccount } from '@/lib/game/delete-account'
 
-export default function DeleteAccountSection() {
+export default function DeleteAccountSection({ isDemo }: { isDemo?: boolean }) {
   const t = useTranslations('profile')
   const locale = useLocale()
   const [showConfirm, setShowConfirm] = useState(false)
   const [deleting, setDeleting] = useState(false)
+
+  if (isDemo) return null
 
   return (
     <>

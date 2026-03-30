@@ -11,6 +11,11 @@ export async function deleteAccount(): Promise<{ success: boolean; error?: strin
     return { success: false, error: 'Not authenticated' }
   }
 
+  // Block deletion of demo account
+  if (user.email === 'team13innovatika@mail.ru') {
+    return { success: false, error: 'Demo account cannot be deleted' }
+  }
+
   // Delete via RPC function that removes both profile (cascading all data)
   // AND the auth.users entry so the account cannot be reused
   const { error: rpcError } = await supabase.rpc('delete_own_account')
