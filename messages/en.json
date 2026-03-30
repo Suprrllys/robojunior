@@ -1605,7 +1605,8 @@
       "confirmTitle": "Are you sure?",
       "confirmMessage": "Are you sure? This action cannot be undone. All your progress, achievements, and data will be permanently deleted.",
       "cancelButton": "Cancel",
-      "confirmButton": "Yes, Delete Everything"
+      "confirmButton": "Yes, Delete Everything",
+      "demoBlocked": "Demo account cannot be deleted"
     }
   },
   "verify": {

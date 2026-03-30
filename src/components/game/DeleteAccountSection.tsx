@@ -11,22 +11,26 @@ export default function DeleteAccountSection({ isDemo }: { isDemo?: boolean }) {
   const [showConfirm, setShowConfirm] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
-  if (isDemo) return null
-
   return (
     <>
-      <div className="border border-red-800/50 bg-red-950/20 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-400 flex-shrink-0">
+      <div className={`border rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 ${isDemo ? 'border-gray-700/50 bg-gray-900/20' : 'border-red-800/50 bg-red-950/20'}`}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={isDemo ? 'text-gray-500 flex-shrink-0' : 'text-red-400 flex-shrink-0'}>
           <path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
         </svg>
         <div className="flex-1 min-w-0">
-          <h2 className="text-lg font-bold text-red-400">{t('deleteAccount.title')}</h2>
-          <p className="text-red-300/70 text-xs mt-0.5">{t('deleteAccount.warning')}</p>
+          <h2 className={`text-lg font-bold ${isDemo ? 'text-gray-500' : 'text-red-400'}`}>{t('deleteAccount.title')}</h2>
+          <p className={`text-xs mt-0.5 ${isDemo ? 'text-gray-500' : 'text-red-300/70'}`}>
+            {isDemo ? t('deleteAccount.demoBlocked') : t('deleteAccount.warning')}
+          </p>
         </div>
         <button
-          onClick={() => setShowConfirm(true)}
-          disabled={deleting}
-          className="w-full sm:w-auto px-5 py-2.5 bg-red-700 hover:bg-red-600 disabled:opacity-50 text-white text-sm font-bold rounded-xl transition-colors whitespace-nowrap flex-shrink-0"
+          onClick={() => !isDemo && setShowConfirm(true)}
+          disabled={isDemo || deleting}
+          className={`w-full sm:w-auto px-5 py-2.5 text-sm font-bold rounded-xl transition-colors whitespace-nowrap flex-shrink-0 ${
+            isDemo
+              ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+              : 'bg-red-700 hover:bg-red-600 disabled:opacity-50 text-white'
+          }`}
         >
           {deleting ? '...' : t('deleteAccount.button')}
         </button>
