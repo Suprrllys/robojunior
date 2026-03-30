@@ -283,7 +283,7 @@ export default async function DashboardPage() {
       {/* Achievements — only unlocked ones */}
       <div className="bg-brand-panel border border-brand-border rounded-2xl p-6">
         <h2 className="text-lg font-bold text-white mb-4">{t('recentAchievements')}</h2>
-        {unlockedSkinIds.length > 0 ? (
+        {unlockedSet.size > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {ACHIEVEMENT_DEFS.filter(ach => unlockedSet.has(ach.id)).map(ach => (
               <div
