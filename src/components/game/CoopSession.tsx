@@ -357,7 +357,11 @@ export default function CoopSession({ userId, session, participants, initialMess
   const rewards = COOP_REWARDS[difficulty] ?? COOP_REWARDS.medium
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    // Scroll only within the chat container, not the whole page
+    const el = messagesEndRef.current
+    if (el?.parentElement) {
+      el.parentElement.scrollTop = el.parentElement.scrollHeight
+    }
   }, [messages])
 
   // Realtime

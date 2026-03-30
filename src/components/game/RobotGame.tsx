@@ -358,8 +358,8 @@ export default function RobotGame({ userId, missionNumber, difficulty, isComplet
         {/* Header */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-lg font-bold text-white">{t(mission?.titleKey ?? 'game.robot.m1_title')}</h2>
-            <p className="text-gray-400 text-sm">{t(mission?.descKey ?? 'game.robot.m1_easy_desc')}</p>
+            <h2 className="text-lg font-bold text-white">{t(mission?.titleKey ? `game.${mission.titleKey}` : 'game.robot.m1_title')}</h2>
+            <p className="text-gray-400 text-sm">{t(mission?.descKey ? `game.${mission.descKey}` : 'game.robot.m1_easy_desc')}</p>
           </div>
           <span className={clsx(
             'px-3 py-1 rounded-full text-xs font-bold uppercase',
