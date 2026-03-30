@@ -74,6 +74,16 @@ export default async function CoopSessionPage({ params }: Props) {
     }
   }
 
+  // Auto-activate stuck sessions: all players present but still 'waiting'
+  if (session.status === 'waiting' && myParticipant) {
+    const requiredPlayers = isCoop3 ? 3 : 2
+    if ((participants?.length ?? 0) >= requiredPlayers) {
+      const expiresAt = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString()
+      await supabase.from('coop_sessions').update({ status: 'active', expires_at: expiresAt }).eq('id', params.sessionId)
+      session.status = 'active'
+    }
+  }
+
   if (!myParticipant && isCreator) notFound()
 
   return (

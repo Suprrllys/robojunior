@@ -50,13 +50,17 @@ export default async function CoopPage() {
   const allMySessions = [...(mySessions ?? []), ...(joinedSessions ?? [])]
 
   // Open sessions to join (with participants and their profiles)
-  const { data: openSessions } = await supabase
+  // Exclude sessions the user already joined
+  const { data: allOpenSessions } = await supabase
     .from('coop_sessions')
     .select('*, profiles!created_by(username, country), coop_participants(user_id, role, profiles(username, country))')
     .eq('status', 'waiting')
     .neq('created_by', user!.id)
     .order('created_at', { ascending: false })
-    .limit(10)
+    .limit(20)
+
+  const joinedIdSet = new Set(joinedIds)
+  const openSessions = (allOpenSessions ?? []).filter(s => !joinedIdSet.has(s.id)).slice(0, 10)
 
   // Completed coop missions for progress display
   const { data: completedCoopMissions } = await supabase

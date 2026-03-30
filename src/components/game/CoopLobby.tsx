@@ -252,8 +252,10 @@ export default function CoopLobby({ userId, mySessions: initialMySessions, openS
       .eq('status', 'waiting')
       .neq('created_by', userId)
       .order('created_at', { ascending: false })
-      .limit(10)
-    setOpenSessions(openData ?? [])
+      .limit(20)
+    // Exclude sessions the user already joined — those appear in "My sessions"
+    const joinedIdSet = new Set(joinedIds)
+    setOpenSessions((openData ?? []).filter(s => !joinedIdSet.has(s.id)).slice(0, 10))
   }, [supabase, userId])
 
   // Realtime
