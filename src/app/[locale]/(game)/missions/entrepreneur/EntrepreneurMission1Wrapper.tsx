@@ -63,7 +63,7 @@ export default function EntrepreneurMission1Wrapper({ userId, initialScore = 0 }
         npcsSurveyed: scoreBreakdown.find(b => b.max === 300)?.value === 300 ? 12 : scoreBreakdown.find(b => b.max === 300)?.value === 200 ? 8 : 6,
         totalNpcs: 12,
         timeMinutes: scoreBreakdown.find(b => b.max === 150)?.value === 150 ? 3 : scoreBreakdown.find(b => b.max === 150)?.value === 100 ? 7 : 15,
-      }, getHintsUsed())
+      }, getHintsUsed(), scoreBreakdown.map(b => ({ value: b.value, max: b.max })))
       // Keep client score (server score used only for DB persistence)
       setXpEarned(result.xpEarned)
       setCoinsEarned(result.currencyEarned)
@@ -74,7 +74,6 @@ export default function EntrepreneurMission1Wrapper({ userId, initialScore = 0 }
       fireGameToast({ xp: 0, score: finalScore })
     }
 
-    nextRouter.refresh()
   }, [nextRouter])
 
   const handleRetry = useCallback(() => {
@@ -84,8 +83,9 @@ export default function EntrepreneurMission1Wrapper({ userId, initialScore = 0 }
   }, [])
 
   const handleExit = useCallback(() => {
+    nextRouter.refresh()
     router.push('/missions/entrepreneur')
-  }, [router])
+  }, [router, nextRouter])
 
   const handleNext = useCallback(() => {
     router.push('/missions/entrepreneur?mission=2')

@@ -111,7 +111,6 @@ export default function DroneMissionLoader({ missionNumber, userId, difficulty, 
   const handleComplete = useCallback(async (
     finalScore: number,
     scoreBreakdown: ScoreBreakdownItem[],
-    telemetryData?: { blocksUsed: number; timeSeconds: number; reachedTarget: boolean; usedRedundantBlocks: boolean },
   ) => {
     setScore(finalScore)
     setBreakdown(scoreBreakdown)
@@ -121,26 +120,22 @@ export default function DroneMissionLoader({ missionNumber, userId, difficulty, 
       const result = await completeMissionV2({
         role: 'drone_programmer',
         missionNumber,
-        reachedTarget: telemetryData?.reachedTarget ?? true,
-        blocksUsed: telemetryData?.blocksUsed ?? 5,
+        reachedTarget: finalScore >= 500,
+        blocksUsed: 5,
         optimalBlocks: 5,
-        timeSeconds: telemetryData?.timeSeconds ?? 60,
+        timeSeconds: 60,
         timeLimitSeconds: 120,
-        usedRedundantBlocks: telemetryData?.usedRedundantBlocks ?? false,
-      }, getHintsUsed())
-      // Keep client score (server score used only for DB persistence)
-      // Keep client breakdown (has readable labels) instead of server's generic i18n keys
+        usedRedundantBlocks: false,
+      }, getHintsUsed(), scoreBreakdown.map(b => ({ value: b.value, max: b.max })))
       setXpEarned(result.xpEarned)
       setCoinsEarned(result.currencyEarned)
       setIsFirstClear(result.isFirstCompletion)
-      fireGameToast({ xp: result.xpEarned, score: result.score, badge: result.newBadges[0] })
+      fireGameToast({ xp: result.xpEarned, score: finalScore, badge: result.newBadges[0] })
     } catch (err) {
       console.error('Failed to save mission progress:', err)
       fireGameToast({ xp: 0, score: finalScore })
     }
-
-    nextRouter.refresh()
-  }, [missionNumber, nextRouter])
+  }, [missionNumber])
 
   const handleRetry = useCallback(() => {
     setMissionState('playing')
@@ -149,14 +144,16 @@ export default function DroneMissionLoader({ missionNumber, userId, difficulty, 
   }, [])
 
   const handleExit = useCallback(() => {
+    nextRouter.refresh()
     router.push('/missions/drone')
-  }, [router])
+  }, [router, nextRouter])
 
   const handleNext = useCallback(() => {
     if (missionNumber < TOTAL_MISSIONS) {
+      nextRouter.refresh()
       router.push(`/missions/drone?mission=${missionNumber + 1}&difficulty=${difficulty}`)
     }
-  }, [missionNumber, difficulty, router])
+  }, [missionNumber, difficulty, router, nextRouter])
 
   // Mission title and skills per mission
   const missionTitles: Record<number, string> = {

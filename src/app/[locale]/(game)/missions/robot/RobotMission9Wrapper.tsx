@@ -75,7 +75,7 @@ export default function RobotMission9Wrapper({ initialScore = 0 }: { initialScor
         moneySpent: 0,
         budgetLimit: 80,
         testQuality: protectionScore >= 300 ? 'smooth' : protectionScore >= 200 ? 'jerky' : 'fail',
-      }, getHintsUsed())
+      }, getHintsUsed(), scoreBreakdown.map(b => ({ value: b.value, max: b.max })))
       setXpEarned(result.xpEarned)
       setCoinsEarned(result.currencyEarned)
       setIsFirstClear(result.isFirstCompletion)
@@ -85,7 +85,6 @@ export default function RobotMission9Wrapper({ initialScore = 0 }: { initialScor
       fireGameToast({ xp: 0, score: finalScore })
     }
 
-    nextRouter.refresh()
   }, [nextRouter])
 
   const handleRetry = useCallback(() => {
@@ -95,8 +94,9 @@ export default function RobotMission9Wrapper({ initialScore = 0 }: { initialScor
   }, [])
 
   const handleExit = useCallback(() => {
+    nextRouter.refresh()
     router.push('/missions/robot')
-  }, [router])
+  }, [router, nextRouter])
 
   const handleNext = useCallback(() => {
     router.push('/missions/robot?mission=10')

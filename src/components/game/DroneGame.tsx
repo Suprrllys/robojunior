@@ -315,31 +315,12 @@ export default function DroneGame({ userId, missionNumber, difficulty, isComplet
     const success = atTarget && allPackages && !hitObstacle
 
     if (success) {
-      const elapsed = (Date.now() - startTimeRef.current) / 1000
-      const efficiencyBonus = Math.max(0, maxBlocks - program.length) * 5
-      const timeBonus = Math.max(0, 30 - Math.floor(elapsed / 10))
-      const finalScore = Math.min(100, 60 + efficiencyBonus + timeBonus)
+      const efficiencyBonus = Math.max(0, maxBlocks - program.length) * 50
+      const baseScore = 600
+      const finalScore = Math.min(1000, baseScore + efficiencyBonus)
       setScore(finalScore)
       setDone(true)
       onComplete?.(finalScore)
-
-      try {
-        const result = await completeMission(userId, 'drone_programmer', missionNumber, difficulty, finalScore, {
-          decision_time_avg: elapsed / program.length,
-          attempts: 1,
-          style: program.length <= Math.floor(maxBlocks * 0.6) ? 'fast' : 'analytical',
-          precision_score: finalScore,
-          creativity_score: Math.min(100, efficiencyBonus * 2),
-          teamwork_score: 0,
-        })
-        setMissionResult(result)
-        fireGameToast({ xp: result.xpEarned, score: finalScore, badge: result.newBadges[0] })
-      } catch (err) {
-        console.error('completeMission error:', err)
-        fireGameToast({ xp: 0, score: finalScore })
-      }
-
-      nextRouter.refresh()
     }
   }, [program, level, gridSize, maxBlocks, userId, missionNumber, difficulty, router, nextRouter, resetSimulation, running, onComplete])
 

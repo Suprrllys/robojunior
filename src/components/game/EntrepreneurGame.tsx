@@ -349,29 +349,12 @@ export default function EntrepreneurGame({ userId, missionNumber, difficulty, is
     const elapsed = (Date.now() - startTime) / 1000
     const speedBonus = isHard && elapsed < HARD_TIME_LIMIT ? 1.0 + (1 - elapsed / HARD_TIME_LIMIT) * 0.2 : 1.0
     const rawScore = profitPct * moraleFactor * speedBonus
-    const finalScore = Math.round(Math.min(100, rawScore))
+    const finalScore = Math.round(Math.min(1000, rawScore * 10))
 
     setScore(finalScore)
-
-    try {
-      const result = await completeMission(userId, 'entrepreneur', missionNumber, difficulty, finalScore, {
-        decision_time_avg: elapsed / Math.max(allAnswers.length, 1),
-        attempts: 1,
-        style: profitPct >= currentMorale ? 'analytical' : 'balanced',
-        precision_score: profitPct,
-        creativity_score: currentMarketShare,
-        teamwork_score: currentMorale,
-      })
-      setMissionResult(result)
-      fireGameToast({ xp: result.xpEarned, score: finalScore, badge: result.newBadges?.[0] })
-    } catch {
-      fireGameToast({ xp: 0, score: finalScore })
-    }
-
     setSaving(false)
     setDone(true)
     onComplete?.(finalScore)
-    router.refresh()
   }, [userId, missionNumber, difficulty, isHard, startTime, HARD_TIME_LIMIT, onComplete, router])
 
   // Auto-finish when timer runs out

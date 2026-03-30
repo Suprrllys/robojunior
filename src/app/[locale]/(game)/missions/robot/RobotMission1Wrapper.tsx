@@ -79,7 +79,7 @@ export default function RobotMission1Wrapper({ initialScore = 0 }: { initialScor
         moneySpent: Math.round(80 * (1 - budgetScore / 200)),
         budgetLimit: 80,
         testQuality: testingScore >= 150 ? 'smooth' : testingScore >= 75 ? 'jerky' : 'fail',
-      }, getHintsUsed())
+      }, getHintsUsed(), scoreBreakdown.map(b => ({ value: b.value, max: b.max })))
       // Keep client score (server score used only for DB persistence)
       // Keep client breakdown (has translated labels) instead of server's generic keys
       setXpEarned(result.xpEarned)
@@ -91,7 +91,6 @@ export default function RobotMission1Wrapper({ initialScore = 0 }: { initialScor
       fireGameToast({ xp: 0, score: finalScore })
     }
 
-    nextRouter.refresh()
   }, [nextRouter])
 
   const handleRetry = useCallback(() => {
@@ -101,8 +100,9 @@ export default function RobotMission1Wrapper({ initialScore = 0 }: { initialScor
   }, [])
 
   const handleExit = useCallback(() => {
+    nextRouter.refresh()
     router.push('/missions/robot')
-  }, [router])
+  }, [router, nextRouter])
 
   const handleNext = useCallback(() => {
     router.push('/missions/robot?mission=2')

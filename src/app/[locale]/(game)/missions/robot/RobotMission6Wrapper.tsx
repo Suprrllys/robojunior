@@ -75,7 +75,7 @@ export default function RobotMission6Wrapper({ initialScore = 0 }: { initialScor
         moneySpent: 0,
         budgetLimit: 50,
         testQuality: runtimeScore >= 500 ? 'smooth' : runtimeScore >= 300 ? 'jerky' : 'fail',
-      }, getHintsUsed())
+      }, getHintsUsed(), scoreBreakdown.map(b => ({ value: b.value, max: b.max })))
       // Keep client score and breakdown (server may differ due to telemetry mapping)
       setXpEarned(result.xpEarned)
       setCoinsEarned(result.currencyEarned)
@@ -85,8 +85,6 @@ export default function RobotMission6Wrapper({ initialScore = 0 }: { initialScor
       console.error('Failed to save robot mission 6:', err)
       fireGameToast({ xp: 0, score: finalScore })
     }
-
-    nextRouter.refresh()
   }, [nextRouter])
 
   const handleRetry = useCallback(() => {
@@ -96,8 +94,9 @@ export default function RobotMission6Wrapper({ initialScore = 0 }: { initialScor
   }, [])
 
   const handleExit = useCallback(() => {
+    nextRouter.refresh()
     router.push('/missions/robot')
-  }, [router])
+  }, [router, nextRouter])
 
   const handleNext = useCallback(() => {
     router.push('/missions/robot?mission=7')

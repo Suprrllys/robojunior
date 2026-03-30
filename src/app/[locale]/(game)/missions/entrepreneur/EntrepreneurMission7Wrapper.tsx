@@ -63,7 +63,7 @@ export default function EntrepreneurMission7Wrapper({ userId, initialScore = 0 }
         npcsSurveyed: 12,
         totalNpcs: 12,
         timeMinutes: 5,
-      }, getHintsUsed())
+      }, getHintsUsed(), scoreBreakdown.map(b => ({ value: b.value, max: b.max })))
       setXpEarned(result.xpEarned)
       setCoinsEarned(result.currencyEarned)
       setIsFirstClear(result.isFirstCompletion)
@@ -72,8 +72,6 @@ export default function EntrepreneurMission7Wrapper({ userId, initialScore = 0 }
       console.error('Failed to save entrepreneur mission 7:', err)
       fireGameToast({ xp: 0, score: finalScore })
     }
-
-    nextRouter.refresh()
   }, [nextRouter])
 
   const handleRetry = useCallback(() => {
@@ -83,8 +81,9 @@ export default function EntrepreneurMission7Wrapper({ userId, initialScore = 0 }
   }, [])
 
   const handleExit = useCallback(() => {
+    nextRouter.refresh()
     router.push('/missions/entrepreneur')
-  }, [router])
+  }, [router, nextRouter])
 
   const handleNext = useCallback(() => {
     router.push('/missions/entrepreneur?mission=8')

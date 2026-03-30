@@ -66,14 +66,19 @@ export async function completeCoopMission(
 
   const difficulty: Difficulty = (session.difficulty as Difficulty) || 'medium'
 
-  // 3. Get my participant info
-  const { data: myPart } = await supabase
+  // 3. Get ALL participant scores from DB (server-authoritative, not client)
+  const { data: allParticipants } = await supabase
     .from('coop_participants')
-    .select('role')
+    .select('user_id, role, score')
     .eq('coop_session_id', sessionId)
-    .eq('user_id', userId)
-    .single()
+  if (!allParticipants) throw new Error('No participants found')
+
+  const myPart = allParticipants.find(p => p.user_id === userId)
   if (!myPart) throw new Error('Not a participant')
+
+  // Use DB scores (server-authoritative) instead of client-provided scores
+  const dbMyScore = Math.min(1000, Math.max(0, myPart.score ?? 0))
+  const dbAllScores = allParticipants.map(p => Math.min(1000, Math.max(0, p.score ?? 0)))
 
   // 4. Check if this is first completion of this mission template for this user
   const { data: existing } = await supabase
@@ -84,9 +89,9 @@ export async function completeCoopMission(
     .limit(1)
   const isFirstCompletion = !existing || existing.length === 0
 
-  // 5. Calculate stars from total session score
-  const totalSessionScore = allScores.reduce((a, b) => a + b, 0)
-  const maxSessionScore = allScores.length * 1000 // 2000 for 2 players, 3000 for 3
+  // 5. Calculate stars from total session score (using DB scores)
+  const totalSessionScore = dbAllScores.reduce((a, b) => a + b, 0)
+  const maxSessionScore = dbAllScores.length * 1000
   const stars = calculateStars(totalSessionScore, maxSessionScore)
   const nearMiss = calculateNearMiss(totalSessionScore, maxSessionScore)
 
@@ -95,8 +100,8 @@ export async function completeCoopMission(
   const baseXp = isFirstCompletion ? baseRewards.xp : 0
   const baseCoins = isFirstCompletion ? baseRewards.coins : 0
 
-  // Bonus from team average
-  const avgScore = allScores.reduce((a, b) => a + b, 0) / allScores.length
+  // Bonus from team average (using DB scores)
+  const avgScore = dbAllScores.reduce((a, b) => a + b, 0) / dbAllScores.length
   const bonusXp = Math.round(avgScore * 0.3)
   const bonusCoins = Math.round(avgScore * 0.15)
 
@@ -129,7 +134,7 @@ export async function completeCoopMission(
     coop_session_id: sessionId,
     mission_template: session.mission_template,
     role: myPart.role,
-    score: myScore,
+    score: dbMyScore,
     stars,
     total_session_score: totalSessionScore,
     partner_country: partnerCountries[0] ?? null,
@@ -171,7 +176,7 @@ export async function completeCoopMission(
     .single()
 
   const axes = COMPETENCY_AXES[myPart.role] ?? { teamwork: 1.0 }
-  const boost = Math.round((myScore / 1000) * 25) // Slightly higher boost for coop
+  const boost = Math.round((dbMyScore / 1000) * 25) // Slightly higher boost for coop
 
   const updated: Record<string, number> = {
     technical_precision: existingComp?.technical_precision ?? 0,
@@ -260,7 +265,7 @@ export async function completeCoopMission(
   }
 
   // Perfect Sync — all players scored 800+
-  if (!existingAchSet.has('coop_perfect_sync') && allScores.every(s => s >= 800)) {
+  if (!existingAchSet.has('coop_perfect_sync') && dbAllScores.every(s => s >= 800)) {
     try {
       await supabase.from('user_achievements').insert({ user_id: userId, achievement_id: 'coop_perfect_sync' })
       await supabase.from('user_skins').insert({ user_id: userId, skin_id: 'coop_perfect_sync_skin' })

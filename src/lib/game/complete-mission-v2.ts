@@ -46,6 +46,34 @@ interface EntrepreneurTelemetry {
 type MissionTelemetry = DroneTelemetry | RobotTelemetry | EntrepreneurTelemetry
 
 // ---------------------------------------------------------------------------
+// Validated score components — server caps each at known max
+// ---------------------------------------------------------------------------
+
+interface ScoreComponent {
+  value: number
+  max: number
+}
+
+// Known max values per component per role (server-side constants)
+const ROLE_COMPONENT_MAXES: Record<Role, number[]> = {
+  drone_programmer: [500, 350, 150],       // correctness, efficiency, style
+  robot_constructor: [350, 300, 200, 150],  // design, physics, budget, testing
+  entrepreneur: [350, 300, 200, 150],       // decisions, financials, team, timing
+}
+
+function validateScoreComponents(role: Role, components: ScoreComponent[]): number {
+  const knownMaxes = ROLE_COMPONENT_MAXES[role]
+  let total = 0
+  for (let i = 0; i < components.length; i++) {
+    // Cap each component at the known server-side max (ignore client-provided max)
+    const serverMax = knownMaxes[i] ?? 0
+    const validated = Math.min(serverMax, Math.max(0, Math.round(components[i].value)))
+    total += validated
+  }
+  return Math.min(MAX_SCORE, total)
+}
+
+// ---------------------------------------------------------------------------
 // Difficulty derived from mission number
 // ---------------------------------------------------------------------------
 
@@ -84,7 +112,8 @@ const COMPETENCY_AXES: Record<Role, Partial<Record<string, number>>> = {
 
 export async function completeMissionV2(
   telemetry: MissionTelemetry,
-  hintsUsed: number
+  hintsUsed: number,
+  scoreComponents?: ScoreComponent[]
 ): Promise<MissionResultV2> {
   const supabase = await createClient()
 
@@ -99,8 +128,13 @@ export async function completeMissionV2(
   const missionNumber = telemetry.missionNumber
   const difficulty = difficultyFromNumber(missionNumber)
 
-  // 2. Score on server
-  const { score, breakdown } = scoreTelemetry(telemetry)
+  // 2. Score — validate client components against server-side max caps,
+  //    or fall back to telemetry-based recalculation
+  const serverResult = scoreTelemetry(telemetry)
+  const score = scoreComponents && scoreComponents.length > 0
+    ? validateScoreComponents(role, scoreComponents)
+    : serverResult.score
+  const breakdown = serverResult.breakdown
   const stars = calculateStars(score, MAX_SCORE)
   const nearMiss = calculateNearMiss(score, MAX_SCORE)
   const isSuccess = stars >= 1 // 1+ star = passed

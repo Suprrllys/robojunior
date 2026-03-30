@@ -287,14 +287,14 @@ export default function RobotGame({ userId, missionNumber, difficulty, isComplet
   const equippedIds = new Set(equippedModules.map(m => m.id))
 
   const calculateScore = useCallback((): number => {
-    if (reqStrength === 0 && reqPrecision === 0 && reqSpeed === 0) return 100
+    if (reqStrength === 0 && reqPrecision === 0 && reqSpeed === 0) return 1000
     const ratios: number[] = []
     if (reqStrength > 0) ratios.push(totalStrength / reqStrength)
     if (reqPrecision > 0) ratios.push(totalPrecision / reqPrecision)
     if (reqSpeed > 0) ratios.push(totalSpeed / reqSpeed)
     const statsAvg = ratios.length > 0 ? ratios.reduce((a, b) => a + b, 0) / ratios.length : 1
     const budgetFactor = ((budget - totalCost) / budget) * 0.5 + 0.5
-    return Math.round(Math.min(100, statsAvg * budgetFactor * 100))
+    return Math.round(Math.min(1000, statsAvg * budgetFactor * 1000))
   }, [totalStrength, totalPrecision, totalSpeed, reqStrength, reqPrecision, reqSpeed, budget, totalCost])
 
   const handleDragStart = useCallback((e: DragStartEvent) => { setActiveId(e.active.id as string) }, [])
@@ -319,24 +319,10 @@ export default function RobotGame({ userId, missionNumber, difficulty, isComplet
     if (!allRequirementsMet || saving) return
     setSaving(true)
     const score = calculateScore()
-    try {
-      const elapsed = (Date.now() - startTime) / 1000
-      const missionResult = await completeMission(userId, 'robot_constructor', missionNumber, difficulty, score, {
-        decision_time_avg: elapsed / Math.max(1, equippedModules.length),
-        attempts: 1,
-        style: totalCost < budget * 0.8 ? 'analytical' : 'fast',
-        precision_score: Math.round((totalPrecision / Math.max(1, reqPrecision)) * 50),
-        creativity_score: Math.max(0, Math.min(100, score - 50)),
-        teamwork_score: 0,
-      })
-      setResult(missionResult)
-      setDone(true)
-      fireGameToast({ xp: missionResult.xpEarned, score, badge: missionResult.newBadges[0] })
-      onComplete?.(score)
-      router.refresh()
-    } finally {
-      setSaving(false)
-    }
+    setResult(null)
+    setDone(true)
+    setSaving(false)
+    onComplete?.(score)
   }, [allRequirementsMet, saving, calculateScore, userId, missionNumber, difficulty, totalCost, budget, reqPrecision, totalPrecision, onComplete, equippedModules.length, startTime, router])
 
   // Done state
