@@ -331,12 +331,12 @@ export default function CoopSession({ userId, session, participants, initialMess
   // Finish session (creator action or auto on timer/max scores)
   const finishSession = useCallback(async () => {
     setFinishing(true)
-    // Mark incomplete participants as done (keep score null — they didn't play)
-    await supabase.from('coop_participants').update({ is_completed: true })
+    // Inactive players get score 0 — team is penalized for absent members
+    await supabase.from('coop_participants').update({ is_completed: true, score: 0 })
       .eq('coop_session_id', session.id).eq('is_completed', false)
     await supabase.from('coop_sessions').update({ status: 'completed' }).eq('id', session.id)
     setSessionStatus('completed')
-    setAllParts(prev => prev.map(p => p.is_completed ? p : { ...p, is_completed: true }))
+    setAllParts(prev => prev.map(p => p.is_completed ? p : { ...p, is_completed: true, score: 0 }))
     setFinishing(false)
   }, [supabase, session.id])
 
@@ -484,11 +484,9 @@ export default function CoopSession({ userId, session, participants, initialMess
   useEffect(() => {
     if (!isCompleted || coopResult || rewardsProcessing) return
     const myScore = myBestScore ?? (myPart?.score ?? 0)
-    // Only count partners who actually played (score > 0)
-    const playedPartners = allParts.filter(p => p.user_id !== userId && p.score && p.score > 0)
-    const otherScores = playedPartners.map(p => p.score ?? 0)
-    // Need at least 1 partner who played to process rewards
-    if (playedPartners.length === 0) return
+    // ALL players count — inactive players get score 0, penalizing the whole team
+    const otherScores = allParts.filter(p => p.user_id !== userId).map(p => p.score ?? 0)
+    if (otherScores.length < requiredPlayers - 1) return
     setRewardsProcessing(true)
     const allScores = [myScore, ...otherScores]
     completeCoopMission(session.id, myScore, allScores)
