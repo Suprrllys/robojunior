@@ -58,6 +58,34 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
         </Link>
       </div>
 
+      {/* 2b. Matching filters (locked for unverified) */}
+      <div className="bg-brand-panel border border-brand-border rounded-2xl p-6 space-y-4">
+        <h2 className="text-lg font-bold text-white">{t('matchingFilters.title')}</h2>
+        <p className="text-xs text-gray-400">{t('matchingFilters.verifyRequired')}</p>
+        <div className="space-y-3">
+          {/* Verified partners only */}
+          <label className="flex items-center gap-3 opacity-50 cursor-not-allowed">
+            <div className="w-10 h-6 bg-gray-700 rounded-full relative">
+              <div className="absolute left-1 top-1 w-4 h-4 bg-gray-500 rounded-full" />
+            </div>
+            <span className="text-gray-400 text-sm">{t('matchingFilters.verifiedOnly')}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500 ml-auto">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </label>
+          {/* Same gender only */}
+          <label className="flex items-center gap-3 opacity-50 cursor-not-allowed">
+            <div className="w-10 h-6 bg-gray-700 rounded-full relative">
+              <div className="absolute left-1 top-1 w-4 h-4 bg-gray-500 rounded-full" />
+            </div>
+            <span className="text-gray-400 text-sm">{t('matchingFilters.sameGender')}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500 ml-auto">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </label>
+        </div>
+      </div>
+
       {/* Parental controls */}
       {(children && children.length > 0) && (
         <div className="bg-brand-panel border border-brand-border rounded-2xl p-6">

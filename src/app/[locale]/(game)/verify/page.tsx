@@ -27,7 +27,7 @@ export default function VerifyPage() {
       <div className="bg-brand-panel border border-brand-border rounded-2xl p-6 space-y-4">
         <h2 className="text-lg font-bold text-white">{t('benefitsTitle')}</h2>
         <ul className="space-y-3">
-          {(['badge', 'partnerMatching', 'coopPriority', 'trust'] as const).map((key) => (
+          {(['badge', 'partnerMatching', 'genderMatching', 'coopPriority', 'trust'] as const).map((key) => (
             <li key={key} className="flex items-start gap-3">
               <span className="mt-0.5 flex-shrink-0 w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-green-400">

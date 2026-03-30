@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { deleteAccount } from '@/lib/game/delete-account'
+import { checkUsernameAvailable } from '@/lib/game/check-username'
 import RobotAvatar from '@/components/game/RobotAvatar'
 import CharacterAvatar, {
   BODY_COLORS,
@@ -238,6 +239,13 @@ export default function ProfileEditor({ profile }: ProfileEditorProps) {
     if (!isUsernameClean(form.username)) {
       alert(t('usernameInappropriate'))
       return
+    }
+    if (form.username.trim() !== profile.username) {
+      const available = await checkUsernameAvailable(form.username.trim(), profile.id)
+      if (!available) {
+        alert(t('usernameTaken'))
+        return
+      }
     }
     setSaving(true)
     // Save profile form data

@@ -6,6 +6,7 @@ import { useRouter, usePathname } from '@/i18n/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Image from 'next/image'
 import { isUsernameClean } from '@/lib/game/username-filter'
+import { checkUsernameAvailable } from '@/lib/game/check-username'
 import type { Country } from '@/types/database'
 
 const COUNTRY_LOCALE: Record<Country, string> = {
@@ -125,6 +126,13 @@ export default function RegisterForm() {
     }
 
     setLoading(true)
+
+    const available = await checkUsernameAvailable(form.username.trim())
+    if (!available) {
+      setError(t('usernameTaken'))
+      setLoading(false)
+      return
+    }
 
     const { error } = await supabase.auth.signUp({
       email: form.email,
