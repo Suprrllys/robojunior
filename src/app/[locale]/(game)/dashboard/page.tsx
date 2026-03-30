@@ -81,9 +81,19 @@ export default async function DashboardPage() {
     { label: t('stats.rolesExplored'), value: rolesExplored, iconEl: <IconRolesExplored size={32} animated /> },
   ]
 
-  // Compute achievements from mission progress
-  const unlockedSkinIds = computeUnlockedSkins(progress)
-  const unlockedSet = new Set(unlockedSkinIds)
+  // Compute achievements: solo from mission_progress + coop from user_achievements
+  const soloUnlocked = computeUnlockedSkins(progress)
+  let coopAchievementIds: string[] = []
+  try {
+    const { data, error } = await supabase
+      .from('user_achievements')
+      .select('achievement_id')
+      .eq('user_id', user!.id)
+    if (!error && data) {
+      coopAchievementIds = data.map(a => `${a.achievement_id}_skin`)
+    }
+  } catch { /* table may not exist */ }
+  const unlockedSet = new Set([...soloUnlocked, ...coopAchievementIds])
 
   return (
     <div className="space-y-8">
