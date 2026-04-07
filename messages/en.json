@@ -16,7 +16,7 @@
   },
   "nav": {
     "home": "Home",
-    "roles": "Roles",
+    "roles": "Walkthrough",
     "dashboard": "Dashboard",
     "leaderboard": "Leaderboard",
     "profile": "Profile",
@@ -1737,19 +1737,19 @@
     "modalClose": "OK"
   },
   "certificate": {
-    "pageTitle": "Completion Certificate",
-    "pageSubtitle": "Prove your skills with an official RoboJunior certificate",
+    "pageTitle": "Innovation Process Certificate",
+    "pageSubtitle": "Prove that you completed the full cycle of building a tech product",
     "whatIsTitle": "What is the Certificate?",
-    "whatIsDesc": "The RoboJunior Completion Certificate is an official digital document confirming that you have successfully completed all missions in at least one engineering role. It includes your name, achievements, competency scores, and the date of completion.",
+    "whatIsDesc": "The RoboJunior Innovation Process Certificate is an official digital document confirming that you have personally covered all 6 stages of the innovation process: from problem research to product launch. It includes your name, innovation profile (map of completed stages), competency radar, and date of completion.",
     "benefitsTitle": "What You Get",
     "benefits": {
-      "portfolio": "A professional digital certificate to add to your portfolio",
+      "portfolio": "Professional digital certificate for your portfolio — listing all 6 stages of the innovation process",
       "social": "Shareable on social media with a unique verification link",
-      "competitions": "Proof of skills for school applications and STEM competitions",
-      "employers": "Show future employers your engineering and teamwork abilities"
+      "competitions": "Proof of innovation skills for school applications, STEM competitions, and RobodexBRICS hackathons",
+      "employers": "Show future employers that you understand the full tech product development cycle — from problem to market"
     },
     "howToGetTitle": "How to Earn It",
-    "howToGetDesc": "Complete all 10 missions in at least one role (Drone Programmer, Robot Constructor, or Entrepreneur). The more roles you complete, the more impressive your certificate will be!",
+    "howToGetDesc": "Personally complete all 6 stages of the innovation process (Research, Idea, Prototype, Test, Pitch, Launch). The fastest path is Story Mode 'Your First Tech Startup', which walks you through every stage in one session. Alternatively, complete missions of different types in free play.",
     "getButton": "Get Certificate",
     "backToProfile": "Back to Profile"
   },
@@ -1760,7 +1760,7 @@
     "tos": {
       "title": "Terms of Service",
       "serviceTitle": "What is RoboJunior?",
-      "serviceContent": "RoboJunior is a free educational game where you learn about robotics, programming, and entrepreneurship by completing fun missions. It is made for students aged 13-18 from BRICS+ countries.",
+      "serviceContent": "RoboJunior is a free game-based simulator of the innovation process for teens aged 13-18 from BRICS+ countries. In the game you walk through the full cycle of building a tech product — from finding a problem and validating an idea to building a prototype, pitching investors, and launching to market. At each stage you practice hands-on tools: programming autonomous drones, constructing robots, and making business decisions.",
       "ageTitle": "Who Can Play?",
       "ageContent": "You must be at least 13 years old to create an account.\nIf you are under 13, a parent or guardian must create the account for you and supervise your use of the game.",
       "accountTitle": "Your Account",
@@ -1776,7 +1776,7 @@
       "terminationTitle": "Account Suspension",
       "terminationContent": "We may suspend or delete your account if you break these rules.\nIf your account is suspended, you may lose access to your progress and virtual items.",
       "disclaimerTitle": "Important Notice",
-      "disclaimerContent": "RoboJunior is an educational game, not a professional training program.\nCareer suggestions in the game are for fun and exploration only - they are not real career advice.\nWe do our best to keep the game running, but we cannot guarantee it will always be available."
+      "disclaimerContent": "RoboJunior is a game-based innovation process simulator, not a professional training program in entrepreneurship or engineering.\nThe innovation profile and recommendations in the game are for fun and self-exploration — they are not real career advice.\nWe do our best to keep the game running, but we cannot guarantee it will always be available."
     },
     "privacy": {
       "title": "Privacy Policy",

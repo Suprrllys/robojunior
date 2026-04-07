@@ -21,9 +21,9 @@ export default function InnovationProcessMap({ completed }: Props) {
   const covered = countCoveredStages(coverage)
 
   return (
-    <div className="bg-brand-panel border border-brand-border rounded-2xl p-6">
+    <div className="bg-brand-panel border border-brand-border rounded-2xl p-4 sm:p-6">
       <div className="mb-4">
-        <h2 className="text-lg font-bold text-white">{tMap('title')}</h2>
+        <h2 className="text-base sm:text-lg font-bold text-white">{tMap('title')}</h2>
         <p className="text-xs text-gray-400 mt-1">{tMap('subtitle')}</p>
         <p className="text-xs text-brand-gold font-bold mt-2">
           {tMap('stagesProgress', { covered })}
@@ -31,7 +31,7 @@ export default function InnovationProcessMap({ completed }: Props) {
       </div>
 
       {/* Stages grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
+      <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 mb-4">
         {INNOVATION_STAGES.map((stageId, idx) => {
           const c = coverage.find(x => x.stage === stageId)!
           const meta = STAGE_META[c.stage]
@@ -53,13 +53,13 @@ export default function InnovationProcessMap({ completed }: Props) {
           return (
             <div
               key={stageId}
-              className={`rounded-xl p-3 flex flex-col items-center text-center transition-all ${bgClass}`}
+              className={`rounded-xl p-2 sm:p-3 flex flex-col items-center text-center transition-all ${bgClass}`}
               style={borderStyle}
               title={tStages(c.stage)}
             >
               <div className="relative mb-2">
                 <div
-                  className="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-xl sm:text-2xl"
                   style={{
                     backgroundColor: isPersonal || isProject ? `${meta.color}22` : 'transparent',
                     opacity: isPersonal || isProject ? 1 : 0.4,
@@ -79,7 +79,7 @@ export default function InnovationProcessMap({ completed }: Props) {
 
               <div className="text-[10px] text-gray-500 font-bold">{idx + 1}</div>
               <div
-                className="text-xs font-bold leading-tight"
+                className="text-[11px] sm:text-xs font-bold leading-tight break-words w-full"
                 style={{ color: isPersonal || isProject ? meta.color : '#6B7280' }}
               >
                 {tStages(`${c.stage}Short`)}

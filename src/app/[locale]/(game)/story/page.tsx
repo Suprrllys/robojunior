@@ -46,20 +46,20 @@ export default async function StoryPage() {
       </div>
 
       {/* Header */}
-      <div className="bg-gradient-to-br from-purple-900/40 via-indigo-900/30 to-blue-900/20 border border-purple-500/30 rounded-2xl p-6">
-        <div className="flex items-start justify-between gap-4 flex-wrap">
+      <div className="bg-gradient-to-br from-purple-900/40 via-indigo-900/30 to-blue-900/20 border border-purple-500/30 rounded-2xl p-4 sm:p-6">
+        <div className="flex items-start justify-between gap-3 sm:gap-4 flex-wrap">
           <div className="flex-1 min-w-0">
             <div className="text-xs font-bold text-purple-400 uppercase tracking-wider mb-1">
               {tStory('label')}
             </div>
-            <h1 className="text-3xl font-black text-white mb-2">{tStory('title')}</h1>
-            <p className="text-gray-300 text-sm leading-relaxed max-w-2xl">{tStory('subtitle')}</p>
+            <h1 className="text-xl sm:text-3xl font-black text-white mb-2">{tStory('title')}</h1>
+            <p className="text-gray-300 text-xs sm:text-sm leading-relaxed max-w-2xl">{tStory('subtitle')}</p>
           </div>
           <div className="flex flex-col items-end shrink-0">
-            <div className="text-3xl font-black text-white">
+            <div className="text-2xl sm:text-3xl font-black text-white">
               {completed}<span className="text-gray-500">/{total}</span>
             </div>
-            <div className="text-xs text-gray-400 mt-1">{tStory('chaptersCompleted')}</div>
+            <div className="text-[10px] sm:text-xs text-gray-400 mt-1">{tStory('chaptersCompleted')}</div>
           </div>
         </div>
         {/* Progress bar */}
@@ -157,7 +157,7 @@ function ChapterCard({
 }) {
   const inner = (
     <div
-      className={`relative rounded-2xl p-5 border-2 transition-all ${
+      className={`relative rounded-2xl p-4 sm:p-5 border-2 transition-all ${
         completed
           ? 'bg-green-900/10 border-green-600/40 hover:border-green-500'
           : isNext
@@ -167,14 +167,13 @@ function ChapterCard({
           : 'bg-brand-dark/50 border-gray-800 opacity-50'
       }`}
     >
-      <div className="flex items-start gap-4">
+      <div className="flex items-start gap-3 sm:gap-4">
         {/* Icon column — fixed width so all chapters align vertically
             regardless of how long the localized stage name is. Long words
-            (e.g. "ПРОТОТИПИРОВАНИЕ") wrap inside this column instead of
-            stretching it and pushing the icon off-center. */}
-        <div className="flex flex-col items-center shrink-0 w-[88px]">
+            wrap inside this column instead of stretching it. */}
+        <div className="flex flex-col items-center shrink-0 w-[72px] sm:w-[88px]">
           <div
-            className="w-14 h-14 rounded-full flex items-center justify-center text-2xl mb-2"
+            className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center text-xl sm:text-2xl mb-2"
             style={{
               backgroundColor: completed || isNext ? `${stageColor}22` : 'rgba(75,85,99,0.2)',
               border: `2px solid ${completed || isNext ? stageColor : '#4B5563'}`,
@@ -183,7 +182,7 @@ function ChapterCard({
             {unlocked ? stageIcon : '\u{1F512}'}
           </div>
           <div
-            className="text-[10px] font-black uppercase tracking-wider text-center leading-tight break-words w-full"
+            className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-center leading-tight break-words w-full"
             style={{ color: completed || isNext ? stageColor : '#6B7280' }}
           >
             {stageName}
@@ -192,7 +191,7 @@ function ChapterCard({
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="text-xs font-bold text-gray-500">
               {`\u041F\u0440\u043E\u043B\u043E\u0433 ${order}`}
             </span>
@@ -204,13 +203,13 @@ function ChapterCard({
               </span>
             )}
           </div>
-          <h3 className="text-lg font-bold text-white mb-1">{chapterTitle}</h3>
-          <p className="text-sm text-gray-400 leading-relaxed line-clamp-2">{chapterTeaser}</p>
+          <h3 className="text-base sm:text-lg font-bold text-white mb-1">{chapterTitle}</h3>
+          <p className="text-xs sm:text-sm text-gray-400 leading-relaxed line-clamp-2 sm:line-clamp-3">{chapterTeaser}</p>
 
           {/* CTA */}
           <div className="mt-3">
             <span
-              className={`inline-block px-4 py-1.5 rounded-lg text-sm font-bold ${
+              className={`inline-block px-4 py-1.5 rounded-lg text-xs sm:text-sm font-bold ${
                 completed
                   ? 'bg-green-600/20 text-green-300'
                   : isNext
@@ -227,11 +226,12 @@ function ChapterCard({
       </div>
 
       {/* Connector line to next chapter — positioned at the horizontal
-          center of the 88px icon column. Card padding (p-5 = 20px) +
-          half of column (44px) - half of line width (1px) = 63px. */}
+          center of the icon column on each breakpoint.
+          Mobile (p-4=16, col=72): 16 + 36 - 1 = 51px
+          Desktop (p-5=20, col=88): 20 + 44 - 1 = 63px */}
       {!isLast && (
         <div
-          className="absolute left-[63px] -bottom-3 w-0.5 h-3"
+          className="absolute left-[51px] sm:left-[63px] -bottom-3 w-0.5 h-3"
           style={{ backgroundColor: completed ? stageColor : '#374151' }}
         />
       )}

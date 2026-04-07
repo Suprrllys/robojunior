@@ -20,7 +20,10 @@ export default async function DashboardPage() {
     supabase.from('profiles').select('username, xp, game_currency, coop_missions_completed').eq('id', user!.id).single(),
     supabase.from('competency_scores').select('*').eq('user_id', user!.id).single(),
     supabase.from('mission_progress').select('role, status, mission_number, score').eq('user_id', user!.id),
-    supabase.from('coop_completed_missions').select('mission_template, role, score, stars, total_session_score, completed_at').eq('user_id', user!.id).order('completed_at', { ascending: false }).limit(10),
+    // Fetch ALL coop completions (no limit) so achievements correctly include
+    // missions beyond the 10 most recent. Slicing to 10 only happens later
+    // for the "Recent Coop Missions" UI section.
+    supabase.from('coop_completed_missions').select('mission_template, role, score, stars, total_session_score, completed_at').eq('user_id', user!.id).order('completed_at', { ascending: false }),
     supabase.from('coop_sessions').select('id, mission_template, status').or(`created_by.eq.${user!.id}`).in('status', ['waiting', 'active']),
   ])
 

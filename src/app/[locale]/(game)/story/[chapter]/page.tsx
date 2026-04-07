@@ -76,7 +76,7 @@ export default async function StoryChapterPage({ params }: Props) {
         {/* Stage badge */}
         <div className="flex items-center gap-3 mb-6">
           <div
-            className="w-16 h-16 rounded-full flex items-center justify-center text-3xl"
+            className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-2xl sm:text-3xl shrink-0"
             style={{
               backgroundColor: `${meta.color}22`,
               border: `2px solid ${meta.color}`,
@@ -84,34 +84,34 @@ export default async function StoryChapterPage({ params }: Props) {
           >
             {meta.icon}
           </div>
-          <div>
+          <div className="min-w-0">
             <div className="text-xs font-black uppercase tracking-wider" style={{ color: meta.color }}>
               {tStages(`${chapter.stage}Short`)} &middot; {tStory('stageOfSix', { order: meta.order })}
             </div>
-            <div className="text-sm text-gray-500 italic mt-0.5">
+            <div className="text-xs sm:text-sm text-gray-500 italic mt-0.5">
               {tStory('mentorLabel', { mentor: chapter.mentor })}
             </div>
           </div>
         </div>
 
         {/* Title */}
-        <h1 className="text-3xl sm:text-4xl font-black text-white mb-2">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-2">
           {tStory(`${chapter.id}.title`)}
         </h1>
-        <p className="text-lg text-gray-400 mb-8 italic">
+        <p className="text-base sm:text-lg text-gray-400 mb-6 sm:mb-8 italic">
           {tStory(`${chapter.id}.tagline`)}
         </p>
 
         {/* Narrative paragraphs */}
-        <div className="bg-brand-panel border border-brand-border rounded-2xl p-6 mb-6">
-          <p className="text-gray-300 leading-relaxed mb-4 whitespace-pre-line">
+        <div className="bg-brand-panel border border-brand-border rounded-2xl p-4 sm:p-6 mb-6">
+          <p className="text-sm sm:text-base text-gray-300 leading-relaxed mb-4 whitespace-pre-line">
             {tStory(`${chapter.id}.narrative`)}
           </p>
           <div className="border-l-2 pl-4 mt-6" style={{ borderColor: meta.color }}>
-            <p className="text-sm text-gray-400 italic mb-1">
+            <p className="text-xs sm:text-sm text-gray-400 italic mb-1">
               {tStory('mentorSays', { mentor: chapter.mentor })}
             </p>
-            <p className="text-white font-medium">
+            <p className="text-sm sm:text-base text-white font-medium">
               &laquo;{tStory(`${chapter.id}.mentorQuote`)}&raquo;
             </p>
           </div>
