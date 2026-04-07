@@ -315,7 +315,7 @@ export default async function RolesPage() {
         </div>
         <Link
           href="/coop"
-          className="px-5 py-3 bg-brand-panel border border-brand-blue text-brand-blue font-bold rounded-xl hover:bg-brand-blue hover:text-black transition-all text-sm whitespace-nowrap"
+          className="px-5 py-3 bg-brand-blue hover:bg-blue-500 text-white font-bold rounded-xl transition-colors text-sm whitespace-nowrap"
         >
           {t('coop.findTeam')} {'\u2192'}
         </Link>
