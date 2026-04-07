@@ -168,8 +168,11 @@ function ChapterCard({
       }`}
     >
       <div className="flex items-start gap-4">
-        {/* Number + stage icon */}
-        <div className="flex flex-col items-center shrink-0">
+        {/* Icon column — fixed width so all chapters align vertically
+            regardless of how long the localized stage name is. Long words
+            (e.g. "ПРОТОТИПИРОВАНИЕ") wrap inside this column instead of
+            stretching it and pushing the icon off-center. */}
+        <div className="flex flex-col items-center shrink-0 w-[88px]">
           <div
             className="w-14 h-14 rounded-full flex items-center justify-center text-2xl mb-2"
             style={{
@@ -180,7 +183,7 @@ function ChapterCard({
             {unlocked ? stageIcon : '\u{1F512}'}
           </div>
           <div
-            className="text-[10px] font-black uppercase tracking-wider"
+            className="text-[10px] font-black uppercase tracking-wider text-center leading-tight break-words w-full"
             style={{ color: completed || isNext ? stageColor : '#6B7280' }}
           >
             {stageName}
@@ -223,10 +226,12 @@ function ChapterCard({
         </div>
       </div>
 
-      {/* Connector line to next chapter */}
+      {/* Connector line to next chapter — positioned at the horizontal
+          center of the 88px icon column. Card padding (p-5 = 20px) +
+          half of column (44px) - half of line width (1px) = 63px. */}
       {!isLast && (
         <div
-          className="absolute left-[2.4rem] -bottom-3 w-0.5 h-3"
+          className="absolute left-[63px] -bottom-3 w-0.5 h-3"
           style={{ backgroundColor: completed ? stageColor : '#374151' }}
         />
       )}
