@@ -95,20 +95,21 @@ export default function GameNav({ profile }: GameNavProps) {
         {/* Navigation — takes the middle segment, can shrink, no wrapping.
             Using flex-1 + min-w-0 lets it use the available space without
             pushing into the logo or the user-info block. */}
-        <div className="hidden md:flex items-center gap-1 flex-1 justify-start ml-2">
+        <div className="hidden md:flex items-center gap-0.5 lg:gap-1 flex-1 justify-start ml-2">
           {NAV_ITEMS.map(item => (
             <Link
               key={item.href}
               href={item.href as '/roles'}
+              title={t(item.key as 'roles')}
               className={clsx(
-                'flex items-center gap-1.5 px-2 lg:px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap shrink-0',
+                'flex items-center gap-1.5 px-2 lg:px-2.5 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap shrink-0',
                 pathname === item.href
                   ? 'bg-brand-blue/20 text-brand-blue'
                   : 'text-gray-400 hover:text-white hover:bg-brand-border'
               )}
             >
               {(() => { const Icon = NAV_ICON_MAP[item.key]; return Icon ? <Icon size={18} /> : null })()}
-              <span>{t(item.key as 'roles')}</span>
+              <span className="hidden lg:inline">{t(item.key as 'roles')}</span>
             </Link>
           ))}
         </div>
@@ -152,21 +153,21 @@ export default function GameNav({ profile }: GameNavProps) {
         </div>
       </div>
 
-      {/* Mobile nav */}
-      <div className="md:hidden flex border-t border-brand-border">
+      {/* Mobile nav — horizontally scrollable when items overflow */}
+      <div className="md:hidden flex border-t border-brand-border overflow-x-auto scrollbar-hide">
         {NAV_ITEMS.map(item => (
           <Link
             key={item.href}
             href={item.href as '/roles'}
             className={clsx(
-              'flex-1 flex flex-col items-center gap-0.5 py-3 md:py-2 text-xs transition-colors',
+              'flex-1 min-w-[68px] flex flex-col items-center gap-0.5 py-3 md:py-2 text-[11px] leading-tight text-center px-1 transition-colors',
               pathname === item.href
                 ? 'text-brand-blue'
                 : 'text-gray-500 hover:text-white'
             )}
           >
             {(() => { const Icon = NAV_ICON_MAP[item.key]; return Icon ? <Icon size={20} /> : null })()}
-            <span>{t(item.key as 'roles')}</span>
+            <span className="truncate max-w-full">{t(item.key as 'roles')}</span>
           </Link>
         ))}
       </div>

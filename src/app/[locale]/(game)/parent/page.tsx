@@ -1,6 +1,10 @@
 import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { computeUnlockedSkins, computeStageAchievements, ACHIEVEMENT_DEFS } from '@/lib/game/avatar-utils'
+import { computeStageCoverage, STAGE_META, INNOVATION_STAGES, type CompletedMission, type InnovationStageId } from '@/lib/game/innovation-stages'
+import { getStoryProgress } from '@/lib/game/story-path'
+import type { Role } from '@/types/database'
 
 export default async function ParentDashboardPage({
   params,
@@ -20,7 +24,7 @@ export default async function ParentDashboardPage({
   // Fetch profile with is_parent check
   const { data: profile } = await supabase
     .from('profiles')
-    .select('id, username, country, created_at, is_parent, is_verified, xp, game_currency')
+    .select('id, username, country, created_at, is_parent, is_verified, xp, game_currency, coop_missions_completed')
     .eq('id', user.id)
     .single()
 
@@ -38,10 +42,14 @@ export default async function ParentDashboardPage({
   // Fetch all dashboard data in parallel
   const [
     missionProgressRes,
+    allMissionProgressRes,
     competencyRes,
     coopCompletedRes,
+    allCoopCompletedRes,
     chatMessagesRes,
+    userAchievementsRes,
   ] = await Promise.all([
+    // Recent completed missions — for the activity table (limited to 20)
     supabase
       .from('mission_progress')
       .select('role, mission_number, status, score, hints_used, completed_at')
@@ -49,31 +57,86 @@ export default async function ParentDashboardPage({
       .eq('status', 'completed')
       .order('completed_at', { ascending: false })
       .limit(20),
+    // ALL mission progress — for independence / story / stage calculations
+    supabase
+      .from('mission_progress')
+      .select('role, mission_number, status, hints_used')
+      .eq('user_id', user.id),
     supabase
       .from('competency_scores')
       .select('*')
       .eq('user_id', user.id)
       .single(),
+    // Recent coop — for the activity table (limited to 10)
     supabase
       .from('coop_completed_missions')
       .select('mission_template, role, score, stars, total_session_score, partner_country, completed_at')
       .eq('user_id', user.id)
       .order('completed_at', { ascending: false })
       .limit(10),
+    // ALL coop completions — for achievement / stage coverage calculations
+    supabase
+      .from('coop_completed_missions')
+      .select('mission_template, role')
+      .eq('user_id', user.id),
     supabase
       .from('chat_messages')
       .select('content, is_preset, created_at, coop_session_id')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(20),
+    supabase
+      .from('user_achievements')
+      .select('achievement_id')
+      .eq('user_id', user.id),
   ])
 
   const missions = missionProgressRes.data || []
+  const allProgress = (allMissionProgressRes.data || []) as { role: string; mission_number: number; status: string; hints_used?: number }[]
   const competency = competencyRes.data
   const coopCompleted = coopCompletedRes.data || []
+  const allCoop = (allCoopCompletedRes.data || []) as { mission_template: string; role: string }[]
   const chatMessages = chatMessagesRes.data || []
+  const userAchievementRows = userAchievementsRes.data || []
 
-  const totalMissionsCompleted = missions.length
+  const totalMissionsCompleted = allProgress.filter(p => p.status === 'completed').length
+
+  // Independence metric — share of completed missions done without hints
+  const tracked = allProgress.filter(p => p.status === 'completed' && typeof p.hints_used === 'number' && p.hints_used >= 0)
+  const withoutHints = tracked.filter(p => (p.hints_used ?? 0) === 0).length
+  const independencePct = tracked.length > 0 ? Math.round((withoutHints / tracked.length) * 100) : 0
+
+  // Story Mode progress
+  const storyProgress = getStoryProgress(
+    allProgress.filter(p => p.status === 'completed').map(p => ({
+      role: p.role,
+      mission_number: p.mission_number,
+      status: p.status,
+    })),
+  )
+
+  // Innovation stage coverage (personal + project)
+  const completedForMap: CompletedMission[] = [
+    ...allProgress
+      .filter(p => p.status === 'completed')
+      .map(p => ({ isCoop: false as const, role: p.role as Role, missionNumber: p.mission_number })),
+    ...allCoop.map(c => ({ isCoop: true as const, coopId: c.mission_template, role: c.role as Role })),
+  ]
+  const stageCoverage = computeStageCoverage(completedForMap)
+  const stageCoverageMap: Record<InnovationStageId, { hasPersonal: boolean; hasProject: boolean }> = {} as Record<InnovationStageId, { hasPersonal: boolean; hasProject: boolean }>
+  for (const c of stageCoverage) {
+    stageCoverageMap[c.stage] = { hasPersonal: c.hasPersonal, hasProject: c.hasProject }
+  }
+
+  // Achievements — solo (from mission_progress) + coop (from user_achievements) + innovation stage
+  const soloUnlocked = computeUnlockedSkins(allProgress.map(p => ({ role: p.role, mission_number: p.mission_number, status: p.status })))
+  const coopAchievementIds = userAchievementRows.map(a => `${(a as { achievement_id: string }).achievement_id}_skin`)
+  const stageAchievements = computeStageAchievements(
+    allProgress.map(p => ({ role: p.role, mission_number: p.mission_number, status: p.status })),
+    allCoop,
+  )
+  const unlockedAchievementSet = new Set<string>([...soloUnlocked, ...coopAchievementIds, ...stageAchievements])
+  const unlockedAchievements = ACHIEVEMENT_DEFS.filter(a => unlockedAchievementSet.has(a.id))
   const registrationDate = profile.created_at
     ? new Date(profile.created_at).toLocaleDateString(locale, {
         year: 'numeric',
@@ -113,7 +176,7 @@ export default async function ParentDashboardPage({
       {/* Account Overview */}
       <div className="bg-brand-panel border border-brand-border rounded-2xl p-6">
         <h2 className="text-lg font-bold text-white mb-4">{t('accountOverview')}</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           <div>
             <p className="text-xs text-gray-500">{t('username')}</p>
             <p className="text-white font-medium">{profile.username}</p>
@@ -130,7 +193,73 @@ export default async function ParentDashboardPage({
             <p className="text-xs text-gray-500">{t('missionsCompleted')}</p>
             <p className="text-white font-medium">{totalMissionsCompleted}</p>
           </div>
+          <div>
+            <p className="text-xs text-gray-500">{t('xp')}</p>
+            <p className="text-white font-medium">{profile.xp ?? 0}</p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500">{t('coins')}</p>
+            <p className="text-white font-medium">{profile.game_currency ?? 0}</p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500" title={t('independenceHint')}>{t('independence')}</p>
+            <p className="text-white font-medium">{independencePct}%</p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500">{t('storyProgress')}</p>
+            <p className="text-white font-medium">{t('storyProgressValue', { done: storyProgress.completed, total: storyProgress.total })}</p>
+          </div>
         </div>
+      </div>
+
+      {/* Innovation Process Stages */}
+      <div className="bg-brand-panel border border-brand-border rounded-2xl p-6">
+        <h2 className="text-lg font-bold text-white mb-1">{t('innovationStages')}</h2>
+        <p className="text-xs text-gray-400 mb-4">{t('innovationStagesDesc')}</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {INNOVATION_STAGES.map(stage => {
+            const cov = stageCoverageMap[stage] || { hasPersonal: false, hasProject: false }
+            const status = cov.hasPersonal ? 'personal' : cov.hasProject ? 'project' : 'none'
+            const bgClass =
+              status === 'personal' ? 'bg-brand-blue/20 border-brand-blue/50'
+              : status === 'project' ? 'bg-gray-700/30 border-gray-600'
+              : 'bg-brand-dark border-brand-border opacity-60'
+            const label =
+              status === 'personal' ? t('stagePersonal')
+              : status === 'project' ? t('stageProject')
+              : t('stageNotYet')
+            return (
+              <div key={stage} className={`rounded-xl border p-3 text-center ${bgClass}`}>
+                <div className="text-2xl mb-1" style={{ color: STAGE_META[stage].color }}>{STAGE_META[stage].icon}</div>
+                <div className="text-xs font-bold text-white">{t(`stages.${stage}` as 'stages.research')}</div>
+                <div className="text-[10px] text-gray-400 mt-1">{label}</div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Achievements */}
+      <div className="bg-brand-panel border border-brand-border rounded-2xl p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold text-white">{t('achievementsUnlocked')}</h2>
+          <span className="text-xs text-gray-400">{t('achievementsTotal', { unlocked: unlockedAchievements.length, total: ACHIEVEMENT_DEFS.length })}</span>
+        </div>
+        {unlockedAchievements.length === 0 ? (
+          <p className="text-gray-400 text-sm text-center py-4">{t('noAchievements')}</p>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {unlockedAchievements.map(a => (
+              <div key={a.id} className="flex items-start gap-2 bg-brand-dark border border-brand-border rounded-xl p-3">
+                <div className="text-2xl leading-none flex-shrink-0">{a.emoji}</div>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-white truncate">{a.name}</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5 line-clamp-2">{a.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Mission Activity */}
