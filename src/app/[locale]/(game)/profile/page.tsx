@@ -4,7 +4,7 @@ import { Link } from '@/i18n/navigation'
 import ProfileEditor from '@/components/game/ProfileEditor'
 import DeleteAccountSection from '@/components/game/DeleteAccountSection'
 import ComingSoonButton from '@/components/game/ComingSoonButton'
-import { computeUnlockedSkins, ACHIEVEMENT_DEFS } from '@/lib/game/avatar-utils'
+import { computeUnlockedSkins, computeStageAchievements, ACHIEVEMENT_DEFS } from '@/lib/game/avatar-utils'
 import { AchievementIcon } from '@/components/ui/SvgIcon'
 
 export default async function ProfilePage({ params }: { params: Promise<{ locale: string }> }) {
@@ -26,6 +26,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
 
   // Also fetch coop achievements from user_achievements table
   let coopAchievementIds: string[] = []
+  let coopCompletedRows: { mission_template: string; role: string }[] = []
   try {
     const { data, error } = await supabase
       .from('user_achievements')
@@ -39,8 +40,20 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
     // table may not exist
   }
 
-  // Merge solo + coop achievements
-  const unlockedSet = new Set([...soloUnlocked, ...coopAchievementIds])
+  // Fetch coop completed missions for innovation-stage achievement computation
+  try {
+    const { data } = await supabase
+      .from('coop_completed_missions')
+      .select('mission_template, role')
+      .eq('user_id', user!.id)
+    if (data) coopCompletedRows = data as { mission_template: string; role: string }[]
+  } catch { /* table may not exist */ }
+
+  // Compute innovation-stage achievements (Problem Hunter, Full Cycle Founder, etc.)
+  const stageAchievements = computeStageAchievements(missionProgress, coopCompletedRows)
+
+  // Merge solo + coop + stage achievements
+  const unlockedSet = new Set([...soloUnlocked, ...coopAchievementIds, ...stageAchievements])
   const achievementCount = unlockedSet.size
 
   // Get owned items from user_skins for the profile editor

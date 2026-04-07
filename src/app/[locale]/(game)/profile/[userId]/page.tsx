@@ -4,7 +4,7 @@ import { Link } from '@/i18n/navigation'
 import CharacterAvatarPreview from '@/components/game/CharacterAvatarPreview'
 import RoleIcon from '@/components/game/RoleIcon'
 import ReportPlayerButton from '@/components/game/ReportPlayerButton'
-import { parseAvatarConfig, computeUnlockedSkins, ACHIEVEMENT_DEFS } from '@/lib/game/avatar-utils'
+import { parseAvatarConfig, computeUnlockedSkins, computeStageAchievements, ACHIEVEMENT_DEFS } from '@/lib/game/avatar-utils'
 import { AchievementIcon } from '@/components/ui/SvgIcon'
 import type { Role } from '@/types/database'
 
@@ -55,6 +55,7 @@ export default async function PublicProfilePage({ params }: Props) {
 
   // Also fetch coop achievements from user_achievements table
   let coopAchievementIds: string[] = []
+  let coopCompletedRows: { mission_template: string; role: string }[] = []
   try {
     const { data, error } = await supabase
       .from('user_achievements')
@@ -67,7 +68,19 @@ export default async function PublicProfilePage({ params }: Props) {
     // table may not exist
   }
 
-  const unlockedSet = new Set([...soloUnlocked, ...coopAchievementIds])
+  // Fetch coop completed missions for innovation-stage achievements
+  try {
+    const { data } = await supabase
+      .from('coop_completed_missions')
+      .select('mission_template, role')
+      .eq('user_id', userId)
+    if (data) coopCompletedRows = data as { mission_template: string; role: string }[]
+  } catch { /* table may not exist */ }
+
+  // Innovation-stage achievements (Problem Hunter, Full Cycle Founder, etc.)
+  const stageAchievements = computeStageAchievements(progress, coopCompletedRows)
+
+  const unlockedSet = new Set([...soloUnlocked, ...coopAchievementIds, ...stageAchievements])
   const earnedAchievements = ACHIEVEMENT_DEFS.filter(a => unlockedSet.has(a.id))
 
   return (
