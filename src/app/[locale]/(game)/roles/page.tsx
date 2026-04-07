@@ -182,7 +182,7 @@ export default async function RolesPage() {
           return (
             <div
               key={role.id}
-              className={`bg-gradient-to-br ${role.bgGradient} border rounded-2xl p-6`}
+              className={`bg-gradient-to-br ${role.bgGradient} border rounded-2xl p-6 flex flex-col h-full`}
               style={{ borderColor: `${role.color}44` }}
             >
               {/* Role illustration */}
@@ -193,63 +193,72 @@ export default async function RolesPage() {
                 })()}
               </div>
 
-              {/* Info */}
-              <h2 className="text-xl font-bold text-white text-center mb-1">
-                {t(`roles.${role.id}.name`)}
-              </h2>
-              <p
-                className="text-xs italic text-center mb-2"
-                style={{ color: role.color }}
-              >
-                {t(`roles.${role.id}.roleLabel`)}
-              </p>
-              <p className="text-gray-400 text-sm text-center mb-2">
-                {t(`roles.${role.id}.description`)}
-              </p>
+              {/* Info — grows to fill the available height so progress and
+                  button stick to the bottom and align across all 3 cards */}
+              <div className="flex flex-col flex-1">
+                <h2 className="text-xl font-bold text-white text-center mb-1">
+                  {t(`roles.${role.id}.name`)}
+                </h2>
+                <p
+                  className="text-xs italic text-center mb-2"
+                  style={{ color: role.color }}
+                >
+                  {t(`roles.${role.id}.roleLabel`)}
+                </p>
+                <p className="text-gray-400 text-sm text-center mb-3">
+                  {t(`roles.${role.id}.description`)}
+                </p>
 
-              <div
-                className="text-xs font-medium text-center px-3 py-1 rounded-full inline-block mb-4 mx-auto block w-fit"
-                style={{ backgroundColor: `${role.color}22`, color: role.color }}
-              >
-                {t(`roles.${role.id}.skill`)}
-              </div>
-
-              {/* Progress */}
-              <div className="mb-4">
-                <div className="flex justify-between text-xs text-gray-400 mb-1">
-                  <span>{t('roles.missions')}</span>
-                  <span>
-                    {completed}/{total} {t('roles.completed')}
-                    {xp > 0 && <span className="ml-1 text-brand-gold">{xp} XP</span>}
-                  </span>
-                </div>
-                <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                {/* Stages chip — centered horizontally */}
+                <div className="flex justify-center mb-4">
                   <div
-                    className="h-full rounded-full transition-all"
-                    style={{
-                      width: `${(completed / total) * 100}%`,
-                      backgroundColor: role.color,
-                    }}
-                  />
+                    className="text-xs font-medium text-center px-3 py-1 rounded-full"
+                    style={{ backgroundColor: `${role.color}22`, color: role.color }}
+                  >
+                    {t(`roles.${role.id}.skill`)}
+                  </div>
                 </div>
-              </div>
 
-              {/* Button */}
-              <Link
-                href={`/missions/${role.id === 'drone_programmer' ? 'drone' : role.id === 'robot_constructor' ? 'robot' : 'entrepreneur'}` as '/roles'}
-                prefetch={true}
-                className="block w-full text-center py-3.5 sm:py-3 rounded-xl font-bold text-sm touch-manipulation"
-                style={{
-                  backgroundColor: isFinished ? `${role.color}33` : role.color,
-                  color: isFinished ? role.color : '#000',
-                }}
-              >
-                {isFinished
-                  ? '\u2713 ' + t('roles.completed')
-                  : isStarted
-                  ? t('roles.continueRole')
-                  : t('roles.startRole')}
-              </Link>
+                {/* Spacer pushes progress + button to the bottom */}
+                <div className="flex-1" />
+
+                {/* Progress */}
+                <div className="mb-4">
+                  <div className="flex justify-between text-xs text-gray-400 mb-1">
+                    <span>{t('roles.missions')}</span>
+                    <span>
+                      {completed}/{total} {t('roles.completed')}
+                      {xp > 0 && <span className="ml-1 text-brand-gold">{xp} XP</span>}
+                    </span>
+                  </div>
+                  <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{
+                        width: `${(completed / total) * 100}%`,
+                        backgroundColor: role.color,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Button */}
+                <Link
+                  href={`/missions/${role.id === 'drone_programmer' ? 'drone' : role.id === 'robot_constructor' ? 'robot' : 'entrepreneur'}` as '/roles'}
+                  prefetch={true}
+                  className="block w-full text-center py-3.5 sm:py-3 rounded-xl font-bold text-sm touch-manipulation"
+                  style={{
+                    backgroundColor: isFinished ? `${role.color}33` : role.color,
+                    color: isFinished ? role.color : '#000',
+                  }}
+                >
+                  {isFinished
+                    ? '\u2713 ' + t('roles.completed')
+                    : isStarted
+                    ? t('roles.continueRole')
+                    : t('roles.startRole')}
+                </Link>
+              </div>
             </div>
           )
         })}
