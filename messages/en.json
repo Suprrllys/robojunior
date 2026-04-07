@@ -1,7 +1,7 @@
 {
   "common": {
     "appName": "RoboJunior",
-    "tagline": "Career Simulator for Future Engineers",
+    "tagline": "Innovation Process Simulator",
     "loading": "Loading...",
     "comingSoonMessage": "Thank you for your interest! This feature will be added in the release version of the game.",
     "error": "Something went wrong",
@@ -73,22 +73,25 @@
     "passwordHint": "Minimum 8 characters"
   },
   "roles": {
-    "title": "Choose Your Role",
-    "subtitle": "Try different careers. Discover what fits you.",
+    "title": "Choose Your Tool",
+    "subtitle": "6 stages of innovation. Each tool works on its own stages. Combine them to cover the full cycle — from problem to launch.",
     "drone_programmer": {
-      "name": "Drone Programmer",
-      "description": "Write code to control drones in real Saudi Arabia scenarios",
-      "skill": "Algorithmic Thinking"
+      "name": "Prototype via Code",
+      "roleLabel": "As a Drone Programmer",
+      "description": "Program autonomous drones for real Saudi Arabia scenarios",
+      "skill": "Stages: Prototype · Test"
     },
     "robot_constructor": {
-      "name": "Robot Constructor",
-      "description": "Build and optimize robots for industrial missions",
-      "skill": "Engineering Thinking"
+      "name": "Prototype via Hardware",
+      "roleLabel": "As a Robot Constructor",
+      "description": "Build robots from modules for industrial missions",
+      "skill": "Stages: Prototype · Test"
     },
     "entrepreneur": {
-      "name": "Tech Entrepreneur",
-      "description": "Launch a tech startup and make strategic decisions",
-      "skill": "Strategic Thinking"
+      "name": "From Idea to Market",
+      "roleLabel": "As a Tech Entrepreneur",
+      "description": "Find problems, build MVP, pitch investors, launch products",
+      "skill": "Stages: Research · Idea · Prototype · Pitch · Launch"
     },
     "missions": "Missions",
     "completed": "completed",
@@ -96,8 +99,8 @@
     "continueRole": "Continue",
     "locked": "Complete previous mission to unlock",
     "specialMissions": {
-      "title": "Special Missions",
-      "desc": "Exclusive missions from industry partners and top universities. Complete them to earn special rewards and recognition.",
+      "title": "RobodexBRICS Special Missions",
+      "desc": "Full scenarios from partners — Aramco, NEOM, KAUST. Complete them to earn special rewards and internship recommendations.",
       "explore": "Explore Missions"
     }
   },
@@ -935,8 +938,33 @@
     }
   },
   "dashboard": {
-    "title": "My Career Dashboard",
+    "title": "My Innovation Profile",
     "subtitle": "Based on your mission performance",
+    "innovationMap": {
+      "title": "Innovation Process Map",
+      "subtitle": "6 stages of creating a technological product — from problem to launch",
+      "personalLabel": "Personal experience",
+      "projectLabel": "Project participation (via coop)",
+      "notStarted": "Not started",
+      "legend": "Solid checkmark — you personally completed this stage. Hollow — the stage was completed by other players in a coop project you participated in.",
+      "missionsCount": "{count} missions",
+      "projectsCount": "{count} projects",
+      "stagesProgress": "Coverage: {covered} of 6 stages"
+    },
+    "stages": {
+      "research": "Problem Research",
+      "idea": "Idea Generation",
+      "prototype": "Prototyping",
+      "test": "Testing",
+      "pitch": "Pitch & Funding",
+      "launch": "Launch & Scale",
+      "researchShort": "Research",
+      "ideaShort": "Idea",
+      "prototypeShort": "Prototype",
+      "testShort": "Test",
+      "pitchShort": "Pitch",
+      "launchShort": "Launch"
+    },
     "competencies": "Competency Radar",
     "axes": {
       "technical_precision": "Technical Precision",
@@ -992,9 +1020,82 @@
       "startup_launch": "Startup Launch"
     }
   },
+  "story": {
+    "label": "Story Mode",
+    "title": "Your First Tech Startup",
+    "subtitle": "Six chapters that walk you through the full innovation cycle — from finding a problem in Riyadh to your first 1000 users. Chapter completions count as regular missions.",
+    "tileDescription": "Walk through the full innovation cycle in 6 chapters with Layla — from problem research to product launch.",
+    "openCta": "Open Story",
+    "backToMenu": "Back to menu",
+    "backToStoryMap": "Story map",
+    "chaptersCompleted": "chapters completed",
+    "chapterOf": "Chapter {current} of {total}",
+    "stageOfSix": "Stage {order} of 6",
+    "mentorLabel": "Mentor: {mentor}",
+    "mentorSays": "{mentor} says:",
+    "yourMission": "Your mission",
+    "alreadyCompletedHint": "This mission is already completed. You can replay it to improve your score.",
+    "start": "Start chapter",
+    "replay": "Replay",
+    "locked": "Locked",
+    "startMission": "Start mission",
+    "replayMission": "Replay mission",
+    "skipToNext": "Skip to next chapter",
+    "progressHint": "Chapters unlock as you complete previous missions. If you've already played these missions in solo mode, the corresponding chapters will be marked complete automatically.",
+    "finishedTitle": "Congratulations! You completed the full innovation cycle.",
+    "finishedDesc": "All 6 stages of the innovation process covered. The 'Full Cycle Founder' achievement is unlocked.",
+
+    "chapter1": {
+      "title": "Why should anyone buy your product?",
+      "tagline": "Chapter 1. Finding the real problem",
+      "teaser": "Layla arrives in Riyadh for the RobodexBRICS hackathon. She has a vague idea of 'making something useful for Vision 2030', but no specific problem in mind.",
+      "narrative": "Layla landed in Riyadh last night. Seven days until the RobodexBRICS hackathon defense. Seven days to turn a vague dream into a working product to show real investors.\n\nIn her head: 'I want to build something for Vision 2030. Something with drones. Or robots. Or AI. Something useful.' Inspiring — and completely useless.\n\nQAMAR, her mentor from Misk School, walks in with two cups of karak tea. Looks at Layla's empty notebook and smiles: 'I know that look. Everyone has it on day one. If you want to solve a problem — go out and find it. Don't invent it at your desk. Ask the people of this city what bothers them.'\n\nThe assignment is simple and excruciating: walk through the city, talk to 12 residents, listen to their pain. Don't propose solutions. Don't argue. Just listen. Then group the pains by theme — somewhere in those repeated complaints hides the real problem worth building a product for.",
+      "mentorQuote": "If the drone won't fly — don't change the drone. Find the bug in the command. Same with products: if no one buys — don't invent a new product. Find the real problem."
+    },
+
+    "chapter2": {
+      "title": "Are you sure it's a real problem?",
+      "tagline": "Chapter 2. Validating the idea",
+      "teaser": "Layla is back with notes from 12 interviews. One complaint repeated most often: water in the new districts on Riyadh's outskirts. But is that her guess — or reality?",
+      "narrative": "At home, Layla spreads her notes on the table. 12 interviews, dozens of different complaints — traffic, housing prices, boring school material, lack of parks. But one theme came up again and again, especially among people from the new districts: water. Delivery is slow, tanks don't get refilled in time, and the hottest days bring panic.\n\nA lightbulb goes on in Layla's head: 'I've got it! Drones for water delivery. Genius! Fast, cheap, no infrastructure needed.'\n\nRAWAAN walks in, sees her glowing eyes, and shakes her head: 'Stop. You've just become the most dangerous figure in any startup — a founder in love with her own idea. Take that idea and go back to those same people. Ask them: «If this service existed right now for $X per month, would you pay?» And listen not to words, but to emotions. If they hedge, say 'maybe, we'll see' — that's a polite no. If they ask when they can buy — that's yes.'\n\nLayla heads back into the city. This time — with a hypothesis in her pocket and the willingness to hear 'no'.",
+      "mentorQuote": "The best time to launch is yesterday. The second best is right now. But only if you know you're launching exactly what people need. Otherwise you're building a beautiful tomb for your hopes."
+    },
+
+    "chapter3": {
+      "title": "From idea to working prototype",
+      "tagline": "Chapter 3. The first prototype",
+      "teaser": "The idea is validated — residents are willing to pay for fast water delivery. Now you need a real prototype that flies and delivers cargo. Not perfect — just working.",
+      "narrative": "Layla has 12 interested potential customers and one week until the defense. The idea is clear: a drone that delivers a 5-liter water canister within 3 km of an unloading point.\n\nThe first temptation — to design the perfect, elegant, powerful drone. With auto-docking, two cameras, a mobile app, obstacle avoidance, recipient face recognition... Layla opens the blueprint and realizes she'd be drawing it until the end of the week with nothing built.\n\nBANDAR, the engineering mentor, notices her face and says what she doesn't want to hear: 'The first prototype doesn't need to be perfect. It needs to fly. Period. No cameras, no app, no faces. Take an off-the-shelf frame, add a basic cargo mount, and write the minimum code that delivers a canister from point A to point B in a straight line. Everything else — later.'\n\nLayla erases the blueprint and starts over — with the simplest thing that can fly and carry water.",
+      "mentorQuote": "A good design tells you how to fix it. A prototype that doesn't fly tells you nothing — because it's dead. Life first, beauty later."
+    },
+
+    "chapter4": {
+      "title": "Will your prototype survive real conditions?",
+      "tagline": "Chapter 4. Testing",
+      "teaser": "The prototype flies. On paper. But Saudi Arabia means +50°C, sandstorms, and power lines. Layla runs the prototype through simulated real conditions — and watches it crash for the first time.",
+      "narrative": "Layla went up to the rooftop with her first working drone. It took off, flew to the neighboring building, gently dropped the canister on the marker, and returned. Layla jumps for joy. Calls her mom. Sends video to BANDAR.\n\nQAMAR comes up to the roof and watches her enthusiasm in silence. Then says: 'Good. Now repeat it at three in the afternoon, when it's +50°C and heat waves rise from the asphalt. And during a sandstorm. And when there's a 30-meter power line between points A and B. And when GPS is off by 5 meters because of interference. Will it still fly?'\n\nLayla realizes: a successful first flight isn't proof that the product works. It's proof that it works in the easiest conditions. The real world is hundreds of scenarios where things can go wrong.\n\nShe launches the simulation — a test field with obstacles, wind, sensor errors. The first three flights — disasters. The drone catches on an obstacle, loses orientation, crashes. Layla doesn't give up — every crash gives her data on what to fix.",
+      "mentorQuote": "Testing isn't proof you're right. It's the search for everything you got wrong, before customers find it first."
+    },
+
+    "chapter5": {
+      "title": "How to convince an investor in 10 minutes",
+      "tagline": "Chapter 5. Pitch and funding",
+      "teaser": "The prototype works. Tests passed. Now you need money for production and a team. Layla has 10 minutes in front of the RobodexBRICS investment fund — and dozens of competitors.",
+      "narrative": "A conference room on the 30th floor of a tower in KAFD district. Layla sits outside, waiting for her turn. Eight other startups have pitched before her. She watched through the glass as two left elated, six left crushed. In 15 minutes, it's her turn.\n\nIn her hands — slides. In her head — two weeks of testing. In her pocket — 12 validated potential customers and a working prototype. But investors have seen hundreds of these. What sets her apart from the six who left crushed?\n\nRAWAAN, who's been through this herself, sits next to her and says quietly: 'Remember: an investor isn't buying your product. He's buying you. He's buying your ability to take an idea to market without wasting his money. Don't talk to him about technology — he doesn't understand it, and that scares him. Tell him about a customer: here's a woman from Al-Safa district, two children, in summer her tank dries out by day three, she's willing to pay 50 riyals a month for guaranteed delivery. Show data. Show the prototype on video. Show that you know where to go next with his money. And be honest about the risks — investors aren't afraid of risks, they're afraid of founders who don't see them.'\n\nThe door opens. 'Layla? Come in.'",
+      "mentorQuote": "The investor isn't buying your product. He's buying you — your ability to take an idea to market. Show data. Show the customer. Show that you know the next step."
+    },
+
+    "chapter6": {
+      "title": "The first thousand users",
+      "tagline": "Chapter 6. Launch and scale",
+      "teaser": "Funding secured. Team assembled. The prototype goes into production. But between 'we have a product' and '1000 customers' lies the hardest part — the actual launch.",
+      "narrative": "The funding is in the account. Layla hired three people — a drone operator, a maintenance engineer, and a marketer. Production has started — the first 50 drones are ready for deployment. Everyone is happy, everyone is waiting for applause.\n\nAnd this is where the hardest part begins.\n\nMonth one: 23 users. Not 1000. 23. Some leave the next day because the drone was 15 minutes late. One leaves a one-star review. The marketer says they need money for ads. The engineer says one of the drones is broken — they need parts. The investor writes: 'When will we see growth?'\n\nLayla understands: launch isn't the finale. It's just the beginning. Every day she chooses how to spend limited time and money — ads or repair? New feature or supporting existing customers? Expand coverage or deepen service in the current zone? RAWAAN, BANDAR, and QAMAR now only watch from the sidelines — Layla makes the decisions.\n\nThree months later, on the dashboard: 1247 users. Six months — 5000. One investor writes: 'Ready to talk Series B?'\n\nLayla opens the RobodexBRICS app. Sees the notification: 'Congratulations. You completed the full innovation cycle. Achievement Full Cycle Founder unlocked.'\n\nAnd smiles. Because she knows: this is just the first chapter.",
+      "mentorQuote": "Between 'we have a product' and '1000 customers' lies the hardest part. It's not about code. It's not about design. It's about showing up every morning, finding problems you didn't expect, and solving them one at a time."
+    }
+  },
   "coop": {
-    "title": "Cooperative Missions",
-    "subtitle": "Team up with engineers from BRICS+ countries",
+    "title": "Team Launch",
+    "subtitle": "Launch products in a BRICS+ team. Each tool works on its own stages of the shared project — Prototype, Test, Pitch, Launch.",
     "findTeam": "Find a Team",
     "createSession": "Create Session",
     "joinSession": "Join Session",
@@ -1729,9 +1830,16 @@
     "xp": "XP",
     "coins": "Coins",
     "skillsPracticed": "Skills practiced:",
+    "stageCovered": "You worked on innovation process stage:",
+    "stageCoveredSingle": "Stage covered: {stage}",
+    "stageCoveredMulti": "Stages covered: {stages}",
+    "stageOfTotal": "{stage} — stage {order} of 6",
     "nextMission": "Next Mission",
     "retry": "Try Again",
     "backToMap": "Back to Map",
+    "backToStory": "Back to Story",
+    "continueStory": "Continue Story",
+    "finishStory": "Finish Story",
     "skip": "Skip",
     "nextStep": "Next",
     "startMission": "Start Mission"
@@ -2379,7 +2487,21 @@
     "achievements_coop_perfect_sync_name": "Perfect Sync",
     "achievements_coop_perfect_sync_desc": "All players score 800+ in one session",
     "achievements_coop_all_missions_name": "Co-op Master",
-    "achievements_coop_all_missions_desc": "Complete all 5 unique co-op missions"
+    "achievements_coop_all_missions_desc": "Complete all 5 unique co-op missions",
+    "achievements_stage_research_name": "Problem Hunter",
+    "achievements_stage_research_desc": "Personally work on the Research stage (NPC interviews, collecting pains)",
+    "achievements_stage_idea_name": "Idea Validator",
+    "achievements_stage_idea_desc": "Personally work on the Idea stage (hypothesis selection, customer discovery)",
+    "achievements_stage_prototype_name": "Prototype Builder",
+    "achievements_stage_prototype_desc": "Personally work on the Prototype stage (drone code, robot assembly, or MVP)",
+    "achievements_stage_test_name": "Stress Tester",
+    "achievements_stage_test_desc": "Personally work on the Test stage (simulations, metrics, iterations)",
+    "achievements_stage_pitch_name": "Pitch Ready",
+    "achievements_stage_pitch_desc": "Personally work on the Pitch stage (defending project to investors)",
+    "achievements_stage_launch_name": "Launch Captain",
+    "achievements_stage_launch_desc": "Personally work on the Launch stage (market entry, growth, pivot)",
+    "achievements_full_cycle_founder_name": "Full Cycle Founder",
+    "achievements_full_cycle_founder_desc": "Personally complete all 6 stages of the innovation process — from problem to launch"
   },
   "skinShop": {
     "title": "Skin Shop",

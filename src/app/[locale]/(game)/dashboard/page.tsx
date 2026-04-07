@@ -3,7 +3,9 @@ import { createClient } from '@/lib/supabase/server'
 import { Link } from '@/i18n/navigation'
 import CompetencyRadar from '@/components/game/CompetencyRadar'
 import CareerRecommendation from '@/components/game/CareerRecommendation'
-import { computeUnlockedSkins, ACHIEVEMENT_DEFS } from '@/lib/game/avatar-utils'
+import InnovationProcessMap from '@/components/game/InnovationProcessMap'
+import { computeUnlockedSkins, computeStageAchievements, ACHIEVEMENT_DEFS } from '@/lib/game/avatar-utils'
+import type { CompletedMission } from '@/lib/game/innovation-stages'
 import { IconStar, IconMissions, IconRolesExplored, AchievementIcon, IconDroneMini, IconRobotMini, IconLightbulb } from '@/components/ui/SvgIcon'
 import type { Role } from '@/types/database'
 import type { ReactNode } from 'react'
@@ -81,6 +83,22 @@ export default async function DashboardPage() {
     { label: t('stats.rolesExplored'), value: rolesExplored, iconEl: <IconRolesExplored size={32} animated /> },
   ]
 
+  // Build CompletedMission list for innovation process map
+  const completedForMap: CompletedMission[] = [
+    ...progress
+      .filter(p => p.status === 'completed')
+      .map(p => ({
+        isCoop: false as const,
+        role: p.role as Role,
+        missionNumber: p.mission_number,
+      })),
+    ...coopCompleted.map(c => ({
+      isCoop: true as const,
+      coopId: c.mission_template as string,
+      role: c.role as Role,
+    })),
+  ]
+
   // Compute achievements: solo from mission_progress + coop from user_achievements
   const soloUnlocked = computeUnlockedSkins(progress)
   let coopAchievementIds: string[] = []
@@ -93,7 +111,12 @@ export default async function DashboardPage() {
       coopAchievementIds = data.map(a => `${a.achievement_id}_skin`)
     }
   } catch { /* table may not exist */ }
-  const unlockedSet = new Set([...soloUnlocked, ...coopAchievementIds])
+  // Innovation stage achievements — computed from both solo and coop completions
+  const stageAchievements = computeStageAchievements(
+    progress,
+    coopCompleted.map(c => ({ mission_template: c.mission_template as string, role: c.role as string })),
+  )
+  const unlockedSet = new Set([...soloUnlocked, ...coopAchievementIds, ...stageAchievements])
 
   return (
     <div className="space-y-8">
@@ -112,6 +135,9 @@ export default async function DashboardPage() {
           </div>
         ))}
       </div>
+
+      {/* Innovation Process Map — main visualization */}
+      <InnovationProcessMap completed={completedForMap} />
 
       {/* Active coop sessions banner */}
       {activeCoop.length > 0 && (

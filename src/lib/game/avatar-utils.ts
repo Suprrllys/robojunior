@@ -1,6 +1,11 @@
 import type { Role } from '@/types/database'
 import type { AvatarConfig } from '@/lib/game/shop-items'
 import { DEFAULT_AVATAR } from '@/lib/game/shop-items'
+import {
+  computeStageCoverage,
+  countPersonalStages,
+  type CompletedMission,
+} from '@/lib/game/innovation-stages'
 
 /**
  * Parse an avatar_accessory string from the database into an AvatarConfig.
@@ -62,6 +67,38 @@ export function computeUnlockedSkins(
 }
 
 /**
+ * Compute unlocked innovation-stage achievements from solo + coop completions.
+ * Returns achievement IDs like 'stage_research_unlocked', 'full_cycle_founder'.
+ */
+export function computeStageAchievements(
+  progress: { role: string; mission_number: number; status: string }[] | null,
+  coopCompleted: { mission_template: string; role: string }[] | null,
+): string[] {
+  const unlocked: string[] = []
+  const completed: CompletedMission[] = []
+
+  if (progress) {
+    for (const p of progress) {
+      if (p.status !== 'completed') continue
+      completed.push({ isCoop: false, role: p.role as Role, missionNumber: p.mission_number })
+    }
+  }
+  if (coopCompleted) {
+    for (const c of coopCompleted) {
+      completed.push({ isCoop: true, coopId: c.mission_template, role: c.role as Role })
+    }
+  }
+
+  const coverage = computeStageCoverage(completed)
+  for (const c of coverage) {
+    if (c.hasPersonal) unlocked.push(`stage_${c.stage}_unlocked`)
+  }
+  if (countPersonalStages(coverage) === 6) unlocked.push('full_cycle_founder')
+
+  return unlocked
+}
+
+/**
  * Achievement definitions — purely recognition milestones.
  * No rewards, no item unlocks, no XP bonuses.
  */
@@ -94,4 +131,12 @@ export const ACHIEVEMENT_DEFS: AchievementDef[] = [
   { id: 'coop_brics_united_skin', emoji: '\u{1F30D}', name: 'BRICS United', desc: 'Play with a partner from another country', nameKey: 'achievements_coop_brics_united_name', descKey: 'achievements_coop_brics_united_desc' },
   { id: 'coop_perfect_sync_skin', emoji: '\u26A1', name: 'Perfect Sync', desc: 'All players score 800+ in one session', nameKey: 'achievements_coop_perfect_sync_name', descKey: 'achievements_coop_perfect_sync_desc' },
   { id: 'coop_all_missions_skin', emoji: '\u{1F3C6}', name: 'Co-op Master', desc: 'Complete all 5 unique co-op missions', nameKey: 'achievements_coop_all_missions_name', descKey: 'achievements_coop_all_missions_desc' },
+  // Innovation process stage achievements (one per stage + full cycle)
+  { id: 'stage_research_unlocked', emoji: '\u{1F50D}', name: 'Problem Hunter', desc: 'Personally work on the Research stage of the innovation process', nameKey: 'achievements_stage_research_name', descKey: 'achievements_stage_research_desc' },
+  { id: 'stage_idea_unlocked', emoji: '\u{1F4A1}', name: 'Idea Validator', desc: 'Personally work on the Idea stage of the innovation process', nameKey: 'achievements_stage_idea_name', descKey: 'achievements_stage_idea_desc' },
+  { id: 'stage_prototype_unlocked', emoji: '\u{1F6E0}', name: 'Prototype Builder', desc: 'Personally work on the Prototype stage of the innovation process', nameKey: 'achievements_stage_prototype_name', descKey: 'achievements_stage_prototype_desc' },
+  { id: 'stage_test_unlocked', emoji: '\u{1F9EA}', name: 'Stress Tester', desc: 'Personally work on the Test stage of the innovation process', nameKey: 'achievements_stage_test_name', descKey: 'achievements_stage_test_desc' },
+  { id: 'stage_pitch_unlocked', emoji: '\u{1F4CA}', name: 'Pitch Ready', desc: 'Personally work on the Pitch stage of the innovation process', nameKey: 'achievements_stage_pitch_name', descKey: 'achievements_stage_pitch_desc' },
+  { id: 'stage_launch_unlocked', emoji: '\u{1F680}', name: 'Launch Captain', desc: 'Personally work on the Launch stage of the innovation process', nameKey: 'achievements_stage_launch_name', descKey: 'achievements_stage_launch_desc' },
+  { id: 'full_cycle_founder', emoji: '\u{1F3C6}', name: 'Full Cycle Founder', desc: 'Personally cover all 6 stages of the innovation process', nameKey: 'achievements_full_cycle_founder_name', descKey: 'achievements_full_cycle_founder_desc' },
 ]

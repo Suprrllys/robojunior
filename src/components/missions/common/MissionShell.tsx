@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
+import { useSearchParams, useRouter } from 'next/navigation'
 import clsx from 'clsx'
 import { X, BookOpen } from 'lucide-react'
 import HintPanel from './HintPanel'
@@ -11,6 +12,7 @@ import OnboardingOverlay from './OnboardingOverlay'
 import type { Role } from '@/types/database'
 import { calculateNearMiss } from '@/lib/game/scoring'
 import { getAudioManager } from '@/lib/game/audio'
+import { STORY_PATH } from '@/lib/game/story-path'
 
 /** Read the number of hints the player revealed during this mission. */
 export function getHintsUsed(): number {
@@ -104,6 +106,30 @@ export default function MissionShell({
 }: MissionShellProps) {
   const t = useTranslations('missionShell')
   const tCommon = useTranslations('missions.common')
+
+  // Story Mode detection — when player launches a mission from /story/[chapter],
+  // the mission URL contains ?story=N. We use this to override navigation:
+  // - "Back to map" button leads back to /story instead of mission list
+  // - "Next mission" leads to next chapter intro instead of next solo mission
+  // The mission progress itself is saved as usual (Variant A), so completing
+  // a chapter mission counts toward both the story and solo progress.
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const storyParam = searchParams?.get('story')
+  const storyChapterOrder = storyParam ? parseInt(storyParam, 10) : null
+  const storyChapter = storyChapterOrder
+    ? STORY_PATH.find(c => c.order === storyChapterOrder)
+    : null
+  // Validate: only treat as story mode if the chapter exists AND it matches
+  // this mission (defends against a player tampering with the URL)
+  const isStoryMode = !!(
+    storyChapter &&
+    storyChapter.mission.role === role &&
+    storyChapter.mission.missionNumber === missionNumber
+  )
+  const nextStoryChapter = isStoryMode && storyChapterOrder
+    ? STORY_PATH.find(c => c.order === storyChapterOrder + 1)
+    : null
 
   // Determine initial state
   const hasOnboarding = onboardingSteps && onboardingSteps.length > 0 && !onboardingCompleted
@@ -257,16 +283,29 @@ export default function MissionShell({
           xpEarned={xpEarned}
           coinsEarned={coinsEarned}
           skillsPracticed={skillsPracticed}
+          role={role}
           missionNumber={missionNumber}
           totalMissions={totalMissions}
           nearMissPoints={nearMissPoints}
           nearMissStarLevel={nearMissStarLevel}
+          storyMode={isStoryMode}
+          storyHasNextChapter={!!nextStoryChapter}
           onRetry={() => {
             setState('playing')
             onRetry?.()
           }}
-          onNext={onNext}
+          onNext={
+            isStoryMode
+              ? nextStoryChapter
+                ? () => router.push(`/story/${nextStoryChapter.id}`)
+                : () => router.push('/story')
+              : onNext
+          }
           onBackToMap={() => {
+            if (isStoryMode) {
+              router.push('/story')
+              return
+            }
             setState('playing')
             onExit()
           }}

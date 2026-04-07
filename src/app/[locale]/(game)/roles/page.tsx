@@ -197,6 +197,12 @@ export default async function RolesPage() {
               <h2 className="text-xl font-bold text-white text-center mb-1">
                 {t(`roles.${role.id}.name`)}
               </h2>
+              <p
+                className="text-xs italic text-center mb-2"
+                style={{ color: role.color }}
+              >
+                {t(`roles.${role.id}.roleLabel`)}
+              </p>
               <p className="text-gray-400 text-sm text-center mb-2">
                 {t(`roles.${role.id}.description`)}
               </p>
@@ -249,8 +255,26 @@ export default async function RolesPage() {
         })}
       </div>
 
+      {/* Story Mode — full innovation cycle in 6 chapters */}
+      <div className="mt-8 bg-gradient-to-r from-purple-900/40 via-pink-900/30 to-red-900/30 border border-purple-500/40 rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center gap-4">
+        <div className="flex-shrink-0 text-5xl">{'\u{1F4D6}'}</div>
+        <div className="flex-1">
+          <div className="text-xs font-bold text-purple-400 uppercase tracking-wider mb-1">
+            {t('story.label')}
+          </div>
+          <h3 className="font-bold text-white text-lg">{t('story.title')}</h3>
+          <p className="text-gray-300 text-sm leading-relaxed">{t('story.tileDescription')}</p>
+        </div>
+        <Link
+          href={'/story' as never}
+          className="px-5 py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl transition-colors text-sm whitespace-nowrap"
+        >
+          {t('story.openCta')} {'\u2192'}
+        </Link>
+      </div>
+
       {/* Special Missions (fakedor) */}
-      <div className="mt-8 bg-gradient-to-r from-purple-900/30 via-indigo-900/20 to-blue-900/30 border border-purple-500/30 rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center gap-4">
+      <div className="mt-4 bg-gradient-to-r from-indigo-900/30 via-blue-900/20 to-cyan-900/30 border border-indigo-500/30 rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center gap-4">
         <div className="flex-shrink-0">
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
             <rect x="4" y="8" width="40" height="32" rx="6" fill="#7C3AED" opacity="0.2" stroke="#7C3AED" strokeWidth="1.5"/>
@@ -264,7 +288,7 @@ export default async function RolesPage() {
         </div>
         <ComingSoonButton
           label={`${t('roles.specialMissions.explore')} \u2192`}
-          className="px-5 py-3 bg-purple-700 hover:bg-purple-600 text-white font-bold rounded-xl transition-colors text-sm whitespace-nowrap"
+          className="px-5 py-3 bg-indigo-700 hover:bg-indigo-600 text-white font-bold rounded-xl transition-colors text-sm whitespace-nowrap"
         />
       </div>
 

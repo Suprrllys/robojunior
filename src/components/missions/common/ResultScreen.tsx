@@ -5,6 +5,8 @@ import { useTranslations } from 'next-intl'
 import clsx from 'clsx'
 import { Star, RotateCcw, ArrowRight, Map } from 'lucide-react'
 import { getAudioManager } from '@/lib/game/audio'
+import { getSoloMissionStages, STAGE_META } from '@/lib/game/innovation-stages'
+import type { Role } from '@/types/database'
 
 interface ScoreBreakdownItem {
   label: string
@@ -21,10 +23,15 @@ interface ResultScreenProps {
   xpEarned: number
   coinsEarned: number
   skillsPracticed: string[]
+  role?: Role
   missionNumber: number
   totalMissions: number
   nearMissPoints?: number
   nearMissStarLevel?: number
+  /** When true, this mission was launched as part of Story Mode */
+  storyMode?: boolean
+  /** When in story mode, whether there is a next chapter to continue to */
+  storyHasNextChapter?: boolean
   onRetry: () => void
   onNext?: () => void
   onBackToMap: () => void
@@ -48,16 +55,23 @@ export default function ResultScreen({
   xpEarned,
   coinsEarned,
   skillsPracticed,
+  role,
   missionNumber,
   totalMissions,
   nearMissPoints,
   nearMissStarLevel,
+  storyMode = false,
+  storyHasNextChapter = false,
   onRetry,
   onNext,
   onBackToMap,
 }: ResultScreenProps) {
   const t = useTranslations('missionShell')
+  const tStages = useTranslations('dashboard.stages')
   const stars = calculateStars(score, maxScore)
+
+  // Compute stages this mission covers (for success feedback)
+  const missionStages = role ? getSoloMissionStages(role, missionNumber) : []
 
   // Animated states
   const [displayedScore, setDisplayedScore] = useState(0)
@@ -238,10 +252,48 @@ export default function ResultScreen({
           </div>
         )}
 
+        {/* Innovation process stage(s) covered */}
+        {showRewards && isSuccess && missionStages.length > 0 && (
+          <div className="mb-4 animate-fadeIn">
+            <p className="text-xs text-gray-500 mb-1.5">{t('stageCovered')}</p>
+            <div className="flex flex-wrap gap-1.5">
+              {missionStages.map(stageId => {
+                const meta = STAGE_META[stageId]
+                return (
+                  <span
+                    key={stageId}
+                    className="px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5"
+                    style={{
+                      backgroundColor: `${meta.color}22`,
+                      color: meta.color,
+                      border: `1px solid ${meta.color}66`,
+                    }}
+                  >
+                    <span>{meta.icon}</span>
+                    <span>{tStages(`${stageId}Short`)}</span>
+                    <span className="text-[10px] opacity-70">{meta.order}/6</span>
+                  </span>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Buttons */}
         <div className="flex flex-col gap-2 mt-6">
-          {/* Next mission (prominent) */}
-          {onNext && isSuccess && missionNumber < totalMissions && (
+          {/* Story Mode: prominent "Continue Story" button */}
+          {storyMode && isSuccess && onNext && (
+            <button
+              onClick={onNext}
+              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-purple-600 text-white font-bold text-sm hover:bg-purple-500 transition-colors"
+            >
+              {storyHasNextChapter ? t('continueStory') : t('finishStory')}
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          )}
+
+          {/* Solo mode: Next mission button (hidden in story mode) */}
+          {!storyMode && onNext && isSuccess && missionNumber < totalMissions && (
             <button
               onClick={onNext}
               className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-brand-blue text-white font-bold text-sm hover:bg-blue-600 transition-colors"
@@ -265,13 +317,13 @@ export default function ResultScreen({
             {t('retry')}
           </button>
 
-          {/* Back to map */}
+          {/* Back to map (or Back to Story) */}
           <button
             onClick={onBackToMap}
             className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-gray-400 text-sm hover:text-gray-300 transition-colors"
           >
             <Map className="w-4 h-4" />
-            {t('backToMap')}
+            {storyMode ? t('backToStory') : t('backToMap')}
           </button>
         </div>
       </div>
