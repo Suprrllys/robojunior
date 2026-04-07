@@ -85,21 +85,23 @@ export default function GameNav({ profile }: GameNavProps) {
 
   return (
     <nav className="bg-brand-panel border-b border-brand-border sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-2 sm:px-4 h-16 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/roles" className="text-lg sm:text-xl font-black">
+      <div className="max-w-6xl mx-auto px-2 sm:px-4 h-16 flex items-center gap-3 sm:gap-4">
+        {/* Logo — fixed-width segment, never compressed */}
+        <Link href="/roles" className="text-lg sm:text-xl font-black shrink-0">
           <span className="text-white">Robo</span>
           <span className="text-brand-blue">Junior</span>
         </Link>
 
-        {/* Navigation */}
-        <div className="hidden md:flex items-center gap-1">
+        {/* Navigation — takes the middle segment, can shrink, no wrapping.
+            Using flex-1 + min-w-0 lets it use the available space without
+            pushing into the logo or the user-info block. */}
+        <div className="hidden md:flex items-center gap-1 flex-1 min-w-0 justify-end overflow-hidden">
           {NAV_ITEMS.map(item => (
             <Link
               key={item.href}
               href={item.href as '/roles'}
               className={clsx(
-                'flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                'flex items-center gap-1.5 px-2 lg:px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap shrink-0',
                 pathname === item.href
                   ? 'bg-brand-blue/20 text-brand-blue'
                   : 'text-gray-400 hover:text-white hover:bg-brand-border'
@@ -111,8 +113,8 @@ export default function GameNav({ profile }: GameNavProps) {
           ))}
         </div>
 
-        {/* Language switcher + User info */}
-        <div className="flex items-center gap-3">
+        {/* Language switcher + User info — fixed-width segment, never wraps */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {/* Volume control */}
           <VolumeControl />
 
@@ -130,11 +132,13 @@ export default function GameNav({ profile }: GameNavProps) {
                   animated={false}
                 />
               </div>
-              <div className="hidden sm:block">
+              <div className="hidden sm:block whitespace-nowrap shrink-0">
                 <div className="text-sm font-medium text-white">{profile.username}</div>
-                <div className="text-xs text-brand-gold flex items-center gap-2">
-                  <span>{profile.xp} XP</span>
-                  <span className="text-yellow-400 flex items-center gap-1"><IconCoin size={16} /> {profile.game_currency ?? 0}</span>
+                <div className="text-xs text-brand-gold flex items-center gap-2 whitespace-nowrap">
+                  <span className="whitespace-nowrap">{profile.xp} XP</span>
+                  <span className="text-yellow-400 flex items-center gap-1 whitespace-nowrap">
+                    <IconCoin size={16} /> {profile.game_currency ?? 0}
+                  </span>
                 </div>
               </div>
               <button
