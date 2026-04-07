@@ -95,7 +95,7 @@ export default function GameNav({ profile }: GameNavProps) {
         {/* Navigation — takes the middle segment, can shrink, no wrapping.
             Using flex-1 + min-w-0 lets it use the available space without
             pushing into the logo or the user-info block. */}
-        <div className="hidden md:flex items-center gap-1 flex-1 min-w-0 justify-end overflow-hidden">
+        <div className="hidden md:flex items-center gap-1 flex-1 justify-start ml-2">
           {NAV_ITEMS.map(item => (
             <Link
               key={item.href}
