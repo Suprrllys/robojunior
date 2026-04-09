@@ -4,50 +4,73 @@ import { useState, useEffect } from 'react'
 import clsx from 'clsx'
 import { ChevronRight, SkipForward } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { IconCoin, IconStar, IconTrophy, IconGlobeAnimated, IconHandshake, IconShop, IconProfile } from '@/components/ui/SvgIcon'
+import { IconCoin, IconStar, IconTrophy, IconGlobeAnimated, IconHandshake, IconShop, IconProfile, IconRocket, IconMagnifier, IconLightbulb, IconGear, IconChart } from '@/components/ui/SvgIcon'
 import RoleIcon from '@/components/game/RoleIcon'
 
 const STORAGE_KEY = 'robojunior_game_onboarded'
-const TOTAL_STEPS = 7
+const TOTAL_STEPS = 8
 
 const ILLUSTRATIONS: React.ReactNode[] = [
-  /* Step 1: Welcome to BRICS City — city skyline SVG */
-  <div key="city" className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-600 to-emerald-500 flex items-center justify-center shadow-lg">
+  /* Step 1: Welcome — innovation process icon (lightbulb → rocket) */
+  <div key="innovation" className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg">
     <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-      <rect x="4" y="24" width="10" height="28" rx="1" fill="#93C5FD" opacity="0.8" />
-      <rect x="6" y="26" width="2" height="2" rx="0.5" fill="#FDE68A" /><rect x="10" y="26" width="2" height="2" rx="0.5" fill="#FDE68A" />
-      <rect x="6" y="30" width="2" height="2" rx="0.5" fill="#FDE68A" /><rect x="10" y="30" width="2" height="2" rx="0.5" fill="#FDE68A" />
-      <rect x="16" y="14" width="12" height="38" rx="1" fill="#60A5FA" />
-      <rect x="18" y="16" width="2" height="2" rx="0.5" fill="#FDE68A" /><rect x="22" y="16" width="2" height="2" rx="0.5" fill="#FDE68A" /><rect x="26" y="16" width="2" height="2" rx="0.5" fill="#FDE68A" />
-      <rect x="18" y="20" width="2" height="2" rx="0.5" fill="#FDE68A" /><rect x="22" y="20" width="2" height="2" rx="0.5" fill="#FDE68A" /><rect x="26" y="20" width="2" height="2" rx="0.5" fill="#FDE68A" />
-      <rect x="18" y="24" width="2" height="2" rx="0.5" fill="#FDE68A" /><rect x="22" y="24" width="2" height="2" rx="0.5" fill="#FDE68A" />
-      <rect x="30" y="8" width="14" height="44" rx="1" fill="#3B82F6" />
-      <rect x="32" y="10" width="2" height="2" rx="0.5" fill="#FDE68A" /><rect x="36" y="10" width="2" height="2" rx="0.5" fill="#FDE68A" /><rect x="40" y="10" width="2" height="2" rx="0.5" fill="#FDE68A" />
-      <rect x="32" y="14" width="2" height="2" rx="0.5" fill="#FDE68A" /><rect x="36" y="14" width="2" height="2" rx="0.5" fill="#FDE68A" /><rect x="40" y="14" width="2" height="2" rx="0.5" fill="#FDE68A" />
-      <rect x="32" y="18" width="2" height="2" rx="0.5" fill="#FDE68A" /><rect x="36" y="18" width="2" height="2" rx="0.5" fill="#FDE68A" />
-      <polygon points="37,4 44,8 30,8" fill="#2563EB" />
-      <rect x="46" y="20" width="8" height="32" rx="1" fill="#93C5FD" opacity="0.7" />
-      <rect x="48" y="22" width="2" height="2" rx="0.5" fill="#FDE68A" /><rect x="48" y="26" width="2" height="2" rx="0.5" fill="#FDE68A" />
+      {/* Lightbulb → arrow → rocket = innovation journey */}
+      <circle cx="14" cy="20" r="8" fill="#FBBF24" opacity="0.8" />
+      <rect x="11" y="28" width="6" height="4" rx="1" fill="#FBBF24" opacity="0.6" />
+      <path d="M14 12V8" stroke="#FDE68A" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M8 14L5 11" stroke="#FDE68A" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M20 14L23 11" stroke="#FDE68A" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M26 28L34 28" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round" strokeDasharray="2 2" />
+      <polygon points="42,16 48,28 45,28 45,36 39,36 39,28 36,28" fill="#60A5FA" />
+      <circle cx="42" cy="22" r="2" fill="#93C5FD" />
     </svg>
   </div>,
-  /* Step 2: 3 roles — role icons */
-  <div key="roles" className="flex gap-3">
+  /* Step 2: 6 stages of innovation process */
+  <div key="stages" className="flex flex-wrap justify-center gap-2">
+    <div className="w-12 h-12 rounded-lg bg-blue-600/30 border border-blue-400/30 flex items-center justify-center">
+      <IconMagnifier size={22} />
+    </div>
+    <div className="w-12 h-12 rounded-lg bg-yellow-600/30 border border-yellow-400/30 flex items-center justify-center">
+      <IconLightbulb size={22} />
+    </div>
+    <div className="w-12 h-12 rounded-lg bg-green-600/30 border border-green-400/30 flex items-center justify-center">
+      <IconGear size={22} animated />
+    </div>
+    <div className="w-12 h-12 rounded-lg bg-orange-600/30 border border-orange-400/30 flex items-center justify-center">
+      <IconChart size={22} />
+    </div>
+    <div className="w-12 h-12 rounded-lg bg-purple-600/30 border border-purple-400/30 flex items-center justify-center">
+      <IconHandshake size={22} />
+    </div>
+    <div className="w-12 h-12 rounded-lg bg-red-600/30 border border-red-400/30 flex items-center justify-center">
+      <IconRocket size={22} animated />
+    </div>
+  </div>,
+  /* Step 3: 3 instruments (not "careers") */
+  <div key="instruments" className="flex gap-3">
     <RoleIcon role="drone_programmer" size={64} />
     <RoleIcon role="robot_constructor" size={64} />
     <RoleIcon role="entrepreneur" size={64} />
   </div>,
-  /* Step 3: 10 missions per role — stars + score bar */
-  <div key="stars" className="flex flex-col items-center gap-2">
-    <div className="flex gap-1">
-      <IconStar size={28} animated />
-      <IconStar size={28} animated />
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><polygon points="14,3 17.5,10 25,11 19.5,16.5 21,24 14,20 7,24 8.5,16.5 3,11 10.5,10" fill="#374151" /></svg>
-    </div>
-    <div className="h-2.5 w-32 bg-gray-700 rounded-full overflow-hidden">
-      <div className="h-full w-[85%] bg-gradient-to-r from-yellow-500 to-amber-400 rounded-full" />
-    </div>
+  /* Step 4: Story Mode — book/narrative icon */
+  <div key="storymode" className="w-24 h-24 rounded-2xl bg-gradient-to-br from-purple-700 to-pink-600 flex items-center justify-center shadow-lg">
+    <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+      {/* Open book with sparkle = Story Mode */}
+      <path d="M8 12C8 12 16 8 28 12V44C16 40 8 44 8 44V12Z" fill="#A78BFA" opacity="0.7" />
+      <path d="M48 12C48 12 40 8 28 12V44C40 40 48 44 48 44V12Z" fill="#C084FC" opacity="0.7" />
+      <line x1="28" y1="12" x2="28" y2="44" stroke="#E9D5FF" strokeWidth="1" />
+      <circle cx="38" cy="8" r="3" fill="#FBBF24" />
+      <path d="M38 4V3M42 8H43M34 8H33M41 5L42 4M35 5L34 4" stroke="#FDE68A" strokeWidth="1" strokeLinecap="round" />
+      {/* Chapter markers */}
+      <circle cx="16" cy="20" r="2" fill="#93C5FD" />
+      <circle cx="16" cy="26" r="2" fill="#86EFAC" />
+      <circle cx="16" cy="32" r="2" fill="#FDE68A" />
+      <circle cx="40" cy="20" r="2" fill="#FCA5A5" />
+      <circle cx="40" cy="26" r="2" fill="#C4B5FD" />
+      <circle cx="40" cy="32" r="2" fill="#FDBA74" />
+    </svg>
   </div>,
-  /* Step 4: Coop missions */
+  /* Step 5: Coop missions */
   <div key="coop" className="flex gap-3">
     <div className="w-14 h-14 rounded-xl bg-blue-600/30 border border-blue-400/30 flex items-center justify-center">
       <IconGlobeAnimated size={32} />
@@ -64,7 +87,7 @@ const ILLUSTRATIONS: React.ReactNode[] = [
       </svg>
     </div>
   </div>,
-  /* Step 5: Rewards — XP, coins, skins */
+  /* Step 6: Rewards — XP, coins, skins */
   <div key="rewards" className="flex items-center gap-3">
     <div className="w-14 h-14 rounded-xl bg-yellow-500/20 border border-yellow-500/30 flex items-center justify-center">
       <IconStar size={28} animated />
@@ -81,7 +104,7 @@ const ILLUSTRATIONS: React.ReactNode[] = [
       </svg>
     </div>
   </div>,
-  /* Step 6: Career dashboard — radar chart (no text labels) */
+  /* Step 7: Innovation profile dashboard — radar chart */
   <div key="dashboard" className="relative w-28 h-28">
     <svg viewBox="0 0 100 100" className="w-full h-full">
       <polygon points="50,10 90,35 80,80 20,80 10,35" fill="none" stroke="#374151" strokeWidth="1" />
@@ -94,7 +117,7 @@ const ILLUSTRATIONS: React.ReactNode[] = [
       <circle cx="20" cy="35" r="4" fill="#EF4444" />
     </svg>
   </div>,
-  /* Step 7: Shop, leaderboard, profile */
+  /* Step 8: Shop, leaderboard, profile */
   <div key="extras" className="flex gap-3">
     <div className="w-14 h-14 rounded-xl bg-yellow-600/30 border border-yellow-400/30 flex items-center justify-center">
       <IconShop size={28} />

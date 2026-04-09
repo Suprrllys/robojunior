@@ -2587,32 +2587,36 @@
     "next": "Next",
     "letsGo": "Let's Go!",
     "step1": {
-      "title": "Welcome to BRICS City!",
-      "description": "You've been recruited to help build a brand new city! Complete missions, earn rewards, and discover your ideal tech career."
+      "title": "How is Innovation Born?",
+      "description": "Welcome to RoboJunior! Here you'll experience the full journey of creating a tech product — from finding a real problem to launching it on the market."
     },
     "step2": {
-      "title": "3 Roles to Try",
-      "description": "Drone Programmer — write code to fly drones. Robot Constructor — design and build robots. Tech Entrepreneur — run a startup. Try all three!"
+      "title": "6 Stages of Innovation",
+      "description": "Research → Idea → Prototype → Test → Pitch → Launch. Each mission covers one or more stages. Complete the full cycle and discover which stage is your superpower."
     },
     "step3": {
-      "title": "10 Missions Per Role",
-      "description": "Each role has 10 missions: Easy, Medium, and Hard. Earn up to 3 stars per mission. No time pressure — think carefully!"
+      "title": "3 Tools for Innovation",
+      "description": "Program a drone, build a robot, or run a startup. These aren't career choices — they're three ways to solve real problems. Try all three!"
     },
     "step4": {
-      "title": "Team Coop Missions",
-      "description": "Join forces with other players! Each person picks a role. Complete your part and combine results for a team score."
+      "title": "Story Mode: Your First Tech Startup",
+      "description": "6 chapters — from idea to launch. Follow Leila's story and complete the full innovation cycle in one evening. The best way to start!"
     },
     "step5": {
-      "title": "Earn Rewards",
-      "description": "Complete missions to earn XP, coins, and unlock avatar skins. Complete all Easy/Medium/Hard missions of a role for epic rewards!"
+      "title": "Team Coop Missions",
+      "description": "Team up with players from other BRICS+ countries! Each person picks a role in the project. Work together — even across time zones."
     },
     "step6": {
-      "title": "Career Dashboard",
-      "description": "Your dashboard tracks your skills across all roles. Discover where you excel — coding, engineering, or business. Find your ideal career path!"
+      "title": "Earn Rewards",
+      "description": "Complete missions to earn XP, coins, and unlock avatar skins. The more stages you complete — the better the rewards!"
     },
     "step7": {
+      "title": "Your Innovation Profile",
+      "description": "The dashboard shows which innovation stages you excel at: research, prototyping, pitching, or launching. Discover your profile and get recommendations."
+    },
+    "step8": {
       "title": "Shop, Leaderboard & Profile",
-      "description": "Spend coins in the shop. Compete on the leaderboard. Customize your avatar with unlocked skins. Make it yours!"
+      "description": "Spend coins in the shop. Compete on the leaderboard with players from different countries. Customize your robot avatar. Make it yours!"
     }
   },
   "parentDashboard": {
