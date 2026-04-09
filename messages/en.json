@@ -974,9 +974,9 @@
       "management": "Management",
       "learning_speed": "Learning Speed"
     },
-    "topProfessions": "Best-Fit Careers for You",
-    "playMoreToUnlock": "Complete {count} more role(s) to unlock your career profile",
-    "professionQuestion": "Which career would you like to explore further?",
+    "topProfessions": "Your Strongest Innovation Stages",
+    "playMoreToUnlock": "Complete {count} more role(s) to unlock your innovation profile",
+    "professionQuestion": "Which innovation stage would you like to explore deeper?",
     "professionQuestionSubtitle": "This helps us improve RoboJunior",
     "noneOfThese": "None of these",
     "badges": "My Badges",

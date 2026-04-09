@@ -3,203 +3,103 @@
 import { useTranslations, useLocale } from 'next-intl'
 import { useState } from 'react'
 import type { CompetencyScore } from '@/types/database'
-import { ProfessionIcon } from '@/components/ui/SvgIcon'
 
 interface CareerRecommendationProps {
   competency: CompetencyScore | null
 }
 
-type Profession = {
-  title: string
+type InnovationStrength = {
+  stageId: string
+  titleEn: string
   titleRu: string
   titleAr: string
-  emoji: string
-  match: number
-  reason: string
+  icon: string
+  color: string
+  score: number
+  reasonEn: string
   reasonRu: string
   reasonAr: string
-  teamworkWeight: number // how much teamwork contributes to this profession (0-1)
 }
 
-function getProfessions(scores: CompetencyScore | null): Profession[] {
+function getInnovationStrengths(scores: CompetencyScore | null): InnovationStrength[] {
   if (!scores) return []
 
-  const professions = [
-    // === Programming / Drone role careers ===
+  const stages: InnovationStrength[] = [
     {
-      title: 'Drone Systems Programmer',
-      titleRu: 'Программист дронов',
-      titleAr: 'مبرمج أنظمة الطائرات المسيّرة',
-      emoji: '🛸',
-      match: Math.round(scores.analytical_thinking * 0.4 + scores.technical_precision * 0.3 + scores.learning_speed * 0.3),
-      reason: 'Your algorithmic thinking and quick learning make you ideal for programming autonomous drones',
-      reasonRu: 'Твоё алгоритмическое мышление и быстрая обучаемость идеальны для программирования автономных дронов',
-      reasonAr: 'تفكيرك الخوارزمي وسرعة تعلمك يجعلانك مثاليًا لبرمجة الطائرات المسيّرة المستقلة',
-      teamworkWeight: 0,
+      stageId: 'research',
+      titleEn: 'Research',
+      titleRu: 'Исследование проблемы',
+      titleAr: 'البحث عن المشكلة',
+      icon: '\u{1F50D}',
+      color: '#3B82F6',
+      score: Math.round(scores.analytical_thinking * 0.5 + scores.creativity * 0.3 + scores.teamwork * 0.2),
+      reasonEn: 'You find hidden problems and ask the right questions — the starting point of any innovation',
+      reasonRu: 'Ты находишь скрытые проблемы и задаёшь правильные вопросы — отправная точка любой инновации',
+      reasonAr: 'تكتشف المشكلات الخفية وتطرح الأسئلة الصحيحة — نقطة البداية لأي ابتكار',
     },
     {
-      title: 'Software Developer',
-      titleRu: 'Разработчик ПО',
-      titleAr: 'مطوّر برمجيات',
-      emoji: '💻',
-      match: Math.round(scores.analytical_thinking * 0.4 + scores.technical_precision * 0.4 + scores.learning_speed * 0.2),
-      reason: 'Strong logic and precision are the foundation of software development',
-      reasonRu: 'Сильная логика и точность — основа разработки программного обеспечения',
-      reasonAr: 'المنطق القوي والدقة هما أساس تطوير البرمجيات',
-      teamworkWeight: 0,
+      stageId: 'idea',
+      titleEn: 'Idea Generation',
+      titleRu: 'Генерация идей',
+      titleAr: 'توليد الأفكار',
+      icon: '\u{1F4A1}',
+      color: '#FBBF24',
+      score: Math.round(scores.creativity * 0.5 + scores.analytical_thinking * 0.3 + scores.learning_speed * 0.2),
+      reasonEn: 'You generate creative solutions and quickly evaluate which ideas have the most potential',
+      reasonRu: 'Ты генерируешь креативные решения и быстро оцениваешь, какие идеи самые перспективные',
+      reasonAr: 'تولّد حلولًا إبداعية وتقيّم بسرعة الأفكار الأكثر إمكانية',
     },
     {
-      title: 'AI / Machine Learning Engineer',
-      titleRu: 'Инженер ИИ / машинного обучения',
-      titleAr: 'مهندس ذكاء اصطناعي / تعلم آلي',
-      emoji: '🧠',
-      match: Math.round(scores.analytical_thinking * 0.5 + scores.learning_speed * 0.3 + scores.technical_precision * 0.2),
-      reason: 'Your analytical depth and fast learning suit complex AI systems',
-      reasonRu: 'Твоя аналитическая глубина и быстрое обучение подходят для сложных систем ИИ',
-      reasonAr: 'عمقك التحليلي وسرعة تعلمك يناسبان أنظمة الذكاء الاصطناعي المعقدة',
-      teamworkWeight: 0,
+      stageId: 'prototype',
+      titleEn: 'Prototyping',
+      titleRu: 'Прототипирование',
+      titleAr: 'بناء النموذج الأولي',
+      icon: '\u{1F6E0}',
+      color: '#10B981',
+      score: Math.round(scores.technical_precision * 0.5 + scores.analytical_thinking * 0.3 + scores.creativity * 0.2),
+      reasonEn: 'You turn ideas into working prototypes with precision and technical skill',
+      reasonRu: 'Ты превращаешь идеи в работающие прототипы с точностью и техническим мастерством',
+      reasonAr: 'تحوّل الأفكار إلى نماذج أولية عاملة بدقة ومهارة تقنية',
     },
     {
-      title: 'Data Scientist',
-      titleRu: 'Дата-сайентист',
-      titleAr: 'عالم بيانات',
-      emoji: '📊',
-      match: Math.round(scores.analytical_thinking * 0.45 + scores.technical_precision * 0.3 + scores.creativity * 0.25),
-      reason: 'You combine analytical rigor with creative problem-solving — key for data science',
-      reasonRu: 'Ты сочетаешь аналитическую строгость с творческим решением задач — ключ к науке о данных',
-      reasonAr: 'تجمع بين الدقة التحليلية وحل المشكلات الإبداعي — مفتاح علم البيانات',
-      teamworkWeight: 0,
-    },
-
-    // === Engineering / Robot role careers ===
-    {
-      title: 'Robot Constructor',
-      titleRu: 'Конструктор робота',
-      titleAr: 'مصمم الروبوتات',
-      emoji: '🤖',
-      match: Math.round(scores.technical_precision * 0.4 + scores.analytical_thinking * 0.4 + scores.creativity * 0.2),
-      reason: 'Your precision and analytical skills are perfect for designing robots',
-      reasonRu: 'Твоя точность и аналитические навыки идеальны для проектирования роботов',
-      reasonAr: 'دقتك ومهاراتك التحليلية مثالية لتصميم الروبوتات',
-      teamworkWeight: 0,
+      stageId: 'test',
+      titleEn: 'Testing',
+      titleRu: 'Тестирование',
+      titleAr: 'الاختبار',
+      icon: '\u{1F9EA}',
+      color: '#06B6D4',
+      score: Math.round(scores.technical_precision * 0.4 + scores.analytical_thinking * 0.4 + scores.learning_speed * 0.2),
+      reasonEn: 'You methodically test, find bugs, and iterate until the product works flawlessly',
+      reasonRu: 'Ты методично тестируешь, находишь ошибки и улучшаешь продукт до идеала',
+      reasonAr: 'تختبر بمنهجية وتكتشف الأخطاء وتكرر حتى يعمل المنتج بلا عيوب',
     },
     {
-      title: 'Mechanical Engineer',
-      titleRu: 'Инженер-механик',
-      titleAr: 'مهندس ميكانيكي',
-      emoji: '⚙️',
-      match: Math.round(scores.technical_precision * 0.5 + scores.analytical_thinking * 0.3 + scores.creativity * 0.2),
-      reason: 'You excel at precise technical design — the core of mechanical engineering',
-      reasonRu: 'Ты отлично справляешься с точным техническим проектированием — основой механики',
-      reasonAr: 'تتفوق في التصميم التقني الدقيق — جوهر الهندسة الميكانيكية',
-      teamworkWeight: 0,
+      stageId: 'pitch',
+      titleEn: 'Pitch & Investment',
+      titleRu: 'Питч и инвестиции',
+      titleAr: 'العرض والاستثمار',
+      icon: '\u{1F4CA}',
+      color: '#A855F7',
+      score: Math.round(scores.management * 0.35 + scores.teamwork * 0.35 + scores.creativity * 0.3),
+      reasonEn: 'You present ideas convincingly and negotiate with confidence — key skills for attracting investors',
+      reasonRu: 'Ты убедительно презентуешь идеи и уверенно ведёшь переговоры — ключ к привлечению инвесторов',
+      reasonAr: 'تقدّم الأفكار بشكل مقنع وتتفاوض بثقة — مهارات أساسية لجذب المستثمرين',
     },
     {
-      title: 'IoT / Embedded Systems Engineer',
-      titleRu: 'Инженер IoT / встраиваемых систем',
-      titleAr: 'مهندس IoT / أنظمة مدمجة',
-      emoji: '📡',
-      match: Math.round(scores.technical_precision * 0.35 + scores.analytical_thinking * 0.35 + scores.learning_speed * 0.3),
-      reason: 'Your technical skills and adaptability fit the fast-evolving IoT field',
-      reasonRu: 'Твои технические навыки и адаптивность подходят для быстро развивающейся сферы IoT',
-      reasonAr: 'مهاراتك التقنية وقدرتك على التكيف تناسب مجال IoT سريع التطور',
-      teamworkWeight: 0,
-    },
-    {
-      title: 'Quality Assurance Engineer',
-      titleRu: 'Инженер по тестированию',
-      titleAr: 'مهندس ضمان الجودة',
-      emoji: '🔍',
-      match: Math.round(scores.technical_precision * 0.5 + scores.analytical_thinking * 0.3 + scores.teamwork * 0.2),
-      reason: 'Your attention to detail and systematic approach make you a natural at QA',
-      reasonRu: 'Твоё внимание к деталям и системный подход делают тебя прирождённым тестировщиком',
-      reasonAr: 'اهتمامك بالتفاصيل ونهجك المنظم يجعلانك مناسبًا بشكل طبيعي لضمان الجودة',
-      teamworkWeight: 0.2,
-    },
-
-    // === Business / Entrepreneur role careers ===
-    {
-      title: 'Tech Entrepreneur / Startup Founder',
-      titleRu: 'Технологический предприниматель',
-      titleAr: 'رائد أعمال تقني / مؤسس شركة ناشئة',
-      emoji: '🚀',
-      match: Math.round(scores.management * 0.4 + scores.creativity * 0.3 + scores.teamwork * 0.3),
-      reason: 'Your leadership, creativity, and team skills are what it takes to build a startup',
-      reasonRu: 'Твоё лидерство, креативность и командные навыки — то, что нужно для создания стартапа',
-      reasonAr: 'قيادتك وإبداعك ومهارات العمل الجماعي هي ما تحتاجه لبناء شركة ناشئة',
-      teamworkWeight: 0.3,
-    },
-    {
-      title: 'Product Manager',
-      titleRu: 'Продакт-менеджер',
-      titleAr: 'مدير منتجات',
-      emoji: '📋',
-      match: Math.round(scores.management * 0.35 + scores.teamwork * 0.3 + scores.analytical_thinking * 0.2 + scores.creativity * 0.15),
-      reason: 'You balance business thinking with team coordination — the essence of product management',
-      reasonRu: 'Ты совмещаешь бизнес-мышление с координацией команды — суть продакт-менеджмента',
-      reasonAr: 'توازن بين التفكير التجاري وتنسيق الفريق — جوهر إدارة المنتجات',
-      teamworkWeight: 0.3,
-    },
-    {
-      title: 'Business Analyst',
-      titleRu: 'Бизнес-аналитик',
-      titleAr: 'محلل أعمال',
-      emoji: '📈',
-      match: Math.round(scores.analytical_thinking * 0.35 + scores.management * 0.35 + scores.teamwork * 0.3),
-      reason: 'Your mix of analytical skills and business sense fits business analysis perfectly',
-      reasonRu: 'Твоё сочетание аналитических навыков и бизнес-чутья идеально для бизнес-анализа',
-      reasonAr: 'مزيجك من المهارات التحليلية والحس التجاري يناسب تحليل الأعمال تمامًا',
-      teamworkWeight: 0.3,
-    },
-    {
-      title: 'Marketing Strategist',
-      titleRu: 'Маркетолог-стратег',
-      titleAr: 'خبير تسويق استراتيجي',
-      emoji: '🎯',
-      match: Math.round(scores.creativity * 0.4 + scores.management * 0.3 + scores.teamwork * 0.3),
-      reason: 'Your creativity and strategic thinking are ideal for marketing',
-      reasonRu: 'Твоя креативность и стратегическое мышление идеальны для маркетинга',
-      reasonAr: 'إبداعك وتفكيرك الاستراتيجي مثاليان للتسويق',
-      teamworkWeight: 0.3,
-    },
-    {
-      title: 'UX Designer',
-      titleRu: 'UX-дизайнер',
-      titleAr: 'مصمم تجربة المستخدم',
-      emoji: '🎨',
-      match: Math.round(scores.creativity * 0.45 + scores.teamwork * 0.3 + scores.analytical_thinking * 0.25),
-      reason: 'You combine creativity with user empathy — core UX skills',
-      reasonRu: 'Ты сочетаешь креативность с эмпатией к пользователям — ключевые навыки UX',
-      reasonAr: 'تجمع بين الإبداع والتعاطف مع المستخدم — مهارات UX الأساسية',
-      teamworkWeight: 0.3,
-    },
-
-    // === Teamwork-heavy careers (boosted by coop play) ===
-    {
-      title: 'Project Manager',
-      titleRu: 'Проджект-менеджер',
-      titleAr: 'مدير مشاريع',
-      emoji: '📌',
-      match: Math.round(scores.teamwork * 0.4 + scores.management * 0.35 + scores.analytical_thinking * 0.25),
-      reason: 'Your team coordination skills and management ability make you a strong project leader',
-      reasonRu: 'Твои навыки координации команды и управления делают тебя сильным руководителем проектов',
-      reasonAr: 'مهاراتك في تنسيق الفريق والإدارة تجعلك قائد مشاريع قويًا',
-      teamworkWeight: 0.4,
-    },
-    {
-      title: 'Scrum Master / Agile Coach',
-      titleRu: 'Скрам-мастер / Agile-коуч',
-      titleAr: 'سكرام ماستر / مدرب أجايل',
-      emoji: '🔄',
-      match: Math.round(scores.teamwork * 0.5 + scores.management * 0.3 + scores.learning_speed * 0.2),
-      reason: 'Your teamwork skills and adaptability are essential for agile leadership',
-      reasonRu: 'Твои навыки командной работы и адаптивность необходимы для agile-лидерства',
-      reasonAr: 'مهاراتك في العمل الجماعي وقدرتك على التكيف ضرورية لقيادة أجايل',
-      teamworkWeight: 0.5,
+      stageId: 'launch',
+      titleEn: 'Launch & Scale',
+      titleRu: 'Запуск и масштабирование',
+      titleAr: 'الإطلاق والتوسع',
+      icon: '\u{1F680}',
+      color: '#EF4444',
+      score: Math.round(scores.management * 0.4 + scores.learning_speed * 0.3 + scores.teamwork * 0.3),
+      reasonEn: 'You make fast decisions under pressure and lead growth — the engine of a successful launch',
+      reasonRu: 'Ты быстро принимаешь решения под давлением и ведёшь рост — двигатель успешного запуска',
+      reasonAr: 'تتخذ قرارات سريعة تحت الضغط وتقود النمو — محرك الإطلاق الناجح',
     },
   ]
 
-  return professions.sort((a, b) => b.match - a.match).slice(0, 3)
+  return stages.sort((a, b) => b.score - a.score)
 }
 
 export default function CareerRecommendation({ competency }: CareerRecommendationProps) {
@@ -208,39 +108,48 @@ export default function CareerRecommendation({ competency }: CareerRecommendatio
   const [answer, setAnswer] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
-  const professions = getProfessions(competency)
+  const strengths = getInnovationStrengths(competency)
+  const top3 = strengths.slice(0, 3)
 
-  const professionOptions = professions.map(p => locale === 'ru' ? p.titleRu : locale === 'ar' ? p.titleAr : p.title).concat([t('noneOfThese')])
+  const stageOptions = top3
+    .map(s => locale === 'ru' ? s.titleRu : locale === 'ar' ? s.titleAr : s.titleEn)
+    .concat([t('noneOfThese')])
 
   return (
     <div className="bg-brand-panel border border-brand-border rounded-2xl p-6 space-y-6">
       <h2 className="text-lg font-bold text-white">{t('topProfessions')}</h2>
 
       <div className="space-y-3">
-        {professions.map((prof, i) => (
-          <div key={prof.title} className="flex items-center gap-4 bg-brand-dark border border-brand-border rounded-xl p-4">
-            <ProfessionIcon title={prof.title} size={40} animated />
+        {top3.map((stage, i) => (
+          <div key={stage.stageId} className="flex items-center gap-4 bg-brand-dark border border-brand-border rounded-xl p-4">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0"
+              style={{ backgroundColor: `${stage.color}20`, border: `1px solid ${stage.color}40` }}
+            >
+              {stage.icon}
+            </div>
             <div className="flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 {i === 0 && (
                   <span className="text-xs bg-brand-gold/20 text-brand-gold px-2 py-0.5 rounded-full font-bold">
-                    {locale === 'ru' ? 'Лучшее совпадение' : locale === 'ar' ? 'أفضل تطابق' : 'Best Match'}
+                    {locale === 'ru' ? 'Твоя суперсила' : locale === 'ar' ? 'قوّتك الخارقة' : 'Your Superpower'}
                   </span>
                 )}
-                {prof.teamworkWeight >= 0.3 && (
-                  <span className="text-[10px] bg-purple-500/20 text-purple-400 px-1.5 py-0.5 rounded-full font-bold">
-                    {locale === 'ru' ? 'Командная работа' : locale === 'ar' ? 'عمل جماعي' : 'Teamwork'}
-                  </span>
-                )}
-                <span className="font-bold text-white">{locale === 'ru' ? prof.titleRu : locale === 'ar' ? prof.titleAr : prof.title}</span>
+                <span className="font-bold text-white">
+                  {locale === 'ru' ? stage.titleRu : locale === 'ar' ? stage.titleAr : stage.titleEn}
+                </span>
               </div>
-              <p className="text-xs text-gray-400 mt-0.5">{locale === 'ru' ? prof.reasonRu : locale === 'ar' ? prof.reasonAr : prof.reason}</p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {locale === 'ru' ? stage.reasonRu : locale === 'ar' ? stage.reasonAr : stage.reasonEn}
+              </p>
             </div>
             <div className="text-right">
-              <div className="text-lg font-black" style={{ color: `hsl(${prof.match}, 80%, 60%)` }}>
-                {prof.match}%
+              <div className="text-lg font-black" style={{ color: stage.color }}>
+                {stage.score}%
               </div>
-              <div className="text-xs text-gray-500">{locale === 'ru' ? 'совпадение' : locale === 'ar' ? 'تطابق' : 'match'}</div>
+              <div className="text-xs text-gray-500">
+                {locale === 'ru' ? 'сила' : locale === 'ar' ? 'قوة' : 'strength'}
+              </div>
             </div>
           </div>
         ))}
@@ -259,10 +168,10 @@ export default function CareerRecommendation({ competency }: CareerRecommendatio
           </div>
           <p className="text-xs text-gray-400">
             {locale === 'ru'
-              ? 'Навык командной работы из кооперативных миссий влияет на профессии с пометкой "Командная работа". Чем выше навык — тем выше совпадение.'
+              ? 'Навык командной работы из кооперативных миссий усиливает этапы Питча и Запуска. Чем выше навык — тем сильнее ты на этих этапах.'
               : locale === 'ar'
-                ? 'مهارة العمل الجماعي من المهمات التعاونية تؤثر على المهن التي تحمل علامة "عمل جماعي". كلما زادت المهارة، زاد التطابق.'
-                : 'Teamwork skill from co-op missions boosts professions tagged "Teamwork". Higher skill = higher match.'}
+                ? 'مهارة العمل الجماعي من المهمات التعاونية تعزز مراحل العرض والإطلاق. كلما زادت المهارة، زادت قوتك في هذه المراحل.'
+                : 'Teamwork skill from co-op missions boosts your Pitch and Launch stages. Higher skill = stronger at those stages.'}
           </p>
         </div>
       )}
@@ -273,7 +182,7 @@ export default function CareerRecommendation({ competency }: CareerRecommendatio
           <p className="font-medium text-white mb-1">{t('professionQuestion')}</p>
           <p className="text-xs text-gray-400 mb-3">{t('professionQuestionSubtitle')}</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {professionOptions.map(opt => (
+            {stageOptions.map(opt => (
               <button
                 key={opt}
                 onClick={() => { setAnswer(opt); setSubmitted(true) }}
@@ -292,7 +201,7 @@ export default function CareerRecommendation({ competency }: CareerRecommendatio
         <div className="bg-green-900/20 border border-green-500/30 rounded-xl p-4 text-center">
           <div className="text-2xl mb-1">✅</div>
           <p className="text-green-400 font-medium">{locale === 'ru' ? 'Спасибо за ответ!' : locale === 'ar' ? 'شكرًا على إجابتك!' : 'Thanks for your answer!'}</p>
-          <p className="text-gray-400 text-sm mt-1">{locale === 'ru' ? 'Ваш выбор:' : locale === 'ar' ? 'اخترت:' : 'You chose:'} <strong className="text-white">{answer}</strong></p>
+          <p className="text-gray-400 text-sm mt-1">{locale === 'ru' ? 'Твой выбор:' : locale === 'ar' ? 'اخترت:' : 'You chose:'} <strong className="text-white">{answer}</strong></p>
         </div>
       )}
     </div>

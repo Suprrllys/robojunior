@@ -974,11 +974,11 @@
       "management": "Управление",
       "learning_speed": "Скорость обучения"
     },
-    "topProfessions": "Подходящие профессии для тебя",
-    "playMoreToUnlock": "Пройди ещё {count} роль(и), чтобы открыть карьерный профиль",
-    "professionQuestion": "Какую профессию ты хотел бы изучить глубже?",
+    "topProfessions": "Твои сильные этапы инновации",
+    "playMoreToUnlock": "Пройди ещё {count} роль(и), чтобы открыть инновационный профиль",
+    "professionQuestion": "Какой этап инновации ты хотел бы изучить глубже?",
     "professionQuestionSubtitle": "Это помогает нам улучшать RoboJunior",
-    "noneOfThese": "Ни одна не подходит",
+    "noneOfThese": "Ни один не интересен",
     "badges": "Мои бейджи",
     "noBadges": "Выполни миссии, чтобы получить бейджи!",
     "stats": {

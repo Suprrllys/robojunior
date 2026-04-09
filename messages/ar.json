@@ -974,9 +974,9 @@
       "management": "الإدارة",
       "learning_speed": "سرعة التعلم"
     },
-    "topProfessions": "المهن الأنسب لك",
-    "playMoreToUnlock": "أكمل {count} دور(أدوار) أخرى لفتح ملفك المهني",
-    "professionQuestion": "أي مهنة تودّ استكشافها أكثر؟",
+    "topProfessions": "أقوى مراحل الابتكار لديك",
+    "playMoreToUnlock": "أكمل {count} دور(أدوار) أخرى لفتح ملفك الابتكاري",
+    "professionQuestion": "أي مرحلة ابتكار تودّ استكشافها أكثر؟",
     "professionQuestionSubtitle": "يساعدنا ذلك على تحسين RoboJunior",
     "noneOfThese": "لا شيء مما سبق",
     "badges": "شاراتي",
